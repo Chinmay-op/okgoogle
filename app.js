@@ -12038,7 +12038,11 @@ const multer = require('multer');
 // Ensure admissions directory exists
 const admissionsDir = path.join(__dirname, 'uploads', 'admissions');
 if (!fs.existsSync(admissionsDir)) {
-  fs.mkdirSync(admissionsDir, { recursive: true });
+  try {
+    fs.mkdirSync(admissionsDir, { recursive: true });
+  } catch (err) {
+    console.warn("Could not create admissions directory. This is expected in read-only environments like Vercel.");
+  }
 }
 
 const admissionStorage = multer.diskStorage({

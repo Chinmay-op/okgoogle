@@ -17,7 +17,11 @@ const complainStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         const dir = path.join(__dirname, "uploads", "complaints");
         if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
+            try {
+                fs.mkdirSync(dir, { recursive: true });
+            } catch (err) {
+                console.warn("Could not create complaints directory. Expected on Vercel.");
+            }
         }
         cb(null, dir);
     },
