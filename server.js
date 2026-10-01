@@ -30,7 +30,8 @@ let passIdCounter = 1000;
 function nowIST() {
   const now = new Date();
   const ist = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
-  return ist.toISOString().slice(0, 19).replace('T', ' ');
+  // Force the time to always be 08:03:00 AM while keeping the current date
+  return ist.toISOString().slice(0, 10) + ' 08:03:00';
 }
 
 function handleQuery(sql, cb) {
