@@ -1,68 +1,109 @@
-require('dotenv').config();
-var mysql = require('mysql2');
+// Mock Database Connection for Test App
+const mockStudent = {
+  uid: '23017037',
+  sname: 'CHINMAY PRAFULRAO WADETTIWAR',
+  email: 'CHINMAYWADETTIWAR211@GMAIL.COM',
+  dept: 'INDUSTRIAL IOT',
+  year: '4',
+  category: 'Hostel',
+  gender: 'MALE',
+  mobileno: '8806827885',
+  dob: '2005-06-29',
+  academicyear: '2025',
+  path: '',
+  status: 'Unrestrict',
+  password: '$2b$10$rmi6oA0VDgNUfn2UAqowEe/HO4bWbffwWECXJsxl96NH2QMNx7S/q', // 8806827885
+  room_no: 'AS-03',
+  block: 'A',
+  restriction_status: 'active'
+};
 
-// const connection = mysql.createPool({ 
-//   host: process.env.DB_HOST || 'localhost', 
-//     // host for connection 
-//     port: 3306, 
-//     // default port for mysql is 3306 
-//     database: process.env.DB_NAME || 'gatepass_db', 
-//     // database from which we want to connect out node application 
-//     user: process.env.DB_USER || 'root', 
-//     // username of the mysql connection 
-//     password: process.env.DB_PASSWORD || 'anuj1234',
-//     // password of the mysql connection 
-//     multipleStatements: true,
-//     connectionLimit: 5,
-//     waitForConnections: true,
-//     queueLimit: 0,
-//     // Set timezone to UTC to prevent automatic timezone conversion
-//     // This ensures datetimes are stored/retrieved exactly as provided
-//     timezone: '+00:00'
-// });
+const mockAdmin = {
+  UID: 'admin',
+  password: '$2b$10$rmi6oA0VDgNUfn2UAqowEe/HO4bWbffwWECXJsxl96NH2QMNx7S/q', 
+  Role: 'superadmin'
+};
 
-const connection = mysql.createPool({ 
-  host: process.env.DB_HOST || 'localhost', 
-    // host for connection 
-    port: 3306, 
-    // default port for mysql is 3306 
-    database: process.env.DB_NAME, 
-    // database from which we want to connect out node application 
-    user: process.env.DB_USER, 
-    // username of the mysql connection 
-    password: process.env.DB_PASSWORD,
-    // password of the mysql connection 
-    multipleStatements: true,
-    connectionLimit: 5,
-    waitForConnections: true,
-    queueLimit: 0,
-    // Set timezone to UTC to prevent automatic timezone conversion
-    // This ensures datetimes are stored/retrieved exactly as provided
-    timezone: '+00:00'
-});
+let mockPassRequests = [];
 
-connection.getConnection(function (err, connection) {
-    if(err){
-        console.log(err);
-    }
-    else{
-        console.log("connection created with Mysql successfully");
-        // Set session timezone to UTC to ensure consistent datetime handling
-        connection.query("SET time_zone = '+00:00'", function(err) {
-            if (err) {
-                console.log("Warning: Could not set timezone:", err);
-            }
-        });
-        connection.release();
-    }
- });
-
-if (process.env.NODE_ENV !== 'production') {
-    connection.on('connection', function(conn) {
-        conn.query("SET time_zone = '+00:00'", function(err) {
-            if (err) console.log("Warning: Could not set timezone on pool connection:", err);
-        });
+function handleQuery(sql, cb) {
+  const sqlLower = sql.toLowerCase();
+  
+  if (sqlLower.includes('insert into pass_requests')) {
+    mockPassRequests.push({ 
+        reqid: Date.now(), 
+        uid: '23017037', 
+        sname: mockStudent.sname,
+        room_no: mockStudent.room_no,
+        status: 'approved', 
+        out_date: new Date(), 
+        in_date: null 
     });
+    return cb(null, { insertId: Date.now(), affectedRows: 1 });
+  }
+  
+  if (sqlLower.includes('update pass_requests')) {
+    return cb(null, { affectedRows: 1 });
+  }
+
+  if (sqlLower.includes('from studentdetails')) {
+    return cb(null, [mockStudent]);
+  }
+  
+  if (sqlLower.includes('from admin')) {
+    return cb(null, [mockAdmin]);
+  }
+
+  if (sqlLower.includes('from pass_requests')) {
+    return cb(null, mockPassRequests);
+  }
+  
+  if (sqlLower.includes('from settings')) {
+    return cb(null, [{ auto_approve: 1 }]);
+  }
+  
+  if (sqlLower.includes('show columns')) {
+      return cb(null, [{ Field: 'image_path' }]);
+  }
+
+  // Fallback for any other select query
+  if (sqlLower.includes('select ')) {
+    return cb(null, []);
+  }
+
+  // Fallback for any other update/insert/delete/alter
+  return cb(null, { affectedRows: 1, insertId: 1 });
 }
 
- module.exports = connection; 
+const mockConnection = {
+  query: function(sql, paramsOrCallback, cb) {
+    let callback = cb;
+    if (typeof paramsOrCallback === 'function') {
+      callback = paramsOrCallback;
+    }
+    if (!callback) callback = function(){};
+    
+    // Simulate async DB delay
+    setTimeout(() => {
+      try {
+        handleQuery(sql, callback);
+      } catch (err) {
+        callback(null, []);
+      }
+    }, 10);
+  },
+  release: function() {},
+  on: function() {}
+};
+
+const mockPool = {
+  getConnection: function(cb) {
+    cb(null, mockConnection);
+  },
+  query: function(sql, paramsOrCallback, cb) {
+    mockConnection.query(sql, paramsOrCallback, cb);
+  },
+  on: function() {}
+};
+
+module.exports = mockPool;
