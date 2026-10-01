@@ -25,21 +25,42 @@ const mockAdmin = {
 };
 
 let mockPassRequests = [];
+let passIdCounter = 1000;
+
+function nowIST() {
+  const now = new Date();
+  const ist = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
+  return ist.toISOString().slice(0, 19).replace('T', ' ');
+}
 
 function handleQuery(sql, cb) {
   const sqlLower = sql.toLowerCase();
   
   if (sqlLower.includes('insert into pass_requests')) {
+    const ts = nowIST();
+    passIdCounter++;
     mockPassRequests.push({ 
-        reqid: Date.now(), 
+        requestid: passIdCounter,
         uid: '23017037', 
         sname: mockStudent.sname,
+        passtype: 'City Pass',
         room_no: mockStudent.room_no,
         status: 'approved', 
+        created_at: ts,
+        approved_at: ts,
+        approvaldt: ts,
+        approved_by: 'Roy',
+        expected_out: ts,
+        expected_return: ts,
+        reason: 'Requested via app',
+        emergency_contact: null,
+        rejection_reason: null,
+        conversion_enabled: 0,
+        conversion_enabled_by: null,
         out_date: new Date(), 
         in_date: null 
     });
-    return cb(null, { insertId: Date.now(), affectedRows: 1 });
+    return cb(null, { insertId: passIdCounter, affectedRows: 1 });
   }
   
   if (sqlLower.includes('update pass_requests')) {
