@@ -9447,7 +9447,6 @@ app.post('/student/requestpass', verifyStudentJwt, function (req, res) {
               expected_out: formattedExpectedOut,
               expected_return: formattedExpectedReturn
             });
-            req.flash('message', 'Pass approved successfully!');
             res.redirect('/student/requestpass');
           }
         });

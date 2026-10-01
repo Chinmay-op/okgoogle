@@ -191,12 +191,7 @@
             </div>
         </div>
         
-        <% if(message && message.length > 0){ %>
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i>
-                <%- message %>
-            </div>
-        <% } %>
+
         
         <!-- New: Latest Approved Pass Card -->
         <% if (latestApprovedPass) { %>
@@ -235,7 +230,7 @@
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                 <div style="display: inline-block; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 10px;">
                     <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=<%= student.uid %>&scale=2.5&height=10" alt="Barcode" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
-                    <div style="font-size: 20px; font-weight: 700; letter-spacing: 6px; color: #0f172a; margin-top: 10px; font-family: monospace;"><%= student.uid %></div>
+                    <div style="font-size: 20px; font-weight: 700; letter-spacing: 6px; color: #000000; margin-top: 10px; font-family: monospace; text-decoration: none;"><%= student.uid %></div>
                 </div>
                 <p style="font-size: 13px; color: #64748b; margin: 0;"><i class="fas fa-info-circle" style="color: #3b82f6;"></i> Scan this barcode at the security gate for automated check-in and check-out logs.</p>
             </div>
