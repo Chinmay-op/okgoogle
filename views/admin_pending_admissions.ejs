@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pending Admission Applications</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .navbar-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            padding: 0.8rem 2rem;
+        }
+        .card { border-radius: 12px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom mb-4">
+    <div class="container-fluid">
+        <span class="navbar-brand text-white fw-bold"><i class="fas fa-clipboard-list me-2"></i>Room Bookings</span>
+        <div class="navbar-nav ms-auto">
+            <a href="/daterange" class="nav-item nav-link text-white">Home</a>
+            <a href="/logout" class="nav-item nav-link text-white ms-2">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-4">
+    <% if(message && message.length > 0){ %>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <%- message %>
+        </div>
+    <% } %>
+
+    <div class="mb-3">
+        <a href="/admin/roombookings" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Room Bookings
+        </a>
+    </div>
+
+<% if (role === 'BoysHostelAdmin' || role === 'SuperID') { %>
+<div class="card mb-4" style="border-radius:12px;">
+  <div class="card-header" style="background:linear-gradient(135deg,#ffc107,#ff8c00);color:white;">
+    <h5 class="mb-0"><i class="fas fa-clock me-2"></i> Pending Admission Applications <span class="badge bg-white text-dark ms-2"><%= pendingApplications && pendingApplications.length ? pendingApplications.length : 0 %></span></h5>
+    <small>Students who have filled the form but not yet been allotted a room by SuperID</small>
+  </div>
+  <div class="card-body p-0">
+    <% if (!pendingApplications || pendingApplications.length === 0) { %>
+      <p class="text-center text-muted p-3">No pending applications</p>
+    <% } else { %>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr><th>#ID</th><th>Student Name</th><th>Mobile</th><th>Branch</th><th>Year</th><th>Mess</th><th>Applied On</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          <% pendingApplications.forEach(function(pa) { %>
+          <tr>
+            <td><%= pa.id %></td><td class="fw-bold"><%= pa.full_name %></td><td><%= pa.student_mobile %></td><td><%= pa.branch %></td><td><%= pa.admission_year %></td>
+            <td><% if (pa.mess_preference === 'Veg') { %><span class="badge bg-success"><i class="fas fa-leaf me-1"></i>Veg</span><% } else { %><span class="badge bg-danger"><i class="fas fa-drumstick-bite me-1"></i>Non-Veg</span><% } %></td>
+            <td><%= new Date(pa.created_at).toLocaleDateString('en-IN',{timeZone:'Asia/Kolkata'}) %></td>
+            <td><% if (role === 'SuperID') { %><a href="/admin/admission-applications/<%= pa.id %>" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> View & Process</a><% } else { %><span class="badge bg-warning text-dark">Awaiting SuperID</span><% } %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+</div>
+<% } %>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!-- Special Food Module -->
+<div class="card mb-4" style="border: none; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border-radius: 12px; overflow: hidden;">
+    <div class="card-header d-flex justify-content-between align-items-center" style="background: #fef3c7; color: #92400e; border-bottom: 1px solid #fde68a; padding: 1rem 1.25rem;">
+        <h4 class="mb-0 fw-bold fs-5"><i class="fas fa-star me-2" style="color: #d97706;"></i>Special Food Add-Ons</h4>
+        <% if(['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+            <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#addSpecialFoodModal">
+                <i class="fas fa-plus"></i> Add Item
+            </button>
+        <% } %>
+    </div>
+    
+    <div class="card-body">
+        
+        <!-- 1. Available Items Section -->
+        <h5 class="text-primary mb-3">Available Items</h5>
+        <% if (specialFoodItems && specialFoodItems.length > 0) { %>
+            <div class="table-responsive mb-4 special-food-table-wrap d-none d-md-block">
+                <table class="table table-hover align-middle mb-0" style="border-bottom: 1px solid #e5e7eb;">
+                    <thead style="background-color: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Price / Day</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <% if (role === 'Student' || ['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+                                <th>Action</th>
+                            <% } %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% specialFoodItems.forEach(item => { %>
+                            <% if (item.is_active) { %>
+                            <tr>
+                                <td><strong><%= item.food_name %></strong></td>
+                                <td><%= item.quantity_desc %></td>
+                                <td>₹<%= item.price_per_day %></td>
+                                <td class="text-capitalize"><%= item.availability %></td>
+                                <td>
+                                    <% if (item.is_active) { %>
+                                        <span class="badge bg-success">Active</span>
+                                    <% } else { %>
+                                        <span class="badge bg-danger">Inactive</span>
+                                    <% } %>
+                                </td>
+                                <% if (role === 'Student') { %>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary request-food-btn" 
+                                                data-bs-toggle="modal" 
+                                        data-bs-target="#requestSpecialFoodModal"
+                                                data-id="<%= item.id %>"
+                                                data-name="<%= item.food_name %>"
+                                                data-price="<%= item.price_per_day %>"
+                                                data-availability="<%= item.availability %>"
+                                                data-duration-days="<%= item.duration_days || 30 %>">
+                                            Request
+                                        </button>
+                                    </td>
+                                <% } else if (['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+                                    <td>
+                                        <button class="btn btn-sm edit-food-btn me-1"
+                                                style="color: #4b5563; background: transparent; border: none; padding: 0.25rem 0.5rem;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editSpecialFoodModal"
+                                                data-id="<%= item.id %>"
+                                                data-name="<%= item.food_name %>"
+                                                data-quantity="<%= item.quantity_desc %>"
+                                                data-price="<%= item.price_per_day %>"
+                                                data-availability="<%= item.availability %>"
+                                                data-duration-days="<%= item.duration_days || 30 %>">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form action="/special-food/items/delete/<%= item.id %>" method="POST" class="d-inline" onsubmit="return confirm('Delete &quot;<%= item.food_name %>&quot;? This cannot be undone.');">
+                                            <button type="submit" class="btn btn-sm text-danger" style="background: transparent; border: none; padding: 0.25rem 0.5rem;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                <% } %>
+                            </tr>
+                            <% } %>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-md-none mb-4">
+                <% specialFoodItems.forEach(item => { %>
+                    <% if (item.is_active) { %>
+                        <div class="special-food-mobile-card">
+                            <div class="special-food-mobile-head">
+                                <div>
+                                    <div class="special-food-mobile-title"><%= item.food_name %></div>
+                                    <div class="special-food-mobile-subtitle"><%= item.quantity_desc %></div>
+                                </div>
+                                <span class="badge <%= item.is_active ? 'bg-success' : 'bg-danger' %>">
+                                    <%= item.is_active ? 'Active' : 'Inactive' %>
+                                </span>
+                            </div>
+                            <div class="special-food-mobile-meta">
+                                <div class="special-food-mobile-meta-item">
+                                    <span class="label">Price / Day</span>
+                                    <span class="value">₹<%= item.price_per_day %></span>
+                                </div>
+                                <div class="special-food-mobile-meta-item">
+                                    <span class="label">Time</span>
+                                    <span class="value text-capitalize"><%= item.availability %></span>
+                                </div>
+                            </div>
+                            <div class="special-food-mobile-actions">
+                                <% if (role === 'Student') { %>
+                                    <button class="btn btn-primary request-food-btn w-100"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#requestSpecialFoodModal"
+                                            data-id="<%= item.id %>"
+                                            data-name="<%= item.food_name %>"
+                                            data-price="<%= item.price_per_day %>"
+                                            data-availability="<%= item.availability %>"
+                                            data-duration-days="<%= item.duration_days || 30 %>">
+                                        Request
+                                    </button>
+                                <% } else if (['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+                                    <button class="btn btn-outline-secondary edit-food-btn me-2"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editSpecialFoodModal"
+                                            data-id="<%= item.id %>"
+                                            data-name="<%= item.food_name %>"
+                                            data-quantity="<%= item.quantity_desc %>"
+                                            data-price="<%= item.price_per_day %>"
+                                            data-availability="<%= item.availability %>"
+                                            data-duration-days="<%= item.duration_days || 30 %>">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </button>
+                                    <form action="/special-food/items/delete/<%= item.id %>" method="POST" class="d-inline" onsubmit="return confirm('Delete &quot;<%= item.food_name %>&quot;? This cannot be undone.');">
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="fas fa-trash me-1"></i>Delete
+                                        </button>
+                                    </form>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% } %>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-utensils fs-3 mb-2" style="color: #cbd5e1;"></i>
+                <p class="mb-0" style="font-size: 0.95rem;">No special food items available at the moment.</p>
+            </div>
+        <% } %>
+
+
+        <!-- 2. Student specific requests -->
+        <% if (role === 'Student') { %>
+            <hr style="border-top: 1px solid #e5e7eb; margin: 2rem 0;">
+            <h5 class="text-primary mb-3">Your Requests</h5>
+            <% if (studentSpecialRequests && studentSpecialRequests.length > 0) { %>
+                <div class="table-responsive special-food-table-wrap d-none d-md-block">
+                    <table class="table table-hover align-middle mb-0" style="border-bottom: 1px solid #e5e7eb;">
+                        <thead style="background-color: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                            <tr>
+                                <th>Item</th>
+                                <th>Requested On</th>
+                                <th>Time Slot</th>
+                                <th>Duration</th>
+                                <th>Total Price</th>
+                                <th>Status</th>
+                                <th>Validity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% studentSpecialRequests.forEach(req => { %>
+                                <tr>
+                                    <td><%= req.food_name %> <small class="text-muted">(x<%= req.quantity_multiplier %>)</small></td>
+                                    <td><%= new Date(req.requested_at).toLocaleDateString('en-IN') %></td>
+                                    <td class="text-capitalize"><%= req.obtain_time %></td>
+                                    <td><%= req.duration_days %> Days</td>
+                                    <td><strong>₹<%= req.total_price %></strong></td>
+                                    <td>
+                                        <% if (req.status === 'pending') { %>
+                                            <span class="badge bg-warning text-dark">Pending Approval</span>
+                                        <% } else if (req.status === 'approved') { %>
+                                            <span class="badge bg-success">Approved</span>
+                                        <% } else { %>
+                                            <span class="badge bg-danger">Rejected</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (req.status === 'approved') { %>
+                                            <%= new Date(req.start_date).toLocaleDateString('en-IN') %> to <%= new Date(req.end_date).toLocaleDateString('en-IN') %>
+                                        <% } else if (req.status === 'pending') { 
+                                            let estDate = new Date();
+                                            estDate.setDate(estDate.getDate() + req.duration_days);
+                                        %>
+                                            <span class="text-muted">Est. till <%= estDate.toLocaleDateString('en-IN') %></span>
+                                        <% } else { %>
+                                            -
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-md-none">
+                    <% studentSpecialRequests.forEach(req => { %>
+                        <div class="special-food-mobile-card">
+                            <div class="special-food-mobile-head">
+                                <div>
+                                    <div class="special-food-mobile-title"><%= req.food_name %> <small class="text-muted">(x<%= req.quantity_multiplier %>)</small></div>
+                                    <div class="special-food-mobile-subtitle"><%= new Date(req.requested_at).toLocaleDateString('en-IN') %></div>
+                                </div>
+                                <% if (req.status === 'pending') { %>
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                <% } else if (req.status === 'approved') { %>
+                                    <span class="badge bg-success">Approved</span>
+                                <% } else { %>
+                                    <span class="badge bg-danger">Rejected</span>
+                                <% } %>
+                            </div>
+                            <div class="special-food-mobile-meta">
+                                <div class="special-food-mobile-meta-item">
+                                    <span class="label">Time Slot</span>
+                                    <span class="value text-capitalize"><%= req.obtain_time %></span>
+                                </div>
+                                <div class="special-food-mobile-meta-item">
+                                    <span class="label">Duration</span>
+                                    <span class="value"><%= req.duration_days %> Days</span>
+                                </div>
+                                <div class="special-food-mobile-meta-item">
+                                    <span class="label">Total Price</span>
+                                    <span class="value fw-bold">₹<%= req.total_price %></span>
+                                </div>
+                                <div class="special-food-mobile-meta-item">
+                                    <span class="label">Validity</span>
+                                    <span class="value">
+                                        <% if (req.status === 'approved') { %>
+                                            <%= new Date(req.start_date).toLocaleDateString('en-IN') %> to <%= new Date(req.end_date).toLocaleDateString('en-IN') %>
+                                        <% } else if (req.status === 'pending') { 
+                                            let estDate = new Date();
+                                            estDate.setDate(estDate.getDate() + req.duration_days);
+                                        %>
+                                            Est. till <%= estDate.toLocaleDateString('en-IN') %>
+                                        <% } else { %>
+                                            -
+                                        <% } %>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="text-center py-4 text-muted">
+                    <i class="fas fa-clipboard-list fs-3 mb-2" style="color: #cbd5e1;"></i>
+                    <p class="mb-0" style="font-size: 0.95rem;">You haven't requested any special food.</p>
+                </div>
+            <% } %>
+        <% } %>
+
+        
+        <!-- 3. Superadmin Pending Requests -->
+        <% if (['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role) || role === 'Admin' || role === 'AdminReview') { %>
+            <hr style="border-top: 1px solid #e5e7eb; margin: 2rem 0;">
+            <h5 class="mb-3" style="color: #d97706;">Pending Requests</h5>
+            <% if (pendingSpecialRequests && pendingSpecialRequests.length > 0) { %>
+                <div class="table-responsive special-food-table-wrap">
+                    <table class="table table-hover align-middle mb-0" style="border-bottom: 1px solid #e5e7eb;">
+                        <thead style="background-color: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                            <tr>
+                                <th>Student</th>
+                                <th>Item & Time</th>
+                                <th>Duration</th>
+                                <th>Total Price</th>
+                                <th>Status</th>
+                                <th>Valid Till</th>
+                                <% if (['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+                                    <th>Action</th>
+                                <% } %>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% pendingSpecialRequests.forEach(req => { %>
+                                <tr>
+                                    <td>
+                                        <strong><%= req.sname %></strong><br>
+                                        <small class="text-muted"><%= req.student_id %> | <%= req.room_no %> | <%= req.dept %></small>
+                                    </td>
+                                    <td>
+                                        <%= req.food_name %> <small class="text-muted">(x<%= req.quantity_multiplier %>)</small><br>
+                                        <small class="text-capitalize text-muted"><%= req.obtain_time %></small>
+                                    </td>
+                                    <td><%= req.duration_days %> Days</td>
+                                    <td><strong>₹<%= req.total_price %></strong></td>
+                                    <td><span class="badge bg-warning text-dark">Pending</span></td>
+                                    <td>
+                                        <% 
+                                            let projectedDate = new Date();
+                                            projectedDate.setDate(projectedDate.getDate() + req.duration_days);
+                                        %>
+                                        <span class="text-muted"><%= projectedDate.toLocaleDateString('en-IN') %> (Est.)</span>
+                                    </td>
+                                    <% if (['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+                                        <td>
+                                            <button class="btn btn-sm btn-success approve-food-btn me-1"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#approveSpecialFoodModal"
+                                                    data-id="<%= req.id %>">
+                                                Approve
+                                            </button>
+                                            <form action="/special-food/requests/reject/<%= req.id %>" method="POST" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                            </form>
+                                        </td>
+                                    <% } %>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="text-center py-4 text-muted">
+                    <i class="fas fa-inbox fs-3 mb-2" style="color: #cbd5e1;"></i>
+                    <p class="mb-0" style="font-size: 0.95rem;">No pending requests.</p>
+                </div>
+            <% } %>
+        <% } %>
+
+
+        <!-- 4. Approved & Active Subscriptions (Admin) -->
+        <% if (['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role) || role === 'Admin' || role === 'AdminReview') { %>
+            <hr style="border-top: 1px solid #e5e7eb; margin: 2rem 0;">
+            <h5 class="mb-3" style="color: #166534;">Currently Active Special Food Subscriptions (Today)</h5>
+            <% if (approvedSpecialRequests && approvedSpecialRequests.length > 0) { %>
+                <div class="table-responsive special-food-table-wrap">
+                    <table class="table table-hover align-middle mb-0" style="border-bottom: 1px solid #e5e7eb;">
+                        <thead style="background-color: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                            <tr>
+                                <th>Student</th>
+                                <th>Item & Time</th>
+                                <th>Price / Day</th>
+                                <th>Valid Till</th>
+                                <th>Days Remaining</th>
+                                <th>Collected Today?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% approvedSpecialRequests.forEach(req => { %>
+                                <% 
+                                    let collectedDay = specialFoodAttendance.some(a => a.special_food_request_id === req.id && a.time_slot === 'day');
+                                    let collectedNight = specialFoodAttendance.some(a => a.special_food_request_id === req.id && a.time_slot === 'night');
+                                    let daysRemaining = Math.ceil((new Date(req.end_date) - new Date()) / (1000 * 60 * 60 * 24));
+                                    daysRemaining = daysRemaining < 0 ? 0 : daysRemaining;
+                                %>
+                                <tr>
+                                    <td>
+                                        <strong><%= req.sname %></strong><br>
+                                        <small class="text-muted"><%= req.student_id %> | <%= req.room_no %> | <%= req.dept %></small>
+                                    </td>
+                                    <td>
+                                        <%= req.food_name %> <small class="text-muted">(x<%= req.quantity_multiplier %>)</small><br>
+                                        <small class="text-capitalize text-muted"><%= req.obtain_time %></small>
+                                    </td>
+                                    <td>₹<%= req.price_per_day %></td>
+                                    <td><%= new Date(req.end_date).toLocaleDateString('en-IN') %></td>
+                                    <td><%= daysRemaining %> Days</td>
+                                    <td>
+                                        <% if (req.obtain_time === 'day' || req.obtain_time === 'both') { %>
+                                            <span class="badge <%= collectedDay ? 'bg-success' : 'bg-secondary' %>">Day</span>
+                                        <% } %>
+                                        <% if (req.obtain_time === 'night' || req.obtain_time === 'both') { %>
+                                            <span class="badge <%= collectedNight ? 'bg-success' : 'bg-secondary' %>">Night</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="text-center py-4 text-muted">
+                    <i class="fas fa-calendar-times fs-3 mb-2" style="color: #cbd5e1;"></i>
+                    <p class="mb-0" style="font-size: 0.95rem;">No active subscriptions for today.</p>
+                </div>
+            <% } %>
+        <% } %>
+
+        <!-- 5. Kitchen Grouped View (Kitchen Dashboard) -->
+        <% if (role === 'KitchenAdmin') { %>
+            <hr style="border-top: 1px solid #e5e7eb; margin: 2rem 0;">
+            <h5 class="mb-4" style="color: #166534;"><i class="fas fa-list-check me-2"></i>Kitchen Special Food Orders (Today)</h5>
+            
+            <% 
+                const meals = [
+                    { id: 'day', label: 'BREAKFAST / LUNCH (Day)', items: approvedSpecialRequests.filter(r => r.obtain_time === 'day' || r.obtain_time === 'both') },
+                    { id: 'night', label: 'DINNER (Night)', items: approvedSpecialRequests.filter(r => r.obtain_time === 'night' || r.obtain_time === 'both') }
+                ];
+                
+                let hasOrders = false;
+            %>
+            
+            <% meals.forEach(meal => { %>
+                <% if (meal.items.length > 0) { 
+                    hasOrders = true;
+                    // Group by food name
+                    const groupedFoods = {};
+                    meal.items.forEach(item => {
+                        if (!groupedFoods[item.food_name]) groupedFoods[item.food_name] = [];
+                        groupedFoods[item.food_name].push(item);
+                    });
+                %>
+                    <div class="mb-4">
+                        <h6 class="text-uppercase fw-bold text-muted border-bottom pb-2 mb-3"><%= meal.label %></h6>
+                        
+                        <div class="row g-4">
+                        <% Object.keys(groupedFoods).forEach(foodName => { 
+                            const students = groupedFoods[foodName];
+                        %>
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card h-100 shadow-sm border-0" style="border-top: 4px solid #f59e0b !important;">
+                                    <div class="card-header bg-white border-0 pt-3 pb-0">
+                                        <h5 class="fw-bold mb-1" style="color: #92400e;"><%= foodName %></h5>
+                                        <span class="badge bg-warning text-dark"><%= students.length %> Student<%= students.length > 1 ? 's' : '' %></span>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            <% students.forEach(s => { %>
+                                                <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center" style="font-size: 0.9rem;">
+                                                    <div>
+                                                        <strong><%= s.student_id %></strong>
+                                                        <span class="ms-2"><%= s.sname %></span>
+                                                    </div>
+                                                    <small class="text-muted"><%= s.room_no %></small>
+                                                </li>
+                                            <% }) %>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                        </div>
+                    </div>
+                <% } %>
+            <% }) %>
+            
+            <% if (!hasOrders) { %>
+                <div class="text-center py-5 text-muted bg-white rounded shadow-sm border">
+                    <i class="fas fa-utensils fs-1 mb-3 text-light"></i>
+                    <h5 class="fw-normal">No approved special food orders for today.</h5>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+</div>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hostel Attendance Grid</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        
+        .navbar-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            padding: 0.8rem 2rem;
+        }
+
+        .block-tabs .nav-link {
+            font-size: 1.1rem; font-weight: 700; color: #444 !important;
+            background-color: #fff; border: 1px solid #ddd; border-radius: 8px;
+            padding: 10px 25px; margin-right: 10px; transition: all 0.2s;
+        }
+        .block-tabs .nav-link.active { background-color: #6c5ce7 !important; color: white !important; }
+        
+        .floor-pills .nav-link {
+            font-weight: 600; color: #555 !important; background-color: #fff;
+            border: 1px solid #ccc; border-radius: 20px; padding: 8px 20px; margin-right: 10px;
+        }
+        .floor-pills .nav-link.active { background-color: #0984e3 !important; color: white !important; }
+
+        .room-card {
+            background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px; padding: 15px; border-top: 5px solid #a29bfe;
+        }
+        .room-header { font-weight: 700; color: #444; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px; }
+
+        .bed-box {
+            height: 90px; border-radius: 8px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; cursor: pointer;
+            background: #f8f9fa; border: 2px solid #ced4da; position: relative; transition: all 0.1s;
+        }
+        .bed-box:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .bed-num { position: absolute; top: 2px; right: 5px; font-size: 0.7rem; font-weight: bold; color: #666; }
+
+        /* STATUS COLORS */
+        .st-Present { background: #d4edda !important; border-color: #28a745 !important; color: #155724; }
+        .st-Absent  { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+        .st-Home    { background: #cfe2ff !important; border-color: #0d6efd !important; color: #084298; }
+        .st-Gate    { background: #e7e3ff !important; border-color: #6c5ce7 !important; color: #4c3a99; }
+        .st-Sick    { background: #fff3cd !important; border-color: #ffc107 !important; color: #856404; }
+        .st-Pending { background: #fff; border-color: #ccc; border-style: dashed; }
+        
+        .new-student-bed {
+            background: #0a2463 !important;
+            border-color: #061a47 !important;
+            color: #ffffff !important;
+        }
+        .new-student-bed .bed-num { color: #ffffff !important; }
+        .new-student-bed i { color: #ffffff !important; }
+        .new-student-bed small { color: #ffffff !important; font-weight: 600; }
+
+        .empty-slot { border-style: dashed; color: #adb5bd; background-color: #fafafa; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-custom mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand text-white fw-bold"><i class="fas fa-calendar-check me-2"></i>Attendance Management</span>
+            <div class="navbar-nav ms-auto">
+                <a href="/daterange" class="nav-item nav-link text-white">Home</a>
+                <a href="/logout" class="nav-item nav-link text-white ms-2">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4">
+        <div class="row">
+            <div class="col-lg-3 col-md-4">
+                <div class="card p-3 mb-3 shadow-sm border-0" style="border-radius: 12px;">
+                    <h6 class="fw-bold text-muted text-uppercase small">Today's Summary</h6>
+                    <hr>
+                    <div class="mb-3">
+                        <small class="text-muted">Total Allocated</small>
+                        <h3 class="fw-bold mb-0" id="statTotal"><%= stats.Total %></h3>
+                    </div>
+                    <div class="small d-flex justify-content-between mb-1">
+                        <span>Present:</span> <span class="fw-bold text-success" id="statPresent"><%= stats.InHostel %></span>
+                    </div>
+                    <div class="small d-flex justify-content-between mb-1">
+                        <span>Absent:</span> <span class="fw-bold text-danger" id="statAbsent"><%= stats.AtCollege %></span>
+                    </div>
+                    <div class="small d-flex justify-content-between">
+                        <span>On Pass:</span> <span class="fw-bold text-primary" id="statHome"><%= stats.Home %></span>
+                    </div>
+                </div>
+
+                <div class="card p-3 mb-3 shadow-sm border-0" style="border-radius: 12px;">
+                    <h6 class="fw-bold text-muted text-uppercase small">Daily Attendance Summary</h6>
+                    <hr>
+                    <div class="table-responsive" style="max-height: 320px; overflow-y: auto;">
+                        <table class="table table-sm table-bordered align-middle mb-0" style="font-size: 0.8rem;">
+                            <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                                <tr>
+                                    <th>Date</th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-center">P</th>
+                                    <th class="text-center">A</th>
+                                    <th class="text-center">H</th>
+                                    <th class="text-center">S</th>
+                                    <th class="text-center">Pen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (typeof dailySummary !== 'undefined' && dailySummary && dailySummary.length) { %>
+                                    <% dailySummary.forEach(function (d) { %>
+                                        <tr>
+                                            <td><%= d.date %></td>
+                                            <td class="text-center"><%= d.total || 0 %></td>
+                                            <td class="text-center text-success fw-bold"><%= d.present || 0 %></td>
+                                            <td class="text-center text-danger fw-bold"><%= d.absent || 0 %></td>
+                                            <td class="text-center text-primary fw-bold"><%= d.home || 0 %></td>
+                                            <td class="text-center text-warning fw-bold"><%= d.sick || 0 %></td>
+                                            <td class="text-center text-muted fw-bold"><%= d.pending || 0 %></td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">No history available</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-muted small mt-2">P=Present, A=Absent, H=Home, S=Sick, Pen=Pending</div>
+                </div>
+
+                <div class="card p-3 shadow-sm border-0" style="border-radius: 12px;">
+                    <h6 class="fw-bold text-muted text-uppercase small">Status Legend</h6>
+                    <div class="mt-2">
+                        <span class="badge st-Present w-100 mb-1 py-2">Present</span>
+                        <span class="badge st-Absent w-100 mb-1 py-2">Absent</span>
+                        <span class="badge st-Home w-100 mb-1 py-2">Home Pass</span>
+                        <span class="badge st-Gate w-100 mb-1 py-2">Gate Pass</span>
+                        <span class="badge st-Sick w-100 mb-1 py-2">Sick Leave</span>
+                        <span class="badge new-student-bed w-100 mb-1 py-2">New Admission</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9 col-md-8">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm border">
+                    <ul class="nav nav-pills block-tabs" id="blockTabs">
+                        <li class="nav-item"><button class="nav-link active" onclick="switchBlock('A')">Block A</button></li>
+                        <li class="nav-item"><button class="nav-link" onclick="switchBlock('B')">Block B</button></li>
+                    </ul>
+                    <ul class="nav nav-pills floor-pills mt-2 mt-md-0" id="floorPills"></ul>
+                </div>
+
+                <h5 class="text-dark fw-bold mb-3 px-2" id="gridTitle">Rooms</h5>
+                <div class="row" id="roomsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="actionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+                <div id="modalHeader" class="modal-header text-white">
+                    <h5 class="modal-title fw-bold">Student Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <img id="mPhoto" src="" class="rounded-circle border border-4 border-white shadow mb-3" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.src='/images/4174.png'">
+                    <h4 class="fw-bold text-dark mb-1" id="mName"></h4>
+                    <p class="text-muted small mb-3" id="mUIDBadge"></p>
+                    
+                    <div class="row text-start bg-light rounded p-3 mb-4 border mx-1">
+                        <div class="col-6 mb-2">
+                            <label class="text-muted small text-uppercase fw-bold">Location</label><br>
+                            <strong id="mRoom"></strong>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <label class="text-muted small text-uppercase fw-bold">Dept</label><br>
+                            <strong id="mDept"></strong>
+                        </div>
+                    </div>
+
+                    <div id="markSection">
+                        <h6 class="text-start text-muted text-uppercase small fw-bold mb-3">Mark Attendance</h6>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6"><button onclick="saveStatus('Present')" class="btn btn-success w-100 py-2">Present</button></div>
+                            <div class="col-6"><button onclick="saveStatus('Absent')" class="btn btn-danger w-100 py-2">Absent</button></div>
+                        </div>
+                        <button onclick="confirmDeallocate()" class="btn btn-outline-secondary btn-sm w-100 mt-2">
+                            <i class="fas fa-user-minus me-1"></i> Remove Student from Bed
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="assignModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:15px;">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Assign Student</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p>Assign to: <strong id="assignTarget"></strong></p>
+                    <input type="text" id="stuSearchInput" class="form-control mb-3" placeholder="Search Name or UID...">
+                    <div id="studentResultsList" class="list-group shadow-sm" style="max-height: 250px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const serverDataRaw = JSON.parse('<%- JSON.stringify(typeof serverData !== "undefined" ? serverData : []) %>');
+        const rawData = (serverDataRaw || []).map(item => {
+            return item;
+        });
+        let currentBlock = 'A';
+        let currentFloor = 'Ground Floor';
+        let currentSelection = { uid: null };
+        let targetRoom = '', targetBed = '';
+
+        const actionModal = new bootstrap.Modal(document.getElementById('actionModal'));
+        const assignModal = new bootstrap.Modal(document.getElementById('assignModal'));
+
+        function normalizeStatus(s) {
+            const v = String(s || '').trim().toLowerCase();
+            if (!v) return 'Pending';
+            if (v === 'present' || v === 'inhostel') return 'Present';
+            if (v === 'absent' || v === 'atcollege') return 'Absent';
+            if (v === 'home' || v === 'home pass' || v === 'homepass') return 'Home';
+            if (v === 'gate' || v === 'gate pass' || v === 'gatepass') return 'Gate';
+            if (v === 'sick' || v === 'sick leave' || v === 'sickleave') return 'Sick';
+            if (v === 'pending') return 'Pending';
+            // Fallback: best-effort title case for single-word values
+            return v.charAt(0).toUpperCase() + v.slice(1);
+        }
+
+        function switchBlock(block) {
+            currentBlock = block;
+            document.querySelectorAll('#blockTabs .nav-link').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+            renderPills();
+        }
+
+        function renderPills() {
+            const container = document.getElementById('floorPills');
+            container.innerHTML = '';
+            const floors = (currentBlock === 'A') ? ['Ground Floor', 'First Floor', 'Second Floor'] : ['Ground Floor', 'First Floor'];
+            floors.forEach(f => {
+                const isActive = (f === currentFloor) ? 'active' : '';
+                container.innerHTML += `<li class="nav-item"><button class="nav-link ${isActive}" onclick="switchFloor('${f}', this)">${f}</button></li>`;
+            });
+            renderGrid();
+        }
+
+        function switchFloor(floor, el) {
+            currentFloor = floor;
+            document.querySelectorAll('#floorPills .nav-link').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+            renderGrid();
+        }
+
+        function updateStats() {
+            let total = 0, present = 0, absent = 0, home = 0;
+            rawData.forEach(x => {
+                if (x.uid) {
+                    total++;
+                    const st = normalizeStatus(x.today_status);
+                    if (st === 'Present') present++;
+                    else if (st === 'Absent') absent++;
+                    else if (st === 'Home') home++;
+                }
+            });
+            const tEl = document.getElementById('statTotal');
+            const pEl = document.getElementById('statPresent');
+            const aEl = document.getElementById('statAbsent');
+            const hEl = document.getElementById('statHome');
+            if (tEl) tEl.innerText = total;
+            if (pEl) pEl.innerText = present;
+            if (aEl) aEl.innerText = absent;
+            if (hEl) hEl.innerText = home;
+        }
+
+        function renderGrid() {
+            updateStats();
+            const container = document.getElementById('roomsContainer');
+            container.innerHTML = '';
+            document.getElementById('gridTitle').innerText = `Rooms: ${currentBlock} - ${currentFloor}`;
+
+            const roomGroups = {};
+            rawData.forEach(item => {
+                if (item.block === currentBlock && item.floor.trim() === currentFloor.trim()) {
+                    if (!roomGroups[item.room_name]) roomGroups[item.room_name] = [];
+                    roomGroups[item.room_name].push(item);
+                }
+            });
+
+            Object.keys(roomGroups).sort().forEach(roomName => {
+                const beds = roomGroups[roomName];
+                let bedsHtml = '';
+
+                beds.sort((a,b) => a.bed_letter.localeCompare(b.bed_letter)).forEach(bed => {
+                    if (bed.uid) {
+                        const st = normalizeStatus(bed.today_status);
+                        const isNewStudent = /^[A-Za-z]/.test(String(bed.uid || '').trim());
+                        const newCls = isNewStudent ? ' new-student-bed' : '';
+                        bedsHtml += `
+                            <div class="col-4">
+                                <div class="bed-box st-${st}${newCls}" onclick='openModal(${JSON.stringify(bed)})'>
+                                    <span class="bed-num">${bed.bed_letter}</span>
+                                    <i class="fas fa-user mb-1"></i>
+                                    <small class="text-truncate w-100 text-center px-1" style="font-size:0.6rem;">${bed.sname.split(' ')[0]}</small>
+                                </div>
+                            </div>`;
+                    } else {
+                        bedsHtml += `
+                            <div class="col-4">
+                                <div class="bed-box empty-slot" onclick="openAssignModal('${roomName}', '${bed.bed_letter}')">
+                                    <span class="bed-num">${bed.bed_letter}</span>
+                                    <i class="fas fa-plus mb-1"></i>
+                                    <small style="font-size:0.55rem;">ASSIGN</small>
+                                </div>
+                            </div>`;
+                    }
+                });
+
+                container.innerHTML += `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="room-card">
+                            <div class="room-header text-center">Room ${roomName}</div>
+                            <div class="row g-2 pt-1">${bedsHtml}</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function openModal(student) {
+            currentSelection.uid = student.uid;
+            const st = normalizeStatus(student.today_status);
+            document.getElementById('modalHeader').className = `modal-header text-white st-${st}`;
+            document.getElementById('mName').innerText = student.sname;
+            document.getElementById('mUIDBadge').innerText = `UID: ${student.uid}`;
+            document.getElementById('mRoom').innerText = `${student.room_name} - Bed ${student.bed_letter}`;
+            document.getElementById('mDept').innerText = student.dept || '--';
+            document.getElementById('mPhoto').src = student.path || '/images/4174.png';
+            actionModal.show();
+        }
+
+        function openAssignModal(room, bed) {
+            targetRoom = room; targetBed = bed;
+            document.getElementById('assignTarget').innerText = `${room} (Bed ${bed})`;
+            document.getElementById('studentResultsList').innerHTML = '<div class="text-center p-3">Loading...</div>';
+            document.getElementById('stuSearchInput').value = '';
+            assignModal.show();
+            fetchUnallocatedStudents('');
+        }
+
+        function fetchUnallocatedStudents(term) {
+            const list = document.getElementById('studentResultsList');
+            const enc = encodeURIComponent(term || '');
+            fetch(`/api/search-unallocated?term=${enc}`, { credentials: 'same-origin' })
+                .then(res => {
+                    if (!res.ok) throw new Error('Request failed');
+                    const ct = res.headers.get('content-type');
+                    if (!ct || !ct.includes('application/json')) throw new Error('Invalid response');
+                    return res.json();
+                })
+                .then(students => {
+                    const arr = Array.isArray(students) ? students : [];
+                    list.innerHTML = arr.length ? arr.map(s => {
+                        const uidSafe = (s.uid || '').toString().replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                        const nameSafe = (s.sname || '').toString().replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                        const displayName = (s.sname || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                        const displayUid = (s.uid || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                        return `<button class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="confirmAssign('${uidSafe}', '${nameSafe}')"><div><strong>${displayName}</strong><br><small>${displayUid}</small></div><i class="fas fa-plus-circle text-success"></i></button>`;
+                    }).join('') : '<div class="list-group-item text-muted">No unallocated students found.</div>';
+                })
+                .catch(() => {
+                    list.innerHTML = '<div class="list-group-item text-danger">Could not load students. Check console or try again.</div>';
+                });
+        }
+
+        document.getElementById('stuSearchInput').addEventListener('input', e => fetchUnallocatedStudents(e.target.value));
+
+        function confirmAssign(uid, name) {
+            if (!confirm(`Assign ${name} to Room ${targetRoom} Bed ${targetBed}?`)) return;
+            fetch('/api/assign-room', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: uid, room_no: targetRoom, bed_no: targetBed })
+            }).then(res => {
+                if (!res.ok) throw new Error('Request failed');
+
+                // Update local grid state
+                const room = String(targetRoom || '');
+                const bed = String(targetBed || '');
+                for (let i = 0; i < rawData.length; i++) {
+                    if (String(rawData[i].room_name || '') === room && String(rawData[i].bed_letter || '') === bed) {
+                        rawData[i].uid = uid;
+                        rawData[i].sname = name;
+                        rawData[i].today_status = rawData[i].today_status || 'Present';
+                        break;
+                    }
+                }
+
+                assignModal.hide();
+                renderGrid();
+            }).catch(() => {
+                alert('Could not assign student. Please try again.');
+            });
+        }
+
+        function confirmDeallocate() {
+            if (!currentSelection.uid) return;
+            if (!confirm("Remove student from this bed? Slot will become empty.")) return;
+            fetch('/api/assign-room', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: currentSelection.uid, room_no: null, bed_no: null })
+            }).then(res => {
+                if (!res.ok) throw new Error('Request failed');
+
+                // Update local grid state: clear the student
+                const uid = String(currentSelection.uid || '');
+                for (let i = 0; i < rawData.length; i++) {
+                    if (String(rawData[i].uid || '') === uid) {
+                        rawData[i].uid = null;
+                        rawData[i].sname = null;
+                        rawData[i].dept = null;
+                        rawData[i].path = null;
+                        rawData[i].today_status = 'Pending';
+                    }
+                }
+
+                actionModal.hide();
+                renderGrid();
+            }).catch(() => {
+                alert('Could not remove student. Please try again.');
+            });
+        }
+
+        function saveStatus(status) {
+            fetch('/api/mark-attendance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: currentSelection.uid, status: status })
+            }).then(res => {
+                if (!res.ok) throw new Error('Request failed');
+
+                const uid = String(currentSelection.uid || '');
+                for (let i = 0; i < rawData.length; i++) {
+                    if (String(rawData[i].uid || '') === uid) {
+                        rawData[i].today_status = status;
+                        break;
+                    }
+                }
+
+                actionModal.hide();
+                renderGrid();
+            }).catch(() => {
+                alert('Could not update attendance. Please try again.');
+            });
+        }
+
+        window.onload = renderPills;
+    </script>
+
+    <script>
+(function(){
+  function saveFilter(val){
+    try { localStorage.setItem('outstudents_pass_filter', String(val || '')); } catch(e) {}
+  }
+  function applySaved(){
+    try {
+      var saved = localStorage.getItem('outstudents_pass_filter');
+      var radios = document.querySelectorAll('input[type="radio"][name="radio"]');
+      if (saved !== null && radios && radios.length) {
+        // Set the radio button UI
+        var matched = null;
+        for (var j=0; j<radios.length; j++) {
+          if ((radios[j].value || '') === saved) { matched = radios[j]; break; }
+        }
+        if (matched) matched.checked = true;
+        // Apply the filter to table rows
+        if (typeof passfilter === 'function') passfilter(saved);
+      }
+    } catch(e) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    // 1) Restore and apply previously chosen radio filter
+    applySaved();
+
+    // 2) Persist whenever radio changes
+    var radios = document.querySelectorAll('input[type="radio"][name="radio"]');
+    for (var r = 0; r < radios.length; r++) {
+      radios[r].addEventListener('change', function(ev){
+        saveFilter((ev.target || {}).value || '');
+      });
+    }
+0
+    // 3) Before any action link navigation, snapshot current filter
+    var table = document.getElementById('myTable');
+    if (table) {
+      var links = table.querySelectorAll(
+        'a[href^="/instudents/"], a[href^="/restrictstu/"], a[href^="/Unrestrictstu/"]'
+      );
+      for (var k = 0; k < links.length; k++) {
+        links[k].addEventListener('click', function(){
+          var current = (document.querySelector('input[type="radio"][name="radio"]:checked') || {}).value || '';
+          saveFilter(current);
+        });
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>

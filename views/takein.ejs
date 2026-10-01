@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Generation</title>
+    <link rel="stylesheet" href="/stylesheets/token.css">
+    <link rel="icon" href="/images/4174.png">
+    <script>
+        var barcode = '';
+        var interval;
+        document.addEventListener('keydown', function (evt) {
+            if (interval)
+                clearInterval(interval);
+            if (evt.code == 'Enter') {
+                if (barcode)
+                    handleBarcode(barcode);
+                barcode = '';
+                return;
+            }
+            if (evt.key != 'Shift')
+                barcode += evt.key;
+            interval = setInterval(() => barcode = '', 20);
+        });
+
+        function handleBarcode(scanned_barcode) {
+
+            location.href = "/token/" + scanned_barcode;
+        }
+
+       
+
+    </script>
+</head>
+
+<body >
+    <form id="form1" action="/takein/<%= result[0].logid %>" method="post">
+        <div class="card-container" id="card">
+            <a href="/token" class="hero-image-container">
+                <% if (!result[0].path==0) { %>
+                    <img class="hero-image" alt="Opps!! No Img Found" src="<%=result[0].path%>" />
+                    <%} else { %>
+                        <img class="hero-image" alt="Opps!! No Img Found" src="/images/4174.png" />
+                        <% } %>
+            </a>
+            <main class="main-content"><br>
+                <p>Pass is Valid for one day</p>
+                <div class="flex-row">
+                    <div class="coin-base">
+                        <img src="/images/idicon.png" alt="Ethereum" class="small-image" />
+                        <h2 id="ID" name="id">
+                            <%= result[0].uid %>
+                        </h2>
+                    </div>
+                    <div class="time-left" align="center">
+                        <img src="/images/timeicon.png" alt="clock" class="small-image" />
+                        <p><%= result[0].approvaldt %></p>
+                    </div>
+                </div>
+            </main>
+            <div class="card-attribute" align="center">
+                <button class="button-86" role="button">Hostel IN</button>
+            </div>
+        </div>
+        </div>
+    </form>
+   
+</body>
+
+</html>

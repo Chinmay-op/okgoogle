@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mess Selection - Student Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../stylesheets/studentportal.css">
+    <style>
+        /* ── PAGE WRAPPER ── */
+        .page-wrapper { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+        /* ── ALERT ── */
+        .alert { border-radius: 10px; font-size: 0.88rem; }
+
+        /* ── MEAL CARDS ── */
+        .meal-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            height: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .meal-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        .meal-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .meal-card-header .meal-icon-wrap {
+            width: 32px; height: 32px;
+            background: #e8f0fe;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: #1976d2; font-size: 0.9rem;
+        }
+        .meal-card-header h4 {
+            margin: 0; font-size: 1rem; font-weight: 700; color: #1a1a2e;
+        }
+
+        /* Today row */
+        .date-label {
+            font-size: 0.72rem;
+            color: #888;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .today-food-pill {
+            display: inline-block;
+            background: #1976d2;
+            color: #fff;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 22px;
+            margin-bottom: 4px;
+        }
+        .saved-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 9px;
+            border-radius: 12px;
+            margin-left: 6px;
+        }
+
+        /* Tomorrow section */
+        .tomorrow-section { margin-top: 12px; }
+        .tomorrow-section .date-label { margin-bottom: 5px; }
+        .tomorrow-section .form-select {
+            font-size: 0.82rem;
+            border-color: #d1d5db;
+            border-radius: 8px;
+            padding: 7px 10px;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+        .tomorrow-section .form-select:focus {
+            border-color: #1976d2;
+            box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
+        }
+        .btn-update {
+            width: 100%;
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 0;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            transition: background 0.15s, transform 0.1s;
+        }
+        .btn-update:hover { background: #1565c0; transform: translateY(-1px); }
+        .btn-update:active { transform: translateY(0); }
+
+        /* Locked state */
+        .locked-selection {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f0fdf4;
+            border: 1.5px solid #86efac;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-top: 4px;
+        }
+        .locked-selection .lock-icon {
+            width: 30px; height: 30px;
+            background: #dcfce7;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: #16a34a; font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .locked-selection .lock-text {
+            flex: 1;
+        }
+        .locked-selection .lock-text .lock-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #15803d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .locked-selection .lock-text .lock-food {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-top: 1px;
+        }
+        .locked-selection .lock-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #16a34a;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Confirmation Card */
+        .confirmation-card {
+            background: #f0fdf4;
+            border: 1.5px solid #86efac;
+            border-radius: 12px;
+            padding: 16px;
+            color: #15803d;
+        }
+        .confirmation-card-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #16a34a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .confirmation-status {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #15803d;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .confirmation-selected-label {
+            font-size: 0.72rem;
+            color: #16a34a;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        .confirmation-food {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+        .confirmation-lock-notice {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #15803d;
+        }
+
+        /* ── SECTION CARDS ── */
+        .section-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            margin-bottom: 24px;
+        }
+        .section-card .section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            border-bottom: 1px solid #f0f2f5;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+        }
+
+        /* ── MEAL TABS (weekly menu) ── */
+        .meal-tab {
+            display: inline-block;
+            padding: 4px 18px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+        }
+        .tab-breakfast { background: #fff3e0; color: #bf5600; }
+        .tab-lunch     { background: #e8f5e9; color: #2e7d32; }
+        .tab-dinner    { background: #e3f2fd; color: #1565c0; }
+
+        /* ── MENU TABLE ── */
+        .menu-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .menu-table thead tr {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .menu-table th {
+            font-weight: 600;
+            color: #888;
+            padding: 7px 10px;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+        }
+        .menu-table td {
+            padding: 7px 10px;
+            color: #333;
+            border-bottom: 1px solid #f4f6f9;
+        }
+        .menu-table tbody tr:last-child td { border-bottom: none; }
+        .menu-table td:first-child { font-weight: 600; color: #555; width: 70px; }
+        .menu-table td:last-child { color: #aaa; font-size: 0.78rem; }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <button class="sidebar-close" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="logo">
+            <img src="/images/4174.png" alt="Logo">
+            <h2>Gate Pass</h2>
+        </div>
+        
+        <ul class="nav-links">
+            <li>
+                <a href="/student/dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/roombooking">
+                    <i class="fas fa-bed"></i>
+                    <span>Room Booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/profile">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="/student/attendance">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Attendance</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/passhistory">
+                    <i class="fas fa-history"></i>
+                    <span>Pass History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/requestpass">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Request Pass</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleave">
+                    <i class="fas fa-notes-medical"></i>
+                    <span>Request Sick Leave</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleaverequests">
+                    <i class="fas fa-list-alt"></i>
+                    <span>My Sick Leave Requests</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/mess" class="active" id="nav_student_breakfast_link">
+                    <i class="fas fa-utensils"></i>
+                    <span>Mess Selection</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/notifications">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bonafide">
+                    <i class="fas fa-certificate"></i>
+                    <span>Bonafide Certificate</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bank-details">
+                    <i class="fas fa-university"></i>
+                    <span>Hostel Bank Details</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/complain">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Complain Box</span>
+                </a>
+            </li>
+        </ul>
+
+        
+        <div class="user-info">
+            <div class="user-detail">
+                <img src="<%= typeof student !== 'undefined' && student.path ? student.path : '/images/blank_profile.webp' %>" onerror="this.src='/images/blank_profile.webp'" alt="Profile">
+                <div class="stu-name">
+                    <div class="name"><%= typeof student !== 'undefined' ? student.sname : 'Student' %></div>
+                    <div class="role"><%= typeof student !== 'undefined' ? student.uid : '' %></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="page-title">
+                <h1>Mess Selection</h1>
+                <p><%= new Date().toLocaleString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Kolkata' }) %></p>
+            </div>
+            
+            <div class="user-actions">
+                <a href="/student/notifications" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                </a>
+                <a href="/student/logout" class="logout-btn" style="text-decoration: none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+
+    <div class="page-wrapper">
+
+        <% if (typeof successMeal !== 'undefined' && successMeal && typeof successFood !== 'undefined' && successFood) { %>
+            <div class="alert alert-dismissible fade show mb-4" role="alert" id="success-alert" style="background-color: #f0fdf4; border: 1px solid #86efac; color: #15803d; border-radius: 10px;">
+                <div style="font-weight: 600; margin-bottom: 8px;">
+                    <i class="fas fa-check-circle me-2"></i>Selection Saved
+                </div>
+                <div style="margin-left: 24px; font-size: 0.88rem;">
+                    <span style="text-transform: capitalize;"><%= successMeal %></span> selection has been saved successfully.
+                    <div style="margin-top: 10px;">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #16a34a; letter-spacing: 0.5px; margin-bottom: 2px;">Selected Item</div>
+                        <div style="font-weight: 600; color: #1a1a2e;"><%= successFood === 'DEFAULT' ? 'Default Menu' : successFood %></div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <script>
+                setTimeout(function() {
+                    var alertElement = document.getElementById('success-alert');
+                    if (alertElement) {
+                        var bsAlert = new bootstrap.Alert(alertElement);
+                        bsAlert.close();
+                    }
+                }, 5000);
+            </script>
+        <% } %>
+ 
+        <% if(message && message.length > 0){ %>
+            <div class="alert alert-<%= message.includes('locked') ? 'warning' : 'info' %> alert-dismissible fade show mb-4" role="alert" style="border-radius: 10px; font-size: 0.88rem;">
+                <%- message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <!-- ─── MEAL SELECTION CARDS ─── -->
+        <div class="row g-3 mb-4">
+            <% const meals = ['breakfast', 'lunch', 'dinner'];
+               const mealIcons = { breakfast: 'fa-egg', lunch: 'fa-leaf', dinner: 'fa-moon' };
+               const mealLabels = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner' };
+               const nowKolkata = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+               const currentHour = String(nowKolkata.getHours()).padStart(2, '0');
+               const currentMin = String(nowKolkata.getMinutes()).padStart(2, '0');
+               const currentTimeStr = `${currentHour}:${currentMin}`;
+               const _openTime  = typeof messOpenTime  !== 'undefined' ? messOpenTime  : '09:00';
+               const _closeTime = typeof messCloseTime !== 'undefined' ? messCloseTime : '16:00';
+
+               function formatTimeTo12Hour(timeStr) {
+                   if (!timeStr) return '';
+                   const parts = timeStr.split(':');
+                   let hr = parseInt(parts[0]);
+                   const mn = parts[1] || '00';
+                   const ampm = hr >= 12 ? 'PM' : 'AM';
+                   hr = hr % 12;
+                   hr = hr ? hr : 12;
+                   return `${hr}:${mn} ${ampm}`;
+               }
+            %>
+            <% meals.forEach(function(meal) {
+                // Today's default for this meal
+                const todayDef = todayDefaults[meal];
+                const tmrwDef  = tomorrowDefaults[meal];
+
+                // Student's current selections (today & tomorrow)
+                const todaySel = studentSelections.find(s => s.meal_type === meal && s.selection_date === today);
+                const tmrwSel  = studentSelections.find(s => s.meal_type === meal && s.selection_date === tomorrow);
+
+                // Today's display name
+                const todayDisplayFood = todaySel && todaySel.selected_food !== 'DEFAULT'
+                    ? todaySel.selected_food + ' (Optional)'
+                    : (todayDef ? todayDef.food_name + ' (Default)' : 'Default');
+
+                // Optional choices for tomorrow (only for tomorrow's weekday)
+                const daysList = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                const targetTmrwName = (typeof tmrwName !== 'undefined' && tmrwName) ? tmrwName : (() => {
+                    const parts = tomorrow.split('-');
+                    const dt = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                    return daysList[dt.getDay()];
+                })();
+
+                const optionalChoices = weeklyOptionalMenu.filter(w => 
+                    w.meal_type === meal && 
+                    Boolean(w.is_active) && 
+                    w.weekday === targetTmrwName && 
+                    w.food_name && 
+                    w.food_name.trim().toLowerCase() !== 'none' &&
+                    (typeof student === 'undefined' || !student || !student.mess_type || meal === 'breakfast' || w.food_type === student.mess_type)
+                );
+            %>
+            <div class="col-md-4">
+                <div class="meal-card">
+                    <!-- Header -->
+                    <div class="meal-card-header">
+                        <div class="meal-icon-wrap">
+                            <i class="fas <%= mealIcons[meal] %>"></i>
+                        </div>
+                        <h4><%= mealLabels[meal] %></h4>
+                    </div>
+
+                    <!-- Today -->
+                    <div class="mb-1">
+                        <div class="date-label"><i class="far fa-calendar-alt me-1"></i>Today (<%= today %>)</div>
+                        <div>
+                            <span class="today-food-pill"><%= todayDisplayFood %></span>
+                            <% if(todaySel) { %><span class="saved-badge"><i class="fas fa-check-circle me-1"></i>saved</span><% } %>
+                        </div>
+                    </div>
+
+                    <!-- Tomorrow selection form / locked state -->
+                    <div class="tomorrow-section">
+                        <div class="date-label"><i class="far fa-calendar-alt me-1"></i>Tomorrow (<%= tomorrow %>)</div>
+                        <% if (currentTimeStr < _openTime) { %>
+                            <div style="font-size: 0.85rem; color: #555; background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; margin-top: 8px;">
+                                Meal selection opens at <%= formatTimeTo12Hour(_openTime) %>.
+                            </div>
+                        <% } else if (currentTimeStr >= _closeTime || (tmrwSel && tmrwSel.selection_locked)) { %>
+                            <!-- LOCKED or CLOSED -->
+                            <div class="confirmation-card mt-2">
+                                <div class="confirmation-card-title">Selected Menu</div>
+                                <div class="confirmation-food" style="margin-bottom: 4px;">
+                                    <% 
+                                        let foodText = '';
+                                        if (tmrwSel && tmrwSel.selected_food && tmrwSel.selected_food !== 'DEFAULT') {
+                                            foodText = tmrwSel.selected_food + ' (Optional Menu)';
+                                        } else {
+                                            const defName = tmrwDef ? tmrwDef.food_name : 'Default Menu';
+                                            foodText = defName + (defName === 'Default Menu' ? '' : ' (Default Menu)');
+                                        }
+                                    %>
+                                    <%= foodText %>
+                                </div>
+                                <div class="confirmation-lock-notice">
+                                    <%= (tmrwSel && tmrwSel.selection_locked) ? 'Selection Locked' : 'Meal selection closed at ' + formatTimeTo12Hour(_closeTime) + '.' %>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <!-- OPEN: allow selection -->
+                            <form method="POST" action="/student/mess" class="mt-2">
+                                <input type="hidden" name="meal_type" value="<%= meal %>">
+                                <input type="hidden" name="selection_date" value="<%= tomorrow %>">
+                                <select name="selected_food" class="form-select">
+                                    <% const defLabel = tmrwDef ? tmrwDef.food_name + ' (Default)' : 'Default Menu'; %>
+                                    <option value="DEFAULT" <%= (tmrwSel && tmrwSel.selected_food === 'DEFAULT') ? 'selected' : '' %>><%= defLabel %></option>
+                                    <% optionalChoices.forEach(function(opt) { 
+                                        let subFoods = opt.food_name ? opt.food_name.split(',').map(s => s.trim()).filter(s => s) : [];
+                                        subFoods.forEach(function(fName) {
+                                    %>
+                                        <option value="<%= fName %>" <%= (tmrwSel && tmrwSel.selected_food === fName) ? 'selected' : '' %>><%= fName %> (Optional)</option>
+                                    <% 
+                                        });
+                                    }); %>
+                                </select>
+                                <button type="submit" class="btn-update">
+                                    <i class="fas fa-sync-alt me-1"></i>Update
+                                </button>
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+
+        <!-- ─── SPECIAL FOOD ADD-ONS ─── -->
+        <div class="section-card">
+            <%- include('partials/special_food') %>
+        </div>
+
+        <!-- ─── WEEKLY MENUS (DEFAULT & OPTIONAL) ─── -->
+        <%- include('partials/weekly_menus') %>
+
+    </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+            document.body.style.overflow = document.querySelector('.sidebar').classList.contains('active') ? 'hidden' : '';
+        }
+    </script>
+    
+    <%- include('partials/mess_modals') %>
+</body>
+</html>

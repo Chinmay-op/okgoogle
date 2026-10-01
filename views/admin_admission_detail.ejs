@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Application Details</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .detail-card, .action-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .label-text {
+            color: #6c757d;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        .value-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .signature-img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+            background: #fff;
+            margin-bottom: 15px;
+        }
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid mt-4 px-4 pb-5">
+        <div class="mb-3 d-flex gap-2">
+            <a href="/admin/admission-applications" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Back to Applications</a>
+            <% if (app.status === 'Admitted') { %>
+  <a href="/admin/admission-applications/<%= app.id %>/print"
+     target="_blank"
+     class="btn btn-outline-secondary btn-sm"><i class="fas fa-print"></i> Print Form</a>
+<% } %>
+            <a href="/admin/admission-applications/<%= app.id %>/edit" class="btn btn-outline-primary"><i class="fas fa-edit"></i> Edit Details</a>
+        </div>
+
+        <div class="header-gradient d-flex justify-content-between align-items-center">
+            <h2 class="mb-0"><i class="fas fa-file-alt"></i> Application #<%= app.id %> Details</h2>
+            <div>
+                <% if(app.status === 'Pending') { %>
+                    <span class="badge bg-warning text-dark fs-5">Pending</span>
+                <% } else if(app.status === 'Admitted') { %>
+                    <span class="badge bg-success fs-5">Admitted</span>
+                <% } else { %>
+                    <span class="badge bg-danger fs-5">Rejected</span>
+                <% } %>
+            </div>
+        </div>
+
+        <% if (message && message.length > 0) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <div class="row">
+<% if (app.status === 'Admitted' && app.student_uid) { %>
+<div class="alert alert-success border-2 mb-3" style="border-color:#28a745!important">
+  <h5><i class="fas fa-check-circle me-2"></i>Student Admitted — Login Credentials</h5>
+  <p class="mb-2">Share these login details with the student on mobile <strong><%= app.student_mobile %></strong>:</p>
+  <div class="bg-white p-3 rounded border" id="credMsg" style="font-family:monospace;font-size:13px;white-space:pre-wrap">Dear <%= app.full_name %>,
+
+Your hostel admission has been approved.
+
+Allotted Room Details:
+- Block: <%= app.allotted_block %>
+- Room: <%= app.allotted_room %>
+- Bed: <%= app.allotted_bed %>
+- Mess: <%= app.mess_preference %>
+
+Your hostel portal login credentials:
+- Login ID: <%= app.student_uid %>
+- Password: <%= app.student_mobile %> (your mobile number)
+
+Note: This is a temporary ID. It will be replaced with your official college UID once issued by the college.
+Please change your password after first login.
+
+- TNPS Hostel Management</div>
+  <div class="mt-2 d-flex gap-2">
+    <button onclick="copyCredentials()" class="btn btn-success btn-sm"><i class="fas fa-copy me-1"></i> Copy Message</button>
+    <a href="https://wa.me/91<%= app.student_mobile %>?text=<%= encodeURIComponent('Dear ' + app.full_name + ', Your hostel admission is approved. Login ID: ' + app.student_uid + ' Password: ' + app.student_mobile + ' (your mobile number). This is a temporary ID until your college UID is issued.') %>" target="_blank" class="btn btn-sm" style="background:#25D366;border-color:#25D366;color:white;"><i class="fab fa-whatsapp me-1"></i> Open WhatsApp</a>
+  </div>
+</div>
+<script>
+function copyCredentials() {
+  const txt = document.getElementById('credMsg').innerText;
+  navigator.clipboard.writeText(txt).then(function() { alert('Message copied to clipboard!'); });
+}
+</script>
+<% } %>
+            <!-- Left Column: Details -->
+            <div class="col-lg-8">
+                <div class="detail-card">
+                    <h4 class="mb-4 text-primary border-bottom pb-2"><i class="fas fa-user"></i> Personal Information</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="label-text">Full Name</div>
+                            <div class="value-text"><%= app.full_name %></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="label-text">Date of Birth</div>
+                            <div class="value-text"><%= new Date(app.dob).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) %></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="label-text">Father's Name</div>
+                            <div class="value-text"><%= app.father_name %></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="label-text">Father's Occupation</div>
+                            <div class="value-text"><%= app.father_occupation || 'N/A' %></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="label-text">Mother's Name</div>
+                            <div class="value-text"><%= app.mother_name %></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="label-text">Mother's Occupation</div>
+                            <div class="value-text"><%= app.mother_occupation || 'N/A' %></div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="label-text">Permanent Address</div>
+                            <div class="value-text"><%= app.permanent_address %></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="label-text">Parent Phone No.</div>
+                            <div class="value-text"><%= app.parent_phone %></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="label-text">Student Mobile No.</div>
+                            <div class="value-text"><%= app.student_mobile %></div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="label-text">Student Personal Email</div>
+                            <div class="value-text"><%= app.student_email || 'N/A' %></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="label-text">Religion</div>
+                            <div class="value-text"><%= app.religion || 'N/A' %></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="label-text">Caste Category</div>
+                            <div class="value-text"><%= app.caste_category || 'N/A' %></div>
+                        </div>
+                    </div>
+
+                    <h4 class="mb-4 mt-4 text-primary border-bottom pb-2"><i class="fas fa-graduation-cap"></i> Academic Details</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="label-text">Branch</div>
+                            <div class="value-text"><%= app.branch %></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="label-text">Admission Year</div>
+                            <div class="value-text"><%= app.admission_year %></div>
+                        </div>
+                    </div>
+
+                    <h4 class="mb-4 mt-4 text-primary border-bottom pb-2"><i class="fas fa-info-circle"></i> Preferences & Metadata</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="label-text">Mess Preference</div>
+                            <div class="value-text">
+                                <% if(app.mess_preference === 'Veg') { %>
+                                    <span class="badge bg-success"><i class="fas fa-leaf"></i> Veg</span>
+                                <% } else { %>
+                                    <span class="badge bg-danger"><i class="fas fa-drumstick-bite"></i> Non-Veg</span>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="label-text">Submission Date</div>
+                            <div class="value-text"><%= new Date(app.submission_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) %></div>
+                        </div>
+                    </div>
+                </div>
+
+                <% if(app.status !== 'Pending') { %>
+                    <div class="action-card bg-light border border-info">
+                        <h4 class="text-info border-bottom pb-2 mb-3"><i class="fas fa-clipboard-check"></i> Action Taken Summary</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="label-text">Status</div>
+                                <div class="value-text">
+                                    <% if(app.status === 'Admitted') { %>
+                                        <span class="text-success fw-bold"><i class="fas fa-check-circle"></i> Admitted</span>
+                                    <% } else { %>
+                                        <span class="text-danger fw-bold"><i class="fas fa-times-circle"></i> Rejected</span>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="label-text">Reviewed By</div>
+                                <div class="value-text"><%= app.reviewed_by %></div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="label-text">Reviewed At</div>
+                                <div class="value-text"><%= app.reviewed_at ? new Date(app.reviewed_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'N/A' %></div>
+                            </div>
+                            
+                            <% if(app.status === 'Admitted') { %>
+                                <div class="col-md-4 mt-3">
+                                    <div class="label-text">Allotted Block</div>
+                                    <div class="value-text"><%= app.allotted_block %></div>
+                                </div>
+                                <div class="col-md-4 mt-3">
+                                    <div class="label-text">Allotted Room</div>
+                                    <div class="value-text"><%= app.allotted_room %></div>
+                                </div>
+                                <div class="col-md-4 mt-3">
+                                    <div class="label-text">Allotted Bed</div>
+                                    <div class="value-text"><%= app.allotted_bed %></div>
+                                </div>
+                                <div class="col-md-12 mt-3">
+                                    <div class="label-text">Generated Student UID</div>
+                                    <div class="value-text font-monospace text-primary fw-bold"><%= app.student_uid %></div>
+                                </div>
+                            <% } %>
+
+                            <% if(app.admin_remarks) { %>
+                                <div class="col-md-12 mt-3">
+                                    <div class="label-text">Admin Remarks</div>
+                                    <div class="value-text fst-italic">"<%= app.admin_remarks.replace(/^[\s|]+/, '') %>"</div>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                <% } %>
+                <% if (app.status === 'Admitted') { %>
+<div class="card mb-3" style="border:2px solid #fd7e14;border-radius:15px">
+  <div class="card-body">
+    <h5><i class="fas fa-exchange-alt text-warning me-2"></i>Transfer Room / Bed</h5>
+    <p class="text-muted small mb-3">
+      Current: Block <strong><%= app.allotted_block %></strong>,
+      Room <strong><%= app.allotted_room %></strong>,
+      Bed <strong><%= app.allotted_bed %></strong>
+    </p>
+    <form method="POST" action="/admin/admission-applications/<%= app.id %>/transfer">
+      <div class="row g-2">
+        <div class="col-md-4"><label class="form-label small fw-bold">New Block</label><select name="new_block" id="transfer_block" class="form-select" onchange="populateTransferRooms()" required><option value="">-- Select Block --</option></select></div>
+        <div class="col-md-4"><label class="form-label small fw-bold">New Room Number</label><select name="new_room" id="transfer_room" class="form-select" onchange="populateTransferBeds()" required><option value="">-- Select Room --</option></select></div>
+        <div class="col-md-4"><label class="form-label small fw-bold">New Bed</label><select name="new_bed" id="transfer_bed" class="form-select" required><option value="">-- Select Bed --</option></select></div>
+      </div>
+      <div class="mt-3"><label class="form-label small fw-bold">Reason for Transfer (optional)</label><input type="text" name="transfer_reason" class="form-control" placeholder="e.g. Room maintenance, student request"></div>
+      <button type="submit" class="btn btn-warning mt-3 fw-bold"><i class="fas fa-exchange-alt"></i> Confirm Transfer</button>
+    </form>
+  </div>
+</div>
+<% } %>
+                <% if (app.status === 'Admitted') { %>
+<div class="card mb-3" style="border:2px solid #dc3545;border-radius:15px">
+  <div class="card-body">
+    <h5 class="text-danger"><i class="fas fa-trash-alt me-2"></i>Remove Student from System</h5>
+    <p class="text-muted small">This will DELETE the student record from studentdetails, cancel their room booking, and reset the application status to 'Rejected'. This action cannot be undone.</p>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#removeModal"><i class="fas fa-user-times"></i> Remove Student</button>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="removeModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Confirm Student Removal</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to completely remove <strong><%= app.full_name %></strong> from the system?</p>
+        <p class="text-danger fw-bold">This will permanently delete their student account and cancel their room booking.</p>
+        <p>Type <strong>REMOVE</strong> to confirm:</p>
+        <input type="text" id="removeConfirmInput" class="form-control" placeholder="Type REMOVE">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action="/admin/admission-applications/<%= app.id %>/remove" id="removeForm">
+          <button type="submit" class="btn btn-danger" id="confirmRemoveBtn" disabled>Confirm Remove</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('removeConfirmInput').addEventListener('input', function() {
+  document.getElementById('confirmRemoveBtn').disabled = this.value !== 'REMOVE';
+});
+</script>
+<% } %>
+            </div>
+
+            <!-- Right Column: Photo & Action -->
+            <div class="col-lg-4">
+                <% if(app.student_photo_path) { %>
+                <div class="detail-card text-center">
+                    <h4 class="mb-3 text-primary border-bottom pb-2"><i class="fas fa-camera"></i> Student Photo</h4>
+                    <div style="position:relative; display:inline-block;">
+                        <img src="<%= app.student_photo_path %>" id="img-student-photo" alt="Student Photo" style="max-width:100%; max-height:250px; height:auto; object-fit:cover; border:2px solid #ddd; border-radius:10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                        <div style="position:absolute; top:-10px; right:-10px; z-index:10; display:flex; gap:5px;">
+                            <button type="button" class="btn btn-sm btn-dark shadow-sm" style="border-radius:50%; width:30px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; opacity: 0.9;" onclick="rotateImage('<%= app.student_photo_path %>', 90, 'img-student-photo')" title="Rotate 90°"><i class="fas fa-redo"></i></button>
+                            <button type="button" class="btn btn-sm btn-primary shadow-sm" style="border-radius:50%; width:30px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; opacity: 0.9;" onclick="openCropModal('<%= app.student_photo_path %>', 'img-student-photo', 3/4)" title="Crop Image"><i class="fas fa-crop-simple"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <div class="detail-card" style="border-left:4px solid #198754;">
+                    <h4 class="mb-3 text-success border-bottom pb-2"><i class="fas fa-wallet"></i> Payment Details</h4>
+                    <div class="label-text">Advance Amount</div>
+                    <div class="value-text">
+                        <%= (app.advance_amount != null && !isNaN(Number(app.advance_amount))) ? Number(app.advance_amount).toFixed(2) : 'N/A' %>
+                    </div>
+                    <div class="label-text">Payment Mode</div>
+                    <div class="value-text mb-0">
+                        <% if (app.payment_mode) { %>
+                            <span class="badge bg-info text-dark"><%= app.payment_mode %></span>
+                        <% } else { %>
+                            N/A
+                        <% } %>
+                    </div>
+                </div>
+
+                <% if(app.status === 'Pending') { %>
+                    <div class="action-card border-primary border">
+                        <h4 class="mb-3 text-primary"><i class="fas fa-gavel"></i> Admin Action</h4>
+                        <form action="/admin/admission-applications/<%= app.id %>/action" method="POST">
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Decision</label><br>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="action" id="actionAdmit" value="Admitted" required onchange="toggleAllotment(true)">
+                                    <label class="btn btn-outline-success" for="actionAdmit">Admit</label>
+                                  
+                                    <input type="radio" class="btn-check" name="action" id="actionReject" value="Rejected" required onchange="toggleAllotment(false)">
+                                    <label class="btn btn-outline-danger" for="actionReject">Reject</label>
+                                </div>
+                            </div>
+
+                            <div id="allotmentFields" style="display: none;" class="bg-light p-3 rounded mb-3 border">
+                                <h6 class="text-muted mb-3"><i class="fas fa-bed"></i> Room Allotment</h6>
+                                <div class="mb-2">
+                                    <label class="form-label small">Block</label>
+                                    <select name="allotted_block" id="allotted_block" class="form-select form-select-sm" onchange="populateRooms()">
+                                        <option value="">-- Select Block --</option>
+                                    </select>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small">Room Number</label>
+                                    <select name="allotted_room" id="allotted_room" class="form-select form-select-sm" onchange="populateBeds()">
+                                        <option value="">-- Select Room --</option>
+                                    </select>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small">Bed / Position</label>
+                                    <select name="allotted_bed" id="allotted_bed" class="form-select form-select-sm">
+                                        <option value="">-- Select Bed --</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3" id="remarksField">
+                                <label class="form-label fw-bold">Remarks</label>
+                                <textarea name="admin_remarks" class="form-control" rows="3" placeholder="Any internal notes..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 shadow"><i class="fas fa-save"></i> Submit Decision</button>
+                        </form>
+                    </div>
+                <% } %>
+
+                <% if (app.status === 'Pending' || app.status === 'Rejected') { %>
+                    <div class="detail-card mt-3" style="border-top: 4px solid #dc3545; background-color: #fff5f5;">
+                        <h5 class="mb-2 text-danger"><i class="fas fa-trash-alt"></i> Remove Request</h5>
+                        <p class="text-muted small mb-3">Permanently delete this application request if it was sent by mistake. This action cannot be undone.</p>
+                        <form action="/admin/admission-applications/<%= app.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to completely remove this application request? This action cannot be undone.');">
+                            <button type="submit" class="btn btn-outline-danger w-100 shadow-sm"><i class="fas fa-times-circle"></i> Remove Application</button>
+                        </form>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Signatures Row: Full width, side by side below details -->
+        <div class="row mt-2">
+            <div class="col-md-6">
+                <div class="detail-card">
+                    <h4 class="mb-3 text-primary border-bottom pb-2"><i class="fas fa-pen-nib"></i> Student Signature</h4>
+                    <div class="text-center">
+                        <% if(app.decl1_signature_path) { %>
+                            <div style="position:relative; display:inline-block;">
+                                <img src="<%= app.decl1_signature_path %>" id="img-student-sig" alt="Student Signature" class="signature-img" style="max-height:200px;">
+                                <div style="position:absolute; top:-10px; right:-10px; z-index:10; display:flex; gap:5px;">
+                                    <button type="button" class="btn btn-sm btn-dark shadow-sm" style="border-radius:50%; width:30px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; opacity: 0.9;" onclick="rotateImage('<%= app.decl1_signature_path %>', 90, 'img-student-sig')" title="Rotate 90°"><i class="fas fa-redo"></i></button>
+                                    <button type="button" class="btn btn-sm btn-primary shadow-sm" style="border-radius:50%; width:30px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; opacity: 0.9;" onclick="openCropModal('<%= app.decl1_signature_path %>', 'img-student-sig', NaN)" title="Crop Image"><i class="fas fa-crop-simple"></i></button>
+                                </div>
+                            </div>
+                        <% } else if(app.undertaking_signature_path) { %>
+                            <div style="position:relative; display:inline-block;">
+                                <img src="/uploads/admissions/<%= app.undertaking_signature_path %>" id="img-student-sig2" alt="Student Signature" class="signature-img" style="max-height:200px;">
+                                <div style="position:absolute; top:-10px; right:-10px; z-index:10; display:flex; gap:5px;">
+                                    <button type="button" class="btn btn-sm btn-dark shadow-sm" style="border-radius:50%; width:30px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; opacity: 0.9;" onclick="rotateImage('/uploads/admissions/<%= app.undertaking_signature_path %>', 90, 'img-student-sig2')" title="Rotate 90°"><i class="fas fa-redo"></i></button>
+                                    <button type="button" class="btn btn-sm btn-primary shadow-sm" style="border-radius:50%; width:30px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; opacity: 0.9;" onclick="openCropModal('/uploads/admissions/<%= app.undertaking_signature_path %>', 'img-student-sig2', NaN)" title="Crop Image"><i class="fas fa-crop-simple"></i></button>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <div class="text-muted fst-italic py-4">Not provided</div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="detail-card">
+                    <h4 class="mb-3 text-primary border-bottom pb-2"><i class="fas fa-users"></i> Parent / Guardian Signature</h4>
+                    <div class="text-center">
+                        <% if(app.parent_signature_path) { %>
+                            <div style="position:relative; display:inline-block;">
+                                <img src="<%= app.parent_signature_path %>" id="img-parent-sig" alt="Parent Signature" class="signature-img" style="max-height:200px;">
+                                <div style="position:absolute; top:-10px; right:-10px; z-index:10; display:flex; gap:5px;">
+                                    <button type="button" class="btn btn-sm btn-dark shadow-sm" style="border-radius:50%; width:30px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; opacity: 0.9;" onclick="rotateImage('<%= app.parent_signature_path %>', 90, 'img-parent-sig')" title="Rotate 90°"><i class="fas fa-redo"></i></button>
+                                    <button type="button" class="btn btn-sm btn-primary shadow-sm" style="border-radius:50%; width:30px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; opacity: 0.9;" onclick="openCropModal('<%= app.parent_signature_path %>', 'img-parent-sig', NaN)" title="Crop Image"><i class="fas fa-crop-simple"></i></button>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <div class="text-muted fst-italic py-4">Not provided</div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="application/json" id="roomsData"><%- JSON.stringify(typeof rooms !== 'undefined' ? rooms : []) %></script>
+    <script type="application/json" id="lockedBedsData"><%- JSON.stringify(typeof lockedBeds !== 'undefined' ? lockedBeds : []) %></script>
+    <!-- Bootstrap JS -->
+    <script>
+        const ROOMS_DATA = JSON.parse((document.getElementById('roomsData') || {}).textContent || '[]');
+        const LOCKED_BEDS = JSON.parse((document.getElementById('lockedBedsData') || {}).textContent || '[]');
+        const PERMANENT_ROOM_NAMES = new Set(['AF-02', 'AF-31', 'AS-31', 'BG-26']);
+
+        function isPermanentRoom(room) {
+            if (!room) return false;
+            const roomName = String(room.name || room.room_no || '').trim().toUpperCase();
+            return !!room.is_permanent || PERMANENT_ROOM_NAMES.has(roomName);
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Populate block dropdown from rooms data on page load
+        (function initBlocks() {
+            const blocks = [...new Set(ROOMS_DATA.map(r => r.block))].sort();
+            
+            const blockSel = document.getElementById('allotted_block');
+            if(blockSel) {
+                blocks.forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b;
+                    opt.textContent = 'Block ' + b;
+                    blockSel.appendChild(opt);
+                });
+            }
+
+            const transferBlockSel = document.getElementById('transfer_block');
+            if(transferBlockSel) {
+                blocks.forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b;
+                    opt.textContent = 'Block ' + b;
+                    transferBlockSel.appendChild(opt);
+                });
+            }
+        })();
+
+        function populateRooms() {
+            const block = document.getElementById('allotted_block').value;
+            const roomSel = document.getElementById('allotted_room');
+            const bedSel = document.getElementById('allotted_bed');
+
+            roomSel.innerHTML = '<option value="">-- Select Room --</option>';
+            bedSel.innerHTML = '<option value="">-- Select Bed --</option>';
+
+            if (!block) return;
+            const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+            const filtered = ROOMS_DATA.filter(r => r.block === block);
+            filtered.forEach(r => {
+                const cap = parseInt(r.capacity) || 1;
+                const lockedForRoom = LOCKED_BEDS.filter(lb => lb.room_no === r.name);
+                const lockedBedLetters = lockedForRoom.map(lb => (lb.bed_no || '').trim().toUpperCase());
+                const availableBeds = [];
+                for (let i = 0; i < cap; i++) {
+                    const letter = letters[i] || String.fromCharCode(65 + i);
+                    if (!lockedBedLetters.includes(letter)) availableBeds.push(letter);
+                }
+                if (availableBeds.length === 0) return; // skip fully booked rooms
+                if (isPermanentRoom(r)) return;
+                const opt = document.createElement('option');
+                opt.value = r.name;
+                opt.textContent = r.name + ' (' + r.floor + ') — ' + availableBeds.length + ' bed' + (availableBeds.length > 1 ? 's' : '') + ' free';
+                roomSel.appendChild(opt);
+            });
+        }
+
+        function populateBeds() {
+            const roomName = document.getElementById('allotted_room').value;
+            const bedSel = document.getElementById('allotted_bed');
+            bedSel.innerHTML = '<option value="">-- Select Bed --</option>';
+
+            if (!roomName) return;
+            const room = ROOMS_DATA.find(r => r.name === roomName);
+            if (!room) return;
+
+            const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+            const cap = parseInt(room.capacity) || 1;
+            const lockedForRoom = LOCKED_BEDS.filter(lb => lb.room_no === roomName);
+            const lockedBedLetters = lockedForRoom.map(lb => (lb.bed_no || '').trim().toUpperCase());
+
+            for (let i = 0; i < cap; i++) {
+                const letter = letters[i] || String.fromCharCode(65 + i);
+                if (lockedBedLetters.includes(letter)) continue; // skip locked beds
+                const opt = document.createElement('option');
+                opt.value = letter;
+                opt.textContent = 'Bed ' + letter;
+                bedSel.appendChild(opt);
+            }
+        }
+
+        function populateTransferRooms() {
+            const block = document.getElementById('transfer_block').value;
+            const roomSel = document.getElementById('transfer_room');
+            const bedSel = document.getElementById('transfer_bed');
+
+            roomSel.innerHTML = '<option value="">-- Select Room --</option>';
+            bedSel.innerHTML = '<option value="">-- Select Bed --</option>';
+
+            if (!block) return;
+            const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+            const filtered = ROOMS_DATA.filter(r => r.block === block);
+            filtered.forEach(r => {
+                const cap = parseInt(r.capacity) || 1;
+                const lockedForRoom = LOCKED_BEDS.filter(lb => lb.room_no === r.name);
+                const lockedBedLetters = lockedForRoom.map(lb => (lb.bed_no || '').trim().toUpperCase());
+                const availableBeds = [];
+                for (let i = 0; i < cap; i++) {
+                    const letter = letters[i] || String.fromCharCode(65 + i);
+                    if (!lockedBedLetters.includes(letter)) availableBeds.push(letter);
+                }
+                if (availableBeds.length === 0) return; // skip fully booked rooms
+                if (isPermanentRoom(r)) return;
+                const opt = document.createElement('option');
+                opt.value = r.name;
+                opt.textContent = r.name + ' (' + r.floor + ') — ' + availableBeds.length + ' bed' + (availableBeds.length > 1 ? 's' : '') + ' free';
+                roomSel.appendChild(opt);
+            });
+        }
+
+        function populateTransferBeds() {
+            const roomName = document.getElementById('transfer_room').value;
+            const bedSel = document.getElementById('transfer_bed');
+            bedSel.innerHTML = '<option value="">-- Select Bed --</option>';
+
+            if (!roomName) return;
+            const room = ROOMS_DATA.find(r => r.name === roomName);
+            if (!room) return;
+
+            const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+            const cap = parseInt(room.capacity) || 1;
+            const lockedForRoom = LOCKED_BEDS.filter(lb => lb.room_no === roomName);
+            const lockedBedLetters = lockedForRoom.map(lb => (lb.bed_no || '').trim().toUpperCase());
+
+            for (let i = 0; i < cap; i++) {
+                const letter = letters[i] || String.fromCharCode(65 + i);
+                if (lockedBedLetters.includes(letter)) continue; // skip locked beds
+                const opt = document.createElement('option');
+                opt.value = letter;
+                opt.textContent = 'Bed ' + letter;
+                bedSel.appendChild(opt);
+            }
+        }
+
+        function toggleAllotment(show) {
+            const fields = document.getElementById('allotmentFields');
+            const block = document.getElementById('allotted_block');
+            const room = document.getElementById('allotted_room');
+            const remarksField = document.getElementById('remarksField');
+
+            if (show) {
+                fields.style.display = 'block';
+                remarksField.style.display = 'none';
+                block.required = true;
+                room.required = true;
+            } else {
+                fields.style.display = 'none';
+                remarksField.style.display = 'block';
+                block.required = false;
+                room.required = false;
+                block.value = '';
+                populateRooms();
+            }
+        }
+    </script>
+    </script>
+    
+    <script>
+        let currentCropper = null;
+        let currentCropImagePath = '';
+        let currentCropTargetId = '';
+
+        function openCropModal(imagePath, targetId, aspectRatio) {
+            currentCropImagePath = imagePath;
+            currentCropTargetId = targetId;
+            
+            const imageElement = document.getElementById('cropperImage');
+            imageElement.src = imagePath + '?t=' + new Date().getTime();
+            
+            const cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
+            cropModal.show();
+            
+            document.getElementById('cropModal').addEventListener('shown.bs.modal', function () {
+                if (currentCropper) {
+                    currentCropper.destroy();
+                }
+                currentCropper = new Cropper(imageElement, {
+                    aspectRatio: aspectRatio,
+                    viewMode: 1,
+                    autoCropArea: 0.9,
+                });
+            }, { once: true });
+        }
+
+        function saveCrop() {
+            if (!currentCropper) return;
+            
+            const btn = document.getElementById('saveCropBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            const cropData = currentCropper.getData(true); // true = rounded integers
+
+            fetch('/admin/crop-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    imagePath: currentCropImagePath, 
+                    x: cropData.x,
+                    y: cropData.y,
+                    width: cropData.width,
+                    height: cropData.height
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const img = document.getElementById(currentCropTargetId);
+                    img.src = currentCropImagePath + '?t=' + data.timestamp;
+                    const cropModal = bootstrap.Modal.getInstance(document.getElementById('cropModal'));
+                    cropModal.hide();
+                } else {
+                    alert('Failed to crop image: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('An error occurred while cropping.');
+            })
+            .finally(() => {
+                btn.innerHTML = 'Save Crop';
+                btn.disabled = false;
+            });
+        }
+
+        document.getElementById('cropModal').addEventListener('hidden.bs.modal', function () {
+            if (currentCropper) {
+                currentCropper.destroy();
+                currentCropper = null;
+            }
+        });
+
+        function rotateImage(imagePath, degrees, imgElementId) {
+            const btn = event.currentTarget;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            fetch('/admin/rotate-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imagePath, degrees })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const img = document.getElementById(imgElementId);
+                    img.src = imagePath + '?t=' + data.timestamp;
+                } else {
+                    alert('Failed to rotate image: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('An error occurred while rotating.');
+            })
+            .finally(() => {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            });
+        }
+    </script>
+
+
+    <!-- Crop Modal -->
+    <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="cropModalLabel">Crop Image</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" style="max-height: 70vh; overflow: hidden; background: #f8f9fa; display: flex; justify-content: center;">
+            <img id="cropperImage" src="" style="max-width: 100%; display: block;">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="saveCropBtn" onclick="saveCrop()">Save Crop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <% if (typeof downloadBiodata !== 'undefined' && downloadBiodata) { %>
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.location.href = '/admin/admission-applications/<%= app.id %>/download-biodata';
+                // Remove the query parameter so refreshing doesn't re-trigger download
+                const url = new URL(window.location);
+                url.searchParams.delete('download_biodata');
+                window.history.replaceState({}, document.title, url.toString());
+            }, 1000);
+        };
+    </script>
+    <% } %>
+</body>
+</html>

@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .page-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            margin: 0;
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 2.25rem;
+            margin-bottom: 10px;
+        }
+
+        .header-hr {
+            border: 0;
+            border-top: 1px solid #e5e7eb;
+            margin-bottom: 25px;
+        }
+
+        .top-section-border {
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            background-color: #fff;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .glass-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            height: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 16px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            margin-bottom: 24px;
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+        }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        .stat-card.veg {
+            border-top: 4px solid #28a745;
+        }
+
+        .stat-card.non-veg {
+            border-top: 4px solid #dc3545;
+        }
+
+        .stat-card h4 {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .count {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .student-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: #9ca3af;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 2px dashed #e5e7eb;
+        }
+
+        .menu-wrapper {
+            border: 1px solid #e5e7eb;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .menu-wrapper h4 {
+            font-size: 1.1rem;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .table th {
+            font-weight: normal;
+            font-size: 0.9rem;
+        }
+
+        .table td {
+            font-size: 0.85rem;
+        }
+
+        /* Fix for IDE warnings regarding inline styles */
+        .food-card-veg {
+            background: #d1e7dd;
+            border: 1px solid #badbcc;
+        }
+
+        .food-card-nonveg {
+            background: #f8d7da;
+            border: 1px solid #f5c2c7;
+        }
+
+        .text-veg {
+            color: #0f5132;
+        }
+
+        .text-nonveg {
+            color: #842029;
+        }
+
+        .text-veg-bold {
+            color: #198754;
+        }
+
+        .text-nonveg-bold {
+            color: #dc3545;
+        }
+
+        /* Scanned Student Card Clean Redesign - Enhanced Sizes (Professional) */
+        .scanned-student-header {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+        .scanned-student-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 2px solid #f3f4f6;
+            object-fit: cover;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        }
+        .scanned-student-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+            letter-spacing: 0.2px;
+        }
+        .scanned-student-pill {
+            font-size: 0.8rem;
+            background: #f8fafc;
+            color: #4b5563;
+            padding: 5px 14px;
+            border-radius: 50rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+        }
+        .scanned-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 6px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .scanned-info-row:last-child {
+            border-bottom: none;
+        }
+        .scanned-info-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #4b5563;
+        }
+        .scanned-info-label i {
+            color: #9ca3af;
+            font-size: 1.05rem;
+            width: 20px;
+            text-align: center;
+        }
+        .badge-clean-veg {
+            background-color: #dcfce7;
+            color: #16a34a;
+            font-size: 0.9rem;
+            padding: 6px 14px;
+            border-radius: 50rem;
+            font-weight: 600;
+        }
+        .badge-clean-nonveg {
+            background-color: #fee2e2;
+            color: #dc2626;
+            font-size: 0.9rem;
+            padding: 6px 14px;
+            border-radius: 50rem;
+            font-weight: 600;
+        }
+        .badge-clean-meal {
+            background-color: #f1f5f9;
+            color: #3b82f6;
+            font-size: 0.9rem;
+            padding: 6px 14px;
+            border-radius: 50rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .badge-clean-default {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            font-size: 0.9rem;
+            padding: 6px 14px;
+            border-radius: 50rem;
+            font-weight: 500;
+        }
+        .badge-clean-optional {
+            background-color: #eff6ff;
+            color: #2563eb;
+            font-size: 1rem;
+            padding: 6px 18px;
+            border-radius: 50rem;
+            font-weight: 600;
+            border: 1px solid #bfdbfe;
+            box-shadow: 0 1px 2px rgba(37, 99, 235, 0.05);
+        }
+        .badge-clean-item {
+            background-color: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+            font-size: 1.05rem;
+            padding: 7px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(245, 158, 11, 0.05);
+        }
+        .special-food-clean-card {
+            background: #fffbeb;
+            border-left: 3px solid #fbbf24;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            border-top: 1px solid #fef3c7;
+            border-right: 1px solid #fef3c7;
+            border-bottom: 1px solid #fef3c7;
+        }
+
+        /* ── ACTIVE MEAL BANNER STYLES ── */
+        .active-pulse-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulseGreen 2s infinite;
+        }
+        @keyframes pulseGreen {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .meal-selector-group {
+            display: inline-flex;
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 12px;
+            gap: 6px;
+            border: 1px solid #cbd5e1;
+        }
+        .meal-select-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 22px;
+            border-radius: 9px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .meal-select-btn:hover {
+            color: #1e293b;
+            background: rgba(255, 255, 255, 0.7);
+        }
+        .meal-select-btn.active.breakfast {
+            background: #f59e0b;
+            color: #ffffff;
+            box-shadow: 0 3px 8px rgba(245, 158, 11, 0.35);
+        }
+        .meal-select-btn.active.lunch {
+            background: #10b981;
+            color: #ffffff;
+            box-shadow: 0 3px 8px rgba(16, 185, 129, 0.35);
+        }
+        .meal-select-btn.active.dinner {
+            background: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 3px 8px rgba(59, 130, 246, 0.35);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Header -->
+        <div class="page-header position-relative d-flex justify-content-between align-items-center" style="border-bottom: 1px solid #e5e7eb; padding-bottom: 20px; margin-bottom: 24px;">
+            <div class="d-flex align-items-center gap-3">
+                <h1 class="page-title m-0 fs-3">Kitchen Login</h1>
+                <p class="text-muted m-0 fs-6">Welcome to the Kitchen Status Page.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button onclick="window.history.back()" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left"></i> Back</button>
+                <a href="/logout" class="btn btn-danger btn-sm text-white"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+
+
+        <!-- ACTIVE SCANNING MEAL BANNER -->
+        <div class="active-meal-banner mb-3 mt-2">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 p-3" 
+                 style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);">
+                
+                <div class="d-flex align-items-center gap-3">
+                    <div class="active-pulse-dot"></div>
+                    <div>
+                        <div class="fw-bold text-dark" style="font-size: 0.95rem; letter-spacing: 0.3px;">
+                            ACTIVE SCANNING MEAL
+                        </div>
+                        <div class="text-muted" style="font-size: 0.8rem;">
+                            Currently scanning attendance for: <strong class="text-primary text-uppercase" style="letter-spacing: 0.5px;"><%= mealType || 'breakfast' %></strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3 Large Segmented Meal Pills -->
+                <div class="meal-selector-group">
+                    <a href="/kitchen/mess?date=<%= targetDate %>&meal_type=breakfast" 
+                       class="meal-select-btn <%= (mealType || 'breakfast') === 'breakfast' ? 'active breakfast' : '' %>">
+                        <i class="fas fa-sun"></i>
+                        <span>Breakfast</span>
+                    </a>
+                    <a href="/kitchen/mess?date=<%= targetDate %>&meal_type=lunch" 
+                       class="meal-select-btn <%= mealType === 'lunch' ? 'active lunch' : '' %>">
+                        <i class="fas fa-cloud-sun"></i>
+                        <span>Lunch</span>
+                    </a>
+                    <a href="/kitchen/mess?date=<%= targetDate %>&meal_type=dinner" 
+                       class="meal-select-btn <%= mealType === 'dinner' ? 'active dinner' : '' %>">
+                        <i class="fas fa-moon"></i>
+                        <span>Dinner</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 mt-2 flex-wrap gap-2">
+            <div class="d-flex gap-3">
+                <a href="/kitchen/mess/menus" class="btn btn-primary px-4 py-2"
+                    style="border-radius: 8px; font-weight: 500;">
+                    <i class="fas fa-clipboard-list me-2"></i> Reference Menus
+                </a>
+                <a href="/kitchen/mess/special-food" class="btn btn-warning px-4 py-2 text-dark"
+                    style="border-radius: 8px; font-weight: 500;">
+                    <i class="fas fa-hamburger me-2"></i> Special Food Add-Ons
+                </a>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <% 
+                    const todayNav = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+                %>
+                  <div class="d-flex align-items-center me-2">
+                      <span class="badge bg-primary fs-6 px-3 py-2 shadow-sm" style="font-weight: 500;">Today (<%= todayNav %>)</span>
+                  </div>
+            </div>
+        </div>
+
+        <% if(message && message.length> 0){ %>
+            <div class="alert alert-warning text-center">
+                <%- message %>
+            </div>
+            <% } %>
+
+                <div class="top-section-border row g-4 mt-3">
+                    <!-- Left Panel -->
+                    <div class="col-md-7 d-flex flex-column gap-3">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="stat-card h-100">
+                                    <h4>Present Veg Students</h4>
+                                    <div class="count veg">
+                                        <%= presentVeg %>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="stat-card h-100">
+                                    <h4>Present Non-Veg Students</h4>
+                                    <div class="count non-veg">
+                                        <%= presentNonVeg %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card p-4" style="flex-grow: 1; border-top: 4px solid #1976d2;">
+                            <h4 class="mb-4 text-center fw-bold text-dark" style="font-size: 1.15rem; letter-spacing: 0.3px;">
+                                <i class="fas fa-calendar-week text-primary me-2"></i>Student Count Logs (Next 7 Days)
+                            </h4>
+                            <% if (recentLogs && recentLogs.length > 0) { %>
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle text-center mb-0" style="font-size: 0.95rem;">
+                                        <thead>
+                                            <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                                <th class="text-secondary py-3 fw-bold border-0" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                    <i class="far fa-calendar-alt me-1"></i> Date
+                                                </th>
+                                                <th class="text-secondary py-3 fw-bold border-0" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                    <i class="fas fa-leaf text-success me-1"></i> Veg Count
+                                                </th>
+                                                <th class="text-secondary py-3 fw-bold border-0" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                    <i class="fas fa-drumstick-bite text-danger me-1"></i> Non-Veg Count
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% recentLogs.forEach((log, idx) => { %>
+                                                <tr style="border-bottom: 1px solid #f1f5f9; <%= idx === 0 ? 'background-color: #f0f7ff;' : '' %>">
+                                                    <td class="py-3 fw-bold text-dark border-0">
+                                                        <%= log.date %>
+                                                        <% if (idx === 0) { %>
+                                                            <span class="badge bg-primary text-white ms-1" style="font-size: 0.68rem; font-weight: 600;">Today</span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td class="py-3 border-0">
+                                                        <span class="badge bg-success bg-gradient px-3 py-2 fs-6 shadow-sm" style="font-weight: 700; min-width: 60px;">
+                                                            <%= log.veg || 0 %>
+                                                        </span>
+                                                    </td>
+                                                    <td class="py-3 border-0">
+                                                        <span class="badge bg-danger bg-gradient px-3 py-2 fs-6 shadow-sm" style="font-weight: 700; min-width: 60px;">
+                                                            <%= log.nonveg || 0 %>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="empty-state border-0 mt-2">
+                                    <i class="fas fa-calendar-times fs-2 text-muted mb-2"></i>
+                                    <p class="mb-0 fs-6 text-muted">No logs available yet for the next 7 days.</p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Right Panel -->
+                    <div class="col-md-5">
+                        <div class="glass-card bg-white" style="border: 1px solid #e9ecef;">
+                            <h4 class="text-center mb-4 text-dark" style="font-size: 1rem; font-weight: bold;">Scanned
+                                Student Details</h4>
+
+                            <!-- Manual UID Input -->
+                            <div class="mb-4">
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-keyboard text-muted"></i></span>
+                                    <input type="text" id="manual_uid_input" class="form-control border-start-0 ps-0" placeholder="Enter Student UID manually...">
+                                    <button class="btn btn-primary px-3 fw-bold" type="button" onclick="manualScan()"><i class="fas fa-search me-1"></i> Search</button>
+                                </div>
+                            </div>
+
+                            <% if (typeof scannedStudent !=='undefined' && scannedStudent) { %>
+                                <% const isOptionalMenu = ((scannedStudent.chosenMenuType || '').toUpperCase() === 'OPTIONAL'); %>
+
+                                <div class="scanned-student-header">
+                                    <img src="<%= scannedStudent.photo || '/images/blank_profile.webp' %>"
+                                        alt="Student Photo" class="scanned-student-avatar"
+                                        onerror="this.onerror=null; this.src='/images/blank_profile.webp';">
+                                    <div class="scanned-student-name">
+                                        <%= scannedStudent.name || 'Unknown Student' %>
+                                    </div>
+                                    <div class="d-flex justify-content-center gap-2 align-items-center flex-wrap">
+                                        <span class="scanned-student-pill">UID: <%= scannedStudent.uid %></span>
+                                        <% if (scannedStudent.dept) { %>
+                                            <span class="scanned-student-pill"><%= scannedStudent.dept %></span>
+                                        <% } %>
+                                        <% if (scannedStudent.room_no) { %>
+                                            <span class="scanned-student-pill">Room: <%= scannedStudent.room_no %></span>
+                                        <% } %>
+                                </div>
+
+                                <div class="scanned-info-list mb-2">
+                                    <div class="scanned-info-row">
+                                        <div class="scanned-info-label">
+                                            <i class="fas fa-utensils"></i>Mess Type
+                                        </div>
+                                        <div>
+                                            <% if ((scannedStudent.mess_type || '').toLowerCase() === 'veg') { %>
+                                                <span class="badge-clean-veg"><i class="fas fa-leaf me-1"></i>Veg</span>
+                                            <% } else { %>
+                                                <span class="badge-clean-nonveg"><i class="fas fa-drumstick-bite me-1"></i>Non-Veg</span>
+                                            <% } %>
+                                        </div>
+                                    </div>
+
+                                    <div class="scanned-info-row">
+                                        <div class="scanned-info-label">
+                                            <i class="fas fa-clock"></i>Meal
+                                        </div>
+                                        <div>
+                                            <span class="badge-clean-meal text-capitalize"><%= scannedStudent.meal %></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="scanned-info-row">
+                                        <div class="scanned-info-label">
+                                            <i class="fas fa-list-check"></i>Selection Type
+                                        </div>
+                                        <div>
+                                            <% if ((scannedStudent.chosenMenuType || '').toUpperCase() === 'OPTIONAL') { %>
+                                                <span class="badge-clean-optional">OPTIONAL</span>
+                                            <% } else { %>
+                                                <span class="badge-clean-default"><i class="fas fa-check me-1"></i>DEFAULT</span>
+                                            <% } %>
+                                        </div>
+                                    </div>
+
+                                    <div class="scanned-info-row">
+                                        <div class="scanned-info-label">
+                                            <i class="fas fa-bowl-rice"></i>Selected Item
+                                        </div>
+                                        <div>
+                                            <span class="badge-clean-item"><%= scannedStudent.chosenFoodName %></span>
+                                        </div>
+                                    </div>
+                                    <div class="scanned-info-row">
+                                        <div class="scanned-info-label">
+                                            <i class="fas fa-history"></i>Scan Time
+                                        </div>
+                                        <div>
+                                            <span style="font-weight: 600; color: #4b5563;"><%= scannedStudent.scan_time %></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <% if (scannedStudent.isDuplicate) { %>
+                                    <div class="alert alert-danger mt-3 mb-2 text-center" style="padding: 12px; border-radius: 8px; border-left: 5px solid #dc3545; background-color: #f8d7da; color: #842029;">
+                                        <div style="font-size: 1.05rem; font-weight: 700; letter-spacing: 0.5px;"><i class="fas fa-exclamation-triangle me-2"></i>ALREADY LOGGED!</div>
+                                        <div style="font-size: 0.85rem; margin-top: 5px;">First scan recorded at <strong><%= scannedStudent.scan_time %></strong></div>
+                                    </div>
+                                <% } else { %>
+                                    <div class="alert alert-success mt-3 mb-2 text-center" style="padding: 12px; border-radius: 8px; border-left: 5px solid #198754; background-color: #d1e7dd; color: #0f5132;">
+                                        <div style="font-size: 1.05rem; font-weight: 700; letter-spacing: 0.5px;"><i class="fas fa-check-circle me-2"></i>SUCCESS</div>
+                                        <div style="font-size: 0.85rem; margin-top: 5px;">Scan recorded at <strong><%= scannedStudent.scan_time %></strong></div>
+                                    </div>
+                                <% } %>
+
+                                <% if (typeof scannedSpecialFood !=='undefined' && scannedSpecialFood) { %>
+                                    <div class="special-food-clean-card">
+                                        <div class="fw-bold mb-2" style="font-size: 1rem; color: #b45309; letter-spacing: 0.2px;">
+                                            <i class="fas fa-star me-1"></i>Special Food
+                                        </div>
+                                        <div style="font-size: 0.95rem; color: #4b5563; margin-bottom: 6px;">
+                                            <span style="color: #374151; font-weight: 500;">Item:</span> <%= scannedSpecialFood.food_name %>
+                                        </div>
+                                        <div style="font-size: 0.95rem; color: #4b5563; margin-bottom: 6px;">
+                                            <span style="color: #374151; font-weight: 500;">Quantity:</span> <%= scannedSpecialFood.quantity_desc %> (x<%= scannedSpecialFood.quantity_multiplier %>)
+                                        </div>
+                                        <% const endDate=new Date(scannedSpecialFood.end_date); const todayDate=new Date(); const diffTime=endDate - todayDate; const diffDays=Math.ceil(diffTime / (1000 * 60 * 60 * 24)); %>
+                                        <div style="font-size: 0.95rem; color: #4b5563;">
+                                            <span style="color: #374151; font-weight: 500;">Remaining:</span> <span class="badge bg-warning text-dark px-2 py-1" style="font-weight: 600;"><%= diffDays %> Days</span>
+                                        </div>
+                                    </div>
+                                <% } %>
+                                        <% } else { %>
+                                            <div class="empty-state mt-2">
+                                                <i class="fas fa-barcode fs-2 text-muted mb-3 d-block"></i>
+                                                <p class="mb-0 text-muted"
+                                                    style="font-size: 0.8rem; font-style: italic;">Ready to scan. Please
+                                                    scan a student ID card to view details.</p>
+                                            </div>
+                                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4 mt-4 g-4">
+                    <div class="col-xl-3 col-md-6 col-sm-12">
+                        <div class="stat-card" style="border-top: 4px solid #6c757d;">
+                            <h3 class="text-secondary mb-2"><i class="fas fa-users mb-2"></i><br><%= stats.total %></h3>
+                            <p>Total Students</p>
+                            <small class="text-muted" style="font-size: 0.75rem;">All active students</small>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 col-sm-12">
+                        <div class="stat-card" style="border-top: 4px solid #28a745;">
+                            <h3 class="text-success mb-2"><i class="fas fa-utensils mb-2"></i><br><%= stats.defaultCnt %></h3>
+                            <p>Total Students (Default Menu)</p>
+                            <small class="text-muted" style="font-size: 0.75rem;">For selected date/meal</small>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 col-sm-12">
+                        <div class="stat-card" style="border-top: 4px solid #17a2b8;">
+                            <h3 class="text-info mb-2"><i class="fas fa-concierge-bell mb-2"></i><br><%= stats.optionalCnt %></h3>
+                            <p>Total Students (Optional Selected)</p>
+                            <small class="text-muted" style="font-size: 0.75rem;">For selected date/meal</small>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 col-sm-12">
+                        <div class="stat-card" style="border-top: 4px solid #ffc107;">
+                            <h3 class="text-warning mb-2"><i class="fas fa-star mb-2"></i><br><%= stats.specialCnt %></h3>
+                            <p>Total Students (Special Selected)</p>
+                            <small class="text-muted" style="font-size: 0.75rem;">For selected date/meal</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="p-3" style="background: #f8f9fa; border-radius: 8px;">
+                            <h4 style="font-size: 18px; margin-bottom: 15px;"><i class="fas fa-utensils"></i> Food
+                                Breakdown</h4>
+                            <% if (Object.keys(stats.foodBreakdown).length> 0) { %>
+                                <ul class="list-group">
+                                    <% for(let key in stats.foodBreakdown) { 
+                                        let item=stats.foodBreakdown[key]; 
+                                        let badgeClass = 'bg-secondary';
+                                        if (item.meal_type === 'lunch') badgeClass = 'bg-success';
+                                        else if (item.meal_type === 'dinner') badgeClass = 'bg-primary';
+                                        else if (item.meal_type === 'breakfast') badgeClass = 'bg-warning text-dark';
+                                    %>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                                            <div>
+                                                <span class="badge <%= badgeClass %> me-2 fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                                    <%= item.meal_type.toUpperCase() %>
+                                                </span>
+                                                <span class="fw-semibold text-dark"><%= item.food_name %></span>
+                                            </div>
+                                            <div class="d-flex align-items-center" style="gap: 1.5rem;">
+                                                <div class="text-center" style="min-width: 65px;">
+                                                    <span class="d-block text-muted" style="font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 2px;">TOTAL</span>
+                                                    <span class="badge bg-primary rounded-pill px-3 py-1 fs-6 shadow-sm" style="min-width: 45px;">
+                                                        <%= item.cnt %>
+                                                    </span>
+                                                </div>
+                                                <div class="text-center" style="min-width: 65px;">
+                                                    <span class="d-block text-muted" style="font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 2px;">LEFT</span>
+                                                    <% let leftCount = (item.type === 'DEFAULT') ? item.cnt : (item.cnt - (item.scannedCnt || 0)); %>
+                                                    <span class="badge <%= leftCount > 0 ? 'bg-warning text-dark' : 'bg-success' %> rounded-pill px-3 py-1 fs-6 shadow-sm" style="min-width: 45px;">
+                                                        <%= leftCount %>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <% } %>
+                                </ul>
+                                <% } else { %>
+                                    <p class="text-muted">No selections made yet.</p>
+                                    <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                </div>
+
+    </div>
+
+    <!-- Hidden configuration for scanner -->
+    <input type="hidden" id="current_meal" value="<%= mealType %>">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Invisible Barcode Scanner Logic
+        var barcode = '';
+        var interval;
+        var currentMeal = document.getElementById('current_meal').value || 'breakfast';
+        // Get the currently selected date from the URL or template
+        var urlParams = new URLSearchParams(window.location.search);
+        var currentDate = urlParams.get('date') || '<%= targetDate %>';
+
+        document.addEventListener('keydown', function (evt) {
+            // Ignore if typing in an input field
+            if (evt.target.tagName.toLowerCase() === 'input') return;
+
+            if (interval) clearInterval(interval);
+            if (evt.code == 'Enter') {
+                if (barcode) {
+                    var timeSlotElement = document.getElementById('kitchen_time_slot');
+                    var timeSlot = timeSlotElement ? timeSlotElement.value : 'day';
+                    window.location.href = '/kitchen/scan/' + encodeURIComponent(barcode) + '?meal_type=' + currentMeal + '&time_slot=' + timeSlot + '&date=' + currentDate;
+                }
+                barcode = '';
+                return;
+            }
+            if (evt.key !== 'Shift' && evt.key.length === 1) {
+                barcode += evt.key;
+            }
+            interval = setInterval(() => barcode = '', 50); // Scanner types very fast
+        });
+
+        // Manual UID Input Logic
+        function manualScan() {
+            var inputBarcode = document.getElementById('manual_uid_input').value.trim();
+            if (inputBarcode) {
+                var timeSlotElement = document.getElementById('kitchen_time_slot');
+                var timeSlot = timeSlotElement ? timeSlotElement.value : 'day';
+                window.location.href = '/kitchen/scan/' + encodeURIComponent(inputBarcode) + '?meal_type=' + currentMeal + '&time_slot=' + timeSlot + '&date=' + currentDate;
+            }
+        }
+
+        var manualInput = document.getElementById('manual_uid_input');
+        if (manualInput) {
+            manualInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    manualScan();
+                }
+            });
+        }
+    </script>
+    <%- include('partials/mess_modals') %>
+</body>
+
+</html>

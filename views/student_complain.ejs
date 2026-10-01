@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complain Box - Student Portal</title>
+    <link rel="stylesheet" href="../stylesheets/studentportal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+</head>
+<body>
+   <!-- Mobile Menu Toggle -->
+   <button class="menu-toggle" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <button class="sidebar-close" onclick="toggleSidebar()">
+        <i class="fas fa-times"></i>
+    </button>
+    <div class="logo">
+        <img src="/images/4174.png" alt="Logo">
+        <h2>Gate Pass</h2>
+    </div>
+    
+    <ul class="nav-links">
+        <li>
+            <a href="/student/dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a href="/student/roombooking">
+                <i class="fas fa-bed"></i>
+                <span>Room Booking</span>
+            </a>
+        </li>
+        <li>
+            <a href="/student/profile">
+                <i class="fas fa-user"></i>
+                <span>My Profile</span>
+            </a>
+        </li>
+        <li>
+            <a href="/student/attendance">
+                <i class="fas fa-calendar-check"></i>
+                <span>Attendance</span>
+            </a>
+        </li>
+        <li>
+            <a href="/student/passhistory">
+                <i class="fas fa-history"></i>
+                <span>Pass History</span>
+            </a>
+        </li>
+        <li>
+            <a href="/student/requestpass">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Request Pass</span>
+            </a>
+        </li>
+        <li>
+            <a href="/student/sickleave">
+                <i class="fas fa-notes-medical"></i>
+                <span>Request Sick Leave</span>
+            </a>
+        </li>
+        <li>
+            <a href="/student/sickleaverequests">
+                <i class="fas fa-list-alt"></i>
+                <span>My Sick Leave Requests</span>
+            </a>
+        </li>
+            <li>
+                <a href="/student/mess" id="nav_student_breakfast_link">
+                    <i class="fas fa-utensils"></i>
+                    <span>Mess Selection</span>
+                </a>
+            </li>
+        <li>
+            <a href="/student/notifications">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+            </a>
+        </li>
+        <li>
+            <a href="/student/bonafide">
+                <i class="fas fa-certificate"></i>
+                <span>Bonafide Certificate</span>
+            </a>
+        </li>
+        <li>
+            <a href="/student/bank-details">
+                <i class="fas fa-university"></i>
+                <span>Hostel Bank Details</span>
+            </a>
+        </li>
+        <li>
+            <a href="/student/complain" class="active">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Complain Box</span>
+            </a>
+        </li>
+    </ul>
+    
+    <div class="user-info">
+        <div class="user-detail">
+            <img src="<%= student ? (student.path || '/images/default-avatar.png') : '/images/default-avatar.png' %>" alt="Profile">
+            <div class="stu-name">
+                <div class="name"><%= student ? student.sname : 'Student' %></div>
+                <div class="role"><%= student ? student.uid : 'UID' %></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div class="page-title">
+            <h1>Complain Box</h1>
+            <p>Submit your complaints and issues</p>
+        </div>
+        
+        <div class="user-actions">
+            <a href="/student/notifications" class="notification-btn">
+                <i class="fas fa-bell"></i>
+            </a>
+            <a href="/student/logout" class="logout-btn" style="text-decoration: none;">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+        </div>
+    </div>
+    
+    <% if(message && message.length > 0){ %>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <%- message %>
+        </div>
+    <% } %>
+           <!-- Complain Form Section -->
+           <div class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Submit a Complaint</h2>
+                <p>Fill out the form below to submit your complaint. Our team will review and respond as soon as possible.</p>
+            </div>
+            
+            <div class="form-container" style="max-width: 700px; margin: 0 auto;">
+                <form action="/student/complain" method="POST" class="complain-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="category">
+                            <i class="fas fa-tag"></i> Category <span class="required">*</span>
+                        </label>
+                        <select name="category" id="category" required>
+                            <option value="">Select a category</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Food">Food</option>
+                            <option value="Facilities">Facilities</option>
+                            <option value="Security">Security</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">
+                            <i class="fas fa-align-left"></i> Description <span class="required">*</span>
+                        </label>
+                        <textarea 
+                            name="description" 
+                            id="description" 
+                            rows="6" 
+                            required 
+                            placeholder="Please provide a detailed description of your complaint..."></textarea>
+                        <small>Be as specific as possible to help us address your issue quickly.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="complain_image">
+                            <i class="fas fa-image"></i> Attach Image <span class="optional">(optional)</span>
+                        </label>
+                        <input 
+                            type="file" 
+                            name="complain_image" 
+                            id="complain_image" 
+                            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                            class="form-file-input">
+                        <small>You can attach a photo (JPEG, PNG, GIF, WebP) to support your complaint. Max 5MB.</small>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit Complaint
+                        </button>
+                        <a href="/student/dashboard" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+      
+        </div>
+    </div>
+    <style>
+        .complain-form {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .complain-form .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .complain-form label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .complain-form .required {
+            color: #dc3545;
+        }
+        
+        .complain-form select,
+        .complain-form textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+        
+        .complain-form select:focus,
+        .complain-form textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .complain-form textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .complain-form small {
+            display: block;
+            margin-top: 5px;
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .complain-form .optional {
+            color: #888;
+            font-weight: 400;
+        }
+        
+        .complain-form .form-file-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            background: #fafafa;
+            cursor: pointer;
+        }
+        
+        .complain-form .form-file-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .section-header {
+            margin-bottom: 25px;
+        }
+        
+        .section-header h2 {
+            font-size: 24px;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-header p {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-left: 4px solid #1976d2;
+        }
+        
+        .alert-success {
+            background: #e8f5e9;
+            color: #388e3c;
+            border-left: 4px solid #388e3c;
+        }
+    </style>
+    
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+            document.body.style.overflow = document.querySelector('.sidebar').classList.contains('active') ? 'hidden' : '';
+        }
+    </script>
+</body>
+</html>

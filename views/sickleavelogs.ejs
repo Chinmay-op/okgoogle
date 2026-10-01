@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sick Leave Logs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="/images/4174.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+       background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 0.5s ease-in-out;
+    }
+
+    .bg-image {
+      min-height: 100vh;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      position: relative;
+    }
+
+    .bg-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+    }
+
+    .content-wrapper {
+      position: relative;
+      z-index: 1;
+      padding-bottom: 2rem;
+    }
+
+    .alert-container {
+      margin-top: 0rem;
+      margin-bottom: 0rem;
+      padding: 0 0rem;
+    }
+
+    .alert-custom {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+      border: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      max-width: 600px;
+      margin: 0 auto;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo-container {
+      padding: 1.5rem 0;
+      text-align: center;
+    }
+
+    .logo-container img {
+      max-width: 200px;
+      height: auto;
+      transition: transform 0.3s ease;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+    }
+
+    .logo-container img:hover {
+      transform: scale(1.05);
+    }
+
+    .filter-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 2rem;
+      margin: 1.5rem auto;
+      max-width: 1000px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .search-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin: 1.5rem auto;
+      max-width: 1000px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-wrapper input {
+      padding: 0.75rem 1rem 0.75rem 3rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      width: 100%;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .search-wrapper input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-wrapper i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #667eea;
+      font-size: 1.1rem;
+    }
+
+    .table-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 2rem;
+      margin: 1.5rem auto;
+      max-width: 1400px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      overflow-x: auto;
+    }
+
+    .table {
+      margin-bottom: 0;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .table thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .table thead th {
+      border: none;
+      padding: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+
+    .table tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f8f9fa;
+      transform: scale(1.01);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table tbody td {
+      padding: 1rem;
+      vertical-align: middle;
+      border-color: #e9ecef;
+    }
+
+    .table tbody td a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .table tbody td a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    .illness-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .illness-fever { background: #ff6b6b; color: white; }
+    .illness-cold { background: #4ecdc4; color: white; }
+    .illness-cough { background: #95e1d3; color: #333; }
+    .illness-headache { background: #f38181; color: white; }
+    .illness-stomach { background: #a8e6cf; color: #333; }
+    .illness-body { background: #ffd3a5; color: #333; }
+    .illness-nausea { background: #fd9853; color: white; }
+    .illness-dizziness { background: #a8caba; color: #333; }
+    .illness-other { background: #667eea; color: white; }
+
+    .status-badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+    .status-approved { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .status-rejected { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+    .no-result {
+      text-align: center;
+      padding: 2rem;
+      color: #6c757d;
+    }
+
+    .no-result i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #ffc107;
+    }
+
+    @media (max-width: 768px) {
+      .logo-container img {
+        max-width: 150px;
+      }
+
+      .filter-container,
+      .search-container,
+      .table-container {
+        margin: 1rem;
+        padding: 1rem;
+      }
+
+      .table {
+        font-size: 0.9rem;
+      }
+
+      .table thead th,
+      .table tbody td {
+        padding: 0.75rem 0.5rem;
+      }
+    }
+  </style>
+  <script>
+    function myFunction() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("searchbar");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 1; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1]; // UID column
+        td1 = tr[i].getElementsByTagName("td")[2]; // Name column
+        if (td || td1) {
+          txtValue = (td ? td.textContent || td.innerText : '') + ' ' + (td1 ? td1.textContent || td1.innerText : '');
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+
+    function dateFormat(input_D) {
+      if (!input_D || input_D == '0') return '';
+      format_D = 'dd-MM-yyyy';
+      const Time = input_D.split(" ", 3);
+      const date = new Date(input_D);
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      format_D = format_D.replace("MM", month.toString().padStart(2, "0"));
+      if (format_D.indexOf("yyyy") > -1) {
+        format_D = format_D.replace("yyyy", year.toString());
+      } else if (format_D.indexOf("yy") > -1) {
+        format_D = format_D.replace("yy", year.toString().substr(2, 2));
+      }
+      format_D = format_D.replace("dd", day.toString().padStart(2, "0"));
+      return format_D;
+    }
+
+    function scheduleMidnightReset() {
+      var now = new Date();
+      var next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+      var ms = next.getTime() - now.getTime();
+      setTimeout(function() {
+        try {
+          var sb = document.getElementById("searchbar");
+          if (sb) sb.value = "";
+        } catch (e) {}
+        location.reload();
+      }, ms);
+    }
+
+    window.onload = function () {
+      // Clear any active search filter on load
+      var sb = document.getElementById("searchbar");
+      if (sb) sb.value = "";
+
+      // Format date cells
+      var dates = document.getElementsByClassName("logDate");
+      for (var i = 0; i < dates.length; i++) {
+        if (dates[i].innerHTML && dates[i].innerHTML != '0') {
+          dates[i].innerHTML = dateFormat(dates[i].innerHTML);
+        }
+      }
+
+      // Ensure all table rows are visible (reset any previous filtering)
+      var table = document.getElementById("myTable");
+      if (table) {
+        var tr = table.getElementsByTagName("tr");
+        for (var j = 1; j < tr.length; j++) {
+          tr[j].style.display = "";
+        }
+      }
+
+      // Schedule automatic reset at next midnight
+      scheduleMidnightReset();
+    };
+  </script>
+</head>
+
+<body>
+  <div class="bg-image">
+    <div class="content-wrapper">
+      <!-- Alert Message -->
+      <div class="alert-container">
+        <% if(message && message.length>0){ %>
+          <div class="alert-custom">
+            <i class="fas fa-exclamation-circle"></i>
+            <span><%- message %></span>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Logo -->
+      <div class="logo-container">
+        <a href="/daterange">
+          <img src="/images/logo.png" alt="Logo" />
+        </a>
+      </div>
+
+      <!-- Date Filter -->
+      <div class="filter-container">
+        <form action="/sickleavelogsdaterange" method="post">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>Date From</label>
+              <input type="date" name="datefrom" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label"><i class="fas fa-calendar-check me-2"></i>Date To</label>
+              <input type="date" name="dateto" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+              <button type="submit" class="btn btn-primary w-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                <i class="fas fa-search me-2"></i>Filter
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-container">
+        <div class="search-wrapper">
+          <i class="fas fa-search"></i>
+          <input type="search" class="form-control" placeholder="Search by UID or Name..." 
+                 aria-label="Search" id="searchbar" onkeyup="myFunction()" />
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-container">
+        <div class="table-responsive">
+          <table class="table table-hover" id="myTable">
+            <thead>
+              <tr>
+                <th scope="col">S.N</th>
+                <th scope="col"><i class="fas fa-id-card me-2"></i>UID</th>
+                <th scope="col"><i class="fas fa-user me-2"></i>NAME</th>
+                <th scope="col"><i class="fas fa-stethoscope me-2"></i>Illness</th>
+                <th scope="col"><i class="fas fa-calendar me-2"></i>Date</th>
+                <th scope="col"><i class="fas fa-clock me-2"></i>Time</th>
+                <th scope="col"><i class="fas fa-info-circle me-2"></i>Status</th>
+                <th scope="col"><i class="fas fa-user-shield me-2"></i>Recorded By</th>
+                <% if(role === 'SuperID') { %>
+                <th scope="col"><i class="fas fa-tools me-2"></i>Actions</th>
+                <% } %>
+              </tr>
+            </thead>
+            <tbody>
+              <% if(result && result.length > 0) { %>
+                <% for(var i=0;i<result.length;i++){ %>
+                  <tr>
+                    <td scope="row"><%- i + 1 %></td>
+                    <td>
+                      <a href="/studentprofile/<%-result[i].uid%>">
+                        <i class="fas fa-link me-1"></i><%-result[i].uid%>
+                      </a>
+                    </td>
+                    <td><%- result[i].sname%></td>
+                    <td>
+                      <span class="illness-badge illness-<%= result[i].illness.toLowerCase().replace(/\s+/g, '') %>">
+                        <i class="fas fa-heartbeat me-1"></i><%- result[i].illness%>
+                      </span>
+                    </td>
+                    <td class="logDate"><%- result[i].logdate%></td>
+                    <td><%- result[i].logtime%></td>
+                    <td>
+                      <span class="status-badge status-<%= result[i].status.toLowerCase() %>">
+                        <%- result[i].status %>
+                      </span>
+                    </td>
+                    <td><%- result[i].recorded_by%></td>
+                    <% if(role === 'SuperID') { %>
+                    <td>
+                      <% if(result[i].logid) { %>
+                        <div class="d-flex flex-wrap gap-1">
+                          <button class="btn btn-sm" 
+                                  style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white;" 
+                                  onclick='openEditModal(<%= JSON.stringify({logid: result[i].logid, uid: result[i].uid, sname: result[i].sname, illness: result[i].illness, logdate: result[i].logdate, logtime: result[i].logtime}) %>)'>
+                            <i class="fas fa-edit me-1"></i>Edit
+                          </button>
+                          <button class="btn btn-sm btn-danger" onclick="deleteLog('<%= result[i].logid %>')">
+                            <i class="fas fa-trash-alt me-1"></i>Delete
+                          </button>
+                        </div>
+                      <% } else { %>
+                        <span class="text-muted small">Fixed Record</span>
+                      <% } %>
+                    </td>
+                    <% } %>
+                  </tr>
+                <% } %>
+              <% }else{ %>
+                <tr class="warning no-result">
+                  <td colspan="<%= role === 'SuperID' ? 9 : 8 %>">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div style="margin-top: 0.5rem;">No sick leave records found</div>
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   <script>
+    const backgroundImages = [
+        '/loginimages/1.jpg',
+        '/loginimages/2.jpg',
+        '/loginimages/3.jpg',
+        '/loginimages/4.jpg',
+        '/loginimages/5.jpg',
+        '/loginimages/6.jpg',   
+        '/loginimages/7.jpg'
+        
+    ];
+    
+    let currentImageIndex = 0;
+    
+    function changeBackground() {
+        document.body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
+        currentImageIndex = (currentImageIndex + 1) % backgroundImages.length;
+    }
+    
+    // Set initial background
+    changeBackground();
+
+    // Change background every 5 seconds
+    setInterval(changeBackground, 20000);
+</script>
+
+<script>
+  function formatToAmPm(input_D) {
+    if (!input_D || typeof input_D !== 'string') return input_D;
+    input_D = input_D.trim();
+    var m = input_D.match(/^(\d{4})-(\d{2})-(\d{2})[ T]+(\d{2}):(\d{2})(?::(\d{2}))?/);
+    if (!m) return input_D;
+    var yyyy = parseInt(m[1], 10);
+    var mm = parseInt(m[2], 10) - 1;
+    var dd = parseInt(m[3], 10);
+    var HH = parseInt(m[4], 10);
+    var MM = parseInt(m[5], 10);
+    var SS = parseInt(m[6] || '0', 10);
+    var d = new Date(yyyy, mm, dd, HH, MM, SS);
+    if (isNaN(d.getTime())) return input_D;
+    function pad(n) { return String(n).padStart(2, '0'); }
+    var h = d.getHours();
+    var ampm = h >= 12 ? 'pm' : 'am';
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return pad(d.getDate()) + '-' + pad(d.getMonth() + 1) + '-' + d.getFullYear() + ' ' + h12 + ':' + pad(d.getMinutes()) + ' ' + ampm;
+  }
+  window.addEventListener('load', function(){
+    var nodes = document.getElementsByClassName('ts');
+    for (var i=0; i<nodes.length; i++) {
+      nodes[i].innerText = formatToAmPm(nodes[i].innerText);
+    }
+  });
+</script>
+  <!-- Edit Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+          <h5 class="modal-title" id="editModalLabel"><i class="fas fa-edit me-2"></i>Edit Sick Leave Record</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm">
+            <input type="hidden" id="editLogId">
+            <div class="mb-3">
+              <label class="form-label">Student Name</label>
+              <input type="text" id="editStudentName" class="form-control" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">UID</label>
+              <input type="text" id="editUID" class="form-control" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Illness Type</label>
+              <select id="editIllness" class="form-select">
+                <option value="Fever">Fever</option>
+                <option value="Cold">Cold</option>
+                <option value="Cough">Cough</option>
+                <option value="Headache">Headache</option>
+                <option value="Stomach Ache">Stomach Ache</option>
+                <option value="Body Pain">Body Pain</option>
+                <option value="Nausea">Nausea</option>
+                <option value="Dizziness">Dizziness</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Date</label>
+              <input type="date" id="editLogDate" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Time</label>
+              <input type="text" id="editLogTime" class="form-control" placeholder="e.g. 10:30 am" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="submitEdit()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openEditModal(data) {
+      document.getElementById('editLogId').value = data.logid;
+      document.getElementById('editUID').value = data.uid;
+      document.getElementById('editStudentName').value = data.sname;
+      document.getElementById('editIllness').value = data.illness;
+      
+      // Convert logdate to YYYY-MM-DD for the date input
+      if (data.logdate) {
+        const d = new Date(data.logdate);
+        const formattedDate = d.toISOString().split('T')[0];
+        document.getElementById('editLogDate').value = formattedDate;
+      }
+      
+      document.getElementById('editLogTime').value = data.logtime;
+      
+      const modal = new bootstrap.Modal(document.getElementById('editModal'));
+      modal.show();
+    }
+
+    async function submitEdit() {
+      const data = {
+        logid: document.getElementById('editLogId').value,
+        illness: document.getElementById('editIllness').value,
+        logdate: document.getElementById('editLogDate').value,
+        logtime: document.getElementById('editLogTime').value
+      };
+
+      try {
+        const response = await fetch('/api/edit-sick-leave', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          alert('Record updated successfully');
+          location.reload();
+        } else {
+          alert('Error: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error updating record:', error);
+        alert('An error occurred while updating the record.');
+      }
+    }
+
+    async function deleteLog(logid) {
+      if (!confirm("Are you sure you want to delete this log?")) return;
+      try {
+        const response = await fetch('/api/delete-sick-leave', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ logid })
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Record deleted successfully');
+          location.reload();
+        } else {
+          alert('Error: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error deleting record:', error);
+        alert('An error occurred while deleting the record.');
+      }
+    }
+  </script>
+</body>
+
+</html>
+

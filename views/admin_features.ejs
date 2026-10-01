@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feature Control</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .navbar-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            padding: 0.8rem 2rem;
+        }
+        .card { border-radius: 12px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom mb-4">
+    <div class="container-fluid">
+        <span class="navbar-brand text-white fw-bold"><i class="fas fa-toggle-on me-2"></i>Feature Control</span>
+        <div class="navbar-nav ms-auto">
+            <a href="/daterange" class="nav-item nav-link text-white">Home</a>
+            <a href="/logout" class="nav-item nav-link text-white ms-2">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container px-3 px-md-4">
+    <% if(message && message.length > 0){ %>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <%- message %>
+        </div>
+    <% } %>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0">
+            <h5 class="mb-0 fw-bold">Enable / Disable Features</h5>
+            <div class="text-muted small">Only SuperID can change these settings.</div>
+        </div>
+        <div class="card-body">
+            <form action="/admin/features" method="POST">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Feature</th>
+                                <th>Status</th>
+                                <th>Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% const getFlag = (key) => (flagsMap && flagsMap[key]) ? flagsMap[key] : { enabled: true }; %>
+
+                            <tr>
+                                <td class="fw-bold">Room Booking (student)</td>
+                                <td>
+                                    <% const roomBookingFlag = getFlag('room_booking'); %>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="room_booking" name="room_booking" <%= roomBookingFlag.enabled ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="room_booking"><%= roomBookingFlag.enabled ? 'Enabled' : 'Disabled' %></label>
+                                    </div>
+                                </td>
+                                <td class="text-muted small"><%= (roomBookingFlag.updated_at || '--') %> <%= (roomBookingFlag.updated_by ? ('by ' + roomBookingFlag.updated_by) : '') %></td>
+                            </tr>
+
+                            <tr>
+                                <td class="fw-bold">Student Profile Editing</td>
+                                <td>
+                                    <% const profileEditFlag = getFlag('student_profile_edit'); %>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="student_profile_edit" name="student_profile_edit" <%= profileEditFlag.enabled ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="student_profile_edit"><%= profileEditFlag.enabled ? 'Enabled' : 'Disabled' %></label>
+                                    </div>
+                                </td>
+                                <td class="text-muted small"><%= (profileEditFlag.updated_at || '--') %> <%= (profileEditFlag.updated_by ? ('by ' + profileEditFlag.updated_by) : '') %></td>
+                            </tr>
+
+                            <tr>
+                                <td class="fw-bold">10 PM ID Restriction</td>
+                                <td>
+                                    <% const restrictionFlag = getFlag('post_10pm_restriction'); %>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="post_10pm_restriction" name="post_10pm_restriction" <%= restrictionFlag.enabled ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="post_10pm_restriction"><%= restrictionFlag.enabled ? 'Enabled' : 'Disabled' %></label>
+                                    </div>
+                                </td>
+                                <td class="text-muted small"><%= (restrictionFlag.updated_at || '--') %> <%= (restrictionFlag.updated_by ? ('by ' + restrictionFlag.updated_by) : '') %></td>
+                            </tr>
+
+                             <tr>
+                                 <td class="fw-bold">Mess Selection – Open Time</td>
+                                 <td>
+                                     <% const messOpenFlag = getFlag('mess_open_hour'); %>
+                                     <% 
+                                        let openTimeVal = "09:00";
+                                        if (messOpenFlag.value_str) {
+                                            openTimeVal = messOpenFlag.value_str;
+                                        } else if (messOpenFlag.value_int !== null && messOpenFlag.value_int !== undefined) {
+                                            openTimeVal = String(messOpenFlag.value_int).padStart(2, '0') + ":00";
+                                        }
+                                     %>
+                                     <input type="time" class="form-control form-control-sm" style="width:150px;" name="mess_open_hour"
+                                         value="<%= openTimeVal %>">
+                                     <small class="text-muted d-block mt-1">Time when students can start selecting meals.</small>
+                                 </td>
+                                 <td class="text-muted small"><%= (messOpenFlag.updated_at || '--') %> <%= (messOpenFlag.updated_by ? ('by ' + messOpenFlag.updated_by) : '') %></td>
+                             </tr>
+
+                             <tr>
+                                 <td class="fw-bold">Mess Selection – Close Time</td>
+                                 <td>
+                                     <% const messCloseFlag = getFlag('mess_close_hour'); %>
+                                     <% 
+                                        let closeTimeVal = "16:00";
+                                        if (messCloseFlag.value_str) {
+                                            closeTimeVal = messCloseFlag.value_str;
+                                        } else if (messCloseFlag.value_int !== null && messCloseFlag.value_int !== undefined) {
+                                            closeTimeVal = String(messCloseFlag.value_int).padStart(2, '0') + ":00";
+                                        }
+                                     %>
+                                     <input type="time" class="form-control form-control-sm" style="width:150px;" name="mess_close_hour"
+                                         value="<%= closeTimeVal %>">
+                                     <small class="text-muted d-block mt-1">Time when meal selection closes. Default: 16:00 (4:00 PM).</small>
+                                 </td>
+                                 <td class="text-muted small"><%= (messCloseFlag.updated_at || '--') %> <%= (messCloseFlag.updated_by ? ('by ' + messCloseFlag.updated_by) : '') %></td>
+                             </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

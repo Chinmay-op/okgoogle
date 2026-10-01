@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Pass - Student Portal</title>
+    <link rel="stylesheet" href="/stylesheets/studentportal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+    <style>
+        .pass-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        /* New styles for the prominent latest approved pass card */
+        .prominent-card {
+            background: linear-gradient(135deg, #a7e0ff 0%, #7dc9ff 100%); /* Light blue gradient */
+            color: #1a1a2e;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            border: 2px solid #5aaee2;
+        }
+
+        .prominent-card .pass-type {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #0d47a1; /* Darker blue for pass type */
+        }
+
+        .prominent-card .pass-status {
+            font-size: 16px;
+            font-weight: 600;
+            color: #28a745; /* Green for approved status */
+            margin-bottom: 20px;
+        }
+
+        .prominent-card .pass-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .prominent-card .pass-detail-item label {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        .prominent-card .pass-detail-item span {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <button class="sidebar-close" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="logo">
+            <img src="/images/4174.png" alt="Logo">
+            <h2>Gate Pass</h2>
+        </div>
+        
+        <ul class="nav-links">
+            <li>
+                <a href="/student/dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/roombooking">
+                    <i class="fas fa-bed"></i>
+                    <span>Room Booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/profile">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/attendance">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Attendance</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/passhistory">
+                    <i class="fas fa-history"></i>
+                    <span>Pass History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/requestpass" class="active">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Request Pass</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleave">
+                    <i class="fas fa-notes-medical"></i>
+                    <span>Request Sick Leave</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleaverequests">
+                    <i class="fas fa-list-alt"></i>
+                    <span>My Sick Leave Requests</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/mess" id="nav_student_breakfast_link">
+                    <i class="fas fa-utensils"></i>
+                    <span>Mess Selection</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/notifications">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bonafide">
+                    <i class="fas fa-certificate"></i>
+                    <span>Bonafide Certificate</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bank-details">
+                    <i class="fas fa-university"></i>
+                    <span>Hostel Bank Details</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/complain">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Complain Box</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="user-info">
+            <div class="user-detail">
+                <img src="<%= student.path || '/images/default-avatar.png' %>" alt="Profile">
+                <div class="stu-name">
+                    <div class="name"><%= student.sname %></div>
+                    <div class="role"><%= student.uid %></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="page-title">
+                <h1>Request Pass</h1>
+                <p>Submit a new pass request for approval</p>
+            </div>
+            
+            <div class="user-actions">
+                <a href="/student/notifications" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                </a>
+                <a href="/student/logout" class="logout-btn" style="text-decoration: none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+        
+        <% if(message && message.length > 0){ %>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <%- message %>
+            </div>
+        <% } %>
+        
+        <!-- New: Latest Approved Pass Card -->
+        <% if (latestApprovedPass) { %>
+            <div class="content-section latest-approved-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-check-circle"></i> Latest Approved Pass Details</h2>
+                </div>
+                <div class="pass-card prominent-card">
+                    <div class="pass-type"><%= latestApprovedPass.passtype %></div>
+                    <div class="pass-status status-approved">
+                        <i class="fas fa-check-circle"></i> Approved
+                    </div>
+                    <div class="pass-details-grid">
+                        <div class="pass-detail-item">
+                            <label>Requested On</label>
+                            <span class="dt-format" data-date="<%= latestApprovedPass.created_at %>"></span>
+                        </div>
+                        <div class="pass-detail-item">
+                            <label>Approved On</label>
+                            <span class="dt-format" data-date="<%= latestApprovedPass.approved_at || latestApprovedPass.approvaldt %>" data-date-only="true"></span>
+                        </div>
+                        <div class="pass-detail-item">
+                            <label>Approved By</label>
+                            <span><%= latestApprovedPass.approved_by || 'N/A' %></span>
+                        </div>
+                       
+                        <div class="pass-detail-item">
+                            <label>Action</label>
+                            <a href="/student/cancelrequest/<%= latestApprovedPass.requestid %>" 
+                               onclick="return confirm('Are you sure you want to cancel this approved pass?')"
+                               style="color: #ef4444; text-decoration: none; font-weight: 500; font-size: 15px;">
+                                <i class="fas fa-times-circle"></i> Cancel Pass
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- Student ID Barcode Card -->
+        <div class="content-section" style="margin-bottom: 25px;">
+            <div class="section-header">
+                <h2><i class="fas fa-barcode"></i> Student ID Barcode</h2>
+            </div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                <div style="display: inline-block; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 10px;">
+                    <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=<%= student.uid %>&scale=2.5&height=10" alt="Barcode" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+                    <div style="font-size: 20px; font-weight: 700; letter-spacing: 6px; color: #0f172a; margin-top: 10px; font-family: monospace;"><%= student.uid %></div>
+                </div>
+                <p style="font-size: 13px; color: #64748b; margin: 0;"><i class="fas fa-info-circle" style="color: #3b82f6;"></i> Scan this barcode at the security gate for automated check-in and check-out logs.</p>
+            </div>
+        </div>
+
+        <!-- Check for restrictions or active pass -->
+        <% if(student.status === 'Restrict') { %>
+            <div class="alert alert-danger">
+                <i class="fas fa-ban"></i>
+                <strong>Account Restricted!</strong> You cannot request passes while your account is restricted. Please contact the hostel office.
+            </div>
+        <% } else if(activePass) { %>
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Active Pass Exists!</strong> You already have an active <%= activePass.passtype %>. Please complete it before requesting a new one.
+            </div>
+            
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-id-card"></i> Current Active Pass</h2>
+                </div>
+                
+                <div class="pass-card">
+                    <div class="pass-type"><%= activePass.passtype %></div>
+                    <div class="pass-status">
+                        <i class="fas fa-door-open"></i> Pass Active
+                    </div>
+                    <div class="pass-details">
+                                                <div class="pass-detail-item">
+                                                        <label>Approved On</label>
+                                                        <% if(activePass && activePass.approvaldt){ %>
+                                                            <span class="dt-format" data-date="<%= activePass.approvaldt %>" data-date-only="true"></span>
+                                                        <% } else { %>
+                                                            <span>N/A</span>
+                                                        <% } %>
+                                                </div>
+                                                <div class="pass-detail-item">
+                                                        <label>Gate Out</label>
+                                                        <% if(activePass && activePass.outdatetime){ %>
+                                                            <span class="dt-format" data-date="<%= activePass.outdatetime %>"></span>
+                                                        <% } else { %>
+                                                            <span>Pending</span>
+                                                        <% } %>
+                                                </div>
+                    </div>
+                </div>
+
+                <% if(activePass && ((activePass.passtype || '').trim().toLowerCase() === 'city pass')) { %>
+                    <div style="margin-top:16px; padding:15px; border-radius:12px; background: rgba(34, 197, 94, 0.08); border-left:4px solid #22c55e;">
+                        <h4 style="margin:0 0 10px; color:#15803d;"><i class="fas fa-exchange-alt"></i> Convert City Pass to Home Pass</h4>
+                        <% if(typeof conversionEnabledForActive !== 'undefined' && conversionEnabledForActive == 1) { %>
+                            <form action="/student/requestpass-convert" method="POST">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label><i class="fas fa-calendar-check"></i> Expected Return Date *</label>
+                                        <input type="date" name="expectedReturnDate" required min="<%= new Date().toISOString().split('T')[0] %>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label><i class="fas fa-clock"></i> Expected Return Time *</label>
+                                        <input type="time" name="expectedReturnTime" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-submit" onclick="return confirm('Convert your City Pass to Home Pass now?')">
+                                    <i class="fas fa-paper-plane"></i> Convert Now
+                                </button>
+                            </form>
+                        <% } else { %>
+                            <div style="color: #15803d; font-size: 14px;">
+                                <i class="fas fa-info-circle"></i> To convert your City Pass to Home Pass, please contact Fr. Roby.
+                            </div>
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        <% } else if(latestApprovedPass && ((latestApprovedPass.passtype || '').trim().toLowerCase() === 'city pass')) { %>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>City Pass Approved!</strong> 
+                <% if(latestApprovedPass.conversion_enabled == 1) { %>
+                    You can convert it to Home Pass before activation.
+                <% } else { %>
+                    To convert your City Pass to Home Pass, please contact Fr. Roby.
+                <% } %>
+            </div>
+
+            <% if(latestApprovedPass.conversion_enabled == 1) { %>
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-exchange-alt"></i> Convert City Pass to Home Pass</h2>
+                </div>
+                <form action="/student/requestpass-convert" method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-check"></i> Expected Return Date *</label>
+                            <input type="date" name="expectedReturnDate" required min="<%= new Date().toISOString().split('T')[0] %>">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Expected Return Time *</label>
+                            <input type="time" name="expectedReturnTime" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit" onclick="return confirm('Convert your City Pass to Home Pass now?')">
+                        <i class="fas fa-paper-plane"></i> Convert Now
+                    </button>
+                </form>
+            </div>
+            <% } %>
+
+
+        <% } else { %>
+            <!-- Pass Request Form -->
+            <% if(student.emergency_pass_enabled) { %>
+            <div class="content-section" style="border: 2px solid #dc3545; box-shadow: 0 0 15px rgba(220,53,69,0.1);">
+                <div class="section-header">
+                    <h2 style="color: #dc3545;"><i class="fas fa-exclamation-triangle"></i> Emergency Pass Request</h2>
+                </div>
+                
+                <form id="emergencyPassForm" action="/student/requestpass" method="POST">
+                    <input type="hidden" name="is_emergency" value="true">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-ticket-alt"></i> Pass Type *</label>
+                            <select id="emergencyPassType" name="passType" required>
+                                <option value="">Select Pass Type</option>
+                                <option value="City Pass">City Pass (Emergency)</option>
+                                <option value="Home Pass">Home Pass (Emergency)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone-alt"></i> Emergency Contact Number *</label>
+                            <input type="tel" name="emergencyContact" required placeholder="Parent/Guardian contact number" value="<%= student.parentnumber || '' %>">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Expected Out Date *</label>
+                            <input type="date" id="emergencyExpectedOutDate" name="expectedOutDate" required min="<%= new Date().toISOString().split('T')[0] %>">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Expected Out Time *</label>
+                            <input type="time" name="expectedOutTime" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-check"></i> Expected Return Date *</label>
+                            <input type="date" id="emergencyExpectedReturnDate" name="expectedReturnDate" required min="<%= new Date().toISOString().split('T')[0] %>">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Expected Return Time</label>
+                            <input type="time" name="expectedReturnTime">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-comment-alt"></i> Emergency Reason *</label>
+                        <textarea name="reason" rows="3" required placeholder="Please provide specific details about the emergency..."></textarea>
+                    </div>
+                    
+                    <div style="background: rgba(220,53,69,0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                        <p style="font-size: 13px; color: #dc3545; margin: 0;">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> This is a one-time emergency pass.
+                        </p>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit" style="background: #dc3545;">
+                        <i class="fas fa-paper-plane"></i> Submit Emergency Request
+                    </button>
+                </form>
+            </div>
+            <% } %>
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-file-alt"></i> New Pass Request</h2>
+                </div>
+                
+                <form action="/student/requestpass" method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Student Name</label>
+                            <input type="text" value="<%= student.sname %>" readonly style="background: #f5f5f5;">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-id-badge"></i> Student UID</label>
+                            <input type="text" value="<%= student.uid %>" readonly style="background: #f5f5f5;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-building"></i> Department</label>
+                            <input type="text" value="<%= student.dept || 'N/A' %>" readonly style="background: #f5f5f5;">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Contact Number</label>
+                            <input type="text" value="<%= student.mobileno || 'N/A' %>" readonly style="background: #f5f5f5;">
+                        </div>
+                    </div>
+                    
+                    <hr style="margin: 25px 0; border: none; border-top: 1px solid #eee;">
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-ticket-alt"></i> Pass Type *</label>
+                        <select id="passType" name="passType" required>
+                            <option value="">Select Pass Type</option>
+                            <option value="City Pass">City Pass (Short Duration)</option>
+                            <option value="Home Pass">Home Pass (Long Duration)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Expected Out Date *</label>
+                            <input type="date" id="expectedOutDate" name="expectedOutDate" required min="<%= new Date().toISOString().split('T')[0] %>">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Expected Out Time *</label>
+                            <input type="time" name="expectedOutTime" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-check"></i> Expected Return Date *</label>
+                            <input type="date" id="expectedReturnDate" name="expectedReturnDate" required min="<%= new Date().toISOString().split('T')[0] %>">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Expected Return Time</label>
+                            <input type="time" name="expectedReturnTime">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Destination/Purpose *</label>
+                        <textarea name="reason" rows="3" required placeholder="Enter your destination and purpose of visit..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-phone-alt"></i> Emergency Contact Number *</label>
+                        <input type="tel" name="emergencyContact" required placeholder="Parent/Guardian contact number" value="<%= student.parentnumber || '' %>">
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                        <p style="font-size: 13px; color: #666; margin: 0;">
+                            <i class="fas fa-info-circle" style="color: #667eea;"></i>
+                            <strong>Note:</strong> Your pass request will be reviewed by the hostel authority. You will receive a notification once it's approved. Make sure to collect your pass from the hostel office before leaving.
+                        </p>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i> Submit Request
+                    </button>
+                </form>
+            </div>
+        <% } %>
+        
+        <!-- Pending Requests -->
+        <% if(pendingRequests && pendingRequests.length > 0) { %>
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-hourglass-half"></i> Pending Requests</h2>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Pass Type</th>
+                            <th>Requested On</th>
+                            <th>Expected Out</th>
+                            <th>Expected Return</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% pendingRequests.forEach(function(req) { %>
+                            <tr>
+                                <td>#<%= req.requestid %></td>
+                                <td><%= req.passtype %></td>
+                                                                <td>
+                                                                    <% if(req.created_at){ %>
+                                                                        <span class="dt-format" data-date="<%= req.created_at %>"></span>
+                                                                    <% } else { %>
+                                                                        <span>N/A</span>
+                                                                    <% } %>
+                                                                </td>
+                                                                <td>
+                                                                    <% if(req.expected_out){ %>
+                                                                        <span class="dt-format" data-date="<%= req.expected_out %>"></span>
+                                                                    <% } else { %>
+                                                                        <span>N/A</span>
+                                                                    <% } %>
+                                                                </td>
+                                                                <td>
+                                                                    <% if(req.expected_return){ %>
+                                                                        <span class="dt-format" data-date="<%= req.expected_return %>"></span>
+                                                                    <% } else { %>
+                                                                        <span>N/A</span>
+                                                                    <% } %>
+                                                                </td>
+                                <td>
+                                    <span class="status-badge pending">
+                                        <i class="fas fa-clock"></i> Pending
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="/student/cancelrequest/<%= req.requestid %>" 
+                                       onclick="return confirm('Are you sure you want to cancel this request?')"
+                                       style="color: #ef4444; text-decoration: none;">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+        
+        <!-- Approved Requests -->
+        <% if(approvedRequests && approvedRequests.length > 0) { %>
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 style="color: rgb(0, 157, 0);"><i class="fas fa-check-circle"></i> Approved Requests</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Pass Type</th>
+                            <th>Approved On</th>
+                            <th>Expected Out</th>
+                            <th>Expected Return</th>
+                            <th>Approved By</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% approvedRequests.forEach(function(req) { %>
+                            <tr>
+                                <td>#<%= req.requestid %></td>
+                                <td><%= req.passtype %></td>
+                                                                <td>
+                                                                    <% if(req.approved_at || req.approvaldt){ %>
+                                                                        <span class="dt-format" data-date="<%= req.approved_at || req.approvaldt %>" data-date-only="true"></span>
+                                                                    <% } else { %>
+                                                                        <span>N/A</span>
+                                                                    <% } %>
+                                                                </td>
+                                                                <td>
+                                                                    <% if(req.expected_out){ %>
+                                                                        <span class="dt-format" data-date="<%= req.expected_out %>"></span>
+                                                                    <% } else { %>
+                                                                        <span>N/A</span>
+                                                                    <% } %>
+                                                                </td>
+                                                                <td>
+                                                                    <% if(req.expected_return){ %>
+                                                                        <span class="dt-format" data-date="<%= req.expected_return %>"></span>
+                                                                    <% } else { %>
+                                                                        <span>N/A</span>
+                                                                    <% } %>
+                                                                </td>
+                                <td><%= req.approved_by || '-' %></td>
+                                <td>
+                                    <a href="/student/cancelrequest/<%= req.requestid %>" 
+                                       onclick="return confirm('Are you sure you want to cancel this approved request?')"
+                                       style="color: #ef4444; text-decoration: none;">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+
+        <!-- Rejected Requests -->
+        <% if(rejectedRequests && rejectedRequests.length > 0) { %>
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-times-circle"></i> Rejected Requests</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Pass Type</th>
+                            <th>Rejected On</th>
+                            <th>Expected Out</th>
+                            <th>Expected Return</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% rejectedRequests.forEach(function(req) { %>
+                            <tr>
+                                <td>#<%= req.requestid %></td>
+                                <td><%= req.passtype %></td>
+                                                                <td>
+                                                                    <% if(req.approved_at || req.approvaldt){ %>
+                                                                        <span class="dt-format" data-date="<%= req.approved_at || req.approvaldt %>"></span>
+                                                                    <% } else { %>
+                                                                        <span>N/A</span>
+                                                                    <% } %>
+                                                                </td>
+                                                                <td>
+                                                                    <% if(req.expected_out){ %>
+                                                                        <span class="dt-format" data-date="<%= req.expected_out %>"></span>
+                                                                    <% } else { %>
+                                                                        <span>N/A</span>
+                                                                    <% } %>
+                                                                </td>
+                                                                <td>
+                                                                    <% if(req.expected_return){ %>
+                                                                        <span class="dt-format" data-date="<%= req.expected_return %>"></span>
+                                                                    <% } else { %>
+                                                                        <span>N/A</span>
+                                                                    <% } %>
+                                                                </td>
+                                <td><%= req.rejection_reason || '-' %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+        
+        <!-- Pass Guidelines -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-book"></i> Pass Guidelines</h2>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="padding: 20px; background: rgba(102, 126, 234, 0.1); border-radius: 10px; border-left: 4px solid #667eea;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;"><i class="fas fa-city"></i> City Pass</h4>
+                    <ul style="font-size: 13px; color: #666; padding-left: 20px;">
+                        <li>For short visits within the city</li>
+                        <li>Maximum duration: Same day return</li>
+                        <li>Must return before hostel closing time</li>
+                        <li>Restricted students cannot apply</li>
+                    </ul>
+                </div>
+                
+                <div style="padding: 20px; background: rgba(34, 197, 94, 0.1); border-radius: 10px; border-left: 4px solid #22c55e;">
+                    <h4 style="color: #22c55e; margin-bottom: 10px;"><i class="fas fa-home"></i> Home Pass</h4>
+                    <ul style="font-size: 13px; color: #666; padding-left: 20px;">
+                        <li>For visiting home/hometown</li>
+                        <li>Requires parent contact verification</li>
+                        <li>Submit request at least 24 hours before</li>
+                        <li>Extended stays require special approval</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+            document.body.style.overflow = document.querySelector('.sidebar').classList.contains('active') ? 'hidden' : '';
+        }
+    </script>
+        <script>
+            // Format all elements with class 'dt-format'; support date-only via data-date-only
+            // IMPORTANT: Treats all dates as LOCAL TIME (not UTC) to match user's timezone
+            (function(){
+                function formatDateString(s, dateOnly) {
+                    try {
+                        if (!s) return s;
+
+                        // Trim whitespace and normalize the string
+                        s = String(s).trim();
+
+                        // MySQL DATETIME format: YYYY-MM-DD HH:MM:SS or YYYY-MM-DD HH:MM
+                        // Parse manually to ensure LOCAL time interpretation (not UTC)
+                        var mysqlLike = /^(\d{4})-(\d{2})-(\d{2})[\sT](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?(?:\s*[Z+-]|$)/;
+                        var m = s.match(mysqlLike);
+
+                        var d;
+                        if (m) {
+                            // Extract components and create LOCAL Date object (not UTC)
+                            var year = parseInt(m[1], 10);
+                            var month = parseInt(m[2], 10) - 1; // JavaScript months are 0-indexed
+                            var day = parseInt(m[3], 10);
+                            var hour = parseInt(m[4], 10);
+                            var minute = parseInt(m[5], 10);
+                            var second = parseInt(m[6] || '0', 10);
+
+                            // Create Date in LOCAL timezone (this is the key fix)
+                            d = new Date(year, month, day, hour, minute, second);
+                        } else {
+                            // Fallback: try standard Date parsing
+                            // But replace space with 'T' to avoid UTC interpretation
+                            var normalized = s.replace(' ', 'T');
+                            if (!normalized.includes('Z') && !normalized.match(/[+-]\d{2}:\d{2}$/)) {
+                                // No timezone info, parse components manually
+                                var fallbackMatch = normalized.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+                                if (fallbackMatch) {
+                                    d = new Date(
+                                        parseInt(fallbackMatch[1], 10),
+                                        parseInt(fallbackMatch[2], 10) - 1,
+                                        parseInt(fallbackMatch[3], 10),
+                                        parseInt(fallbackMatch[4], 10),
+                                        parseInt(fallbackMatch[5], 10),
+                                        parseInt(fallbackMatch[6] || '0', 10)
+                                    );
+                                } else {
+                                    d = new Date(s);
+                                }
+                            } else {
+                                d = new Date(s);
+                            }
+                        }
+
+                        if (isNaN(d.getTime())) {
+                            console.warn('Invalid date:', s);
+                            return s; // Return original string if parsing fails
+                        }
+
+                        if (dateOnly) {
+                            var opts = { year: 'numeric', month: 'short', day: 'numeric' };
+                            return d.toLocaleDateString('en-IN', opts);
+                        }
+                        var opts = {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                        };
+                        return d.toLocaleString('en-IN', opts);
+                    } catch (e) {
+                        console.error('Date formatting error:', e, 'for string:', s);
+                        return s;
+                    }
+                }
+
+                document.addEventListener('DOMContentLoaded', function(){
+                    var els = document.querySelectorAll('.dt-format');
+                    els.forEach(function(el){
+                        var s = el.getAttribute('data-date');
+                        if (!s) return;
+                        var dateOnly = el.getAttribute('data-date-only') === 'true';
+                        el.textContent = formatDateString(s, dateOnly);
+                    });
+                });
+            })();
+        </script>
+        <script>
+            // Enforce valid date selections and City Pass rules on request forms
+            document.addEventListener('DOMContentLoaded', function(){
+                function todayLocalISO(){
+                    var d = new Date();
+                    // Build YYYY-MM-DD in local time
+                    var yyyy = d.getFullYear();
+                    var mm = String(d.getMonth() + 1).padStart(2, '0');
+                    var dd = String(d.getDate()).padStart(2, '0');
+                    return yyyy + '-' + mm + '-' + dd;
+                }
+
+                var today = todayLocalISO();
+
+                function initPassForm(passTypeEl, outDateEl, returnDateEl) {
+                    if (!passTypeEl || !outDateEl || !returnDateEl) return;
+
+                    // Set min for both date inputs to today's local date
+                    if (outDateEl.min !== today) outDateEl.min = today;
+                    if (returnDateEl.min !== today) returnDateEl.min = today;
+
+                    function syncReturnMin(){
+                        // Ensure return date cannot be before out date
+                        var outVal = outDateEl.value || today;
+                        returnDateEl.min = outVal;
+                        if (returnDateEl.value && returnDateEl.value < returnDateEl.min) {
+                            returnDateEl.value = returnDateEl.min;
+                        }
+                    }
+
+                    function ensureHidden(form, id, name){
+                        var el = document.getElementById(id);
+                        if (!el) {
+                            el = document.createElement('input');
+                            el.type = 'hidden';
+                            el.id = id;
+                            el.name = name;
+                            form.appendChild(el);
+                        }
+                        return el;
+                    }
+
+                    function applyLock(){
+                        var form = outDateEl.closest('form');
+                        var formIdPrefix = form.id || 'normal';
+                        var hiddenOutId = 'hidden_expectedOutDate_' + formIdPrefix;
+                        var hiddenReturnId = 'hidden_expectedReturnDate_' + formIdPrefix;
+
+                        if (passTypeEl.value === 'City Pass' || passTypeEl.value === 'City Pass (Emergency)'){
+                            var t = todayLocalISO();
+
+                            // Lock Expected Out Date
+                            outDateEl.value = t;
+                            outDateEl.disabled = true;
+                            ensureHidden(form, hiddenOutId, outDateEl.name).value = t;
+
+                            // Lock Expected Return Date to same day
+                            returnDateEl.value = t;
+                            returnDateEl.disabled = true;
+                            ensureHidden(form, hiddenReturnId, returnDateEl.name).value = t;
+                        } else if (passTypeEl.value === 'Home Pass' || passTypeEl.value === 'Home Pass (Emergency)') {
+                            var t2 = todayLocalISO();
+
+                            // Lock Expected Out Date to today
+                            outDateEl.value = t2;
+                            outDateEl.disabled = true;
+                            ensureHidden(form, hiddenOutId, outDateEl.name).value = t2;
+
+                            // Expected Return Date stays editable but not before today
+                            returnDateEl.disabled = false;
+                            if (!returnDateEl.value || returnDateEl.value < t2) {
+                                returnDateEl.value = t2;
+                            }
+                            returnDateEl.min = t2;
+                        } else {
+                            // Unlock dates
+                            outDateEl.disabled = false;
+                            returnDateEl.disabled = false;
+
+                            // Remove hidden fields if present to avoid duplicate fields on submit
+                            var hOut = document.getElementById(hiddenOutId);
+                            if (hOut && hOut.parentNode) hOut.parentNode.removeChild(hOut);
+                            var hRet = document.getElementById(hiddenReturnId);
+                            if (hRet && hRet.parentNode) hRet.parentNode.removeChild(hRet);
+                        }
+
+                        // Always ensure return date min aligns to out date
+                        syncReturnMin();
+                    }
+
+                    // Wire events
+                    passTypeEl.addEventListener('change', applyLock);
+                    outDateEl.addEventListener('change', syncReturnMin);
+
+                    // Initialize on load
+                    applyLock();
+
+                    // Validate on submit: return datetime must be >= out datetime
+                    var form = outDateEl.closest('form');
+                    if (form) {
+                        form.addEventListener('submit', function(e){
+                            var outTimeEl = form.querySelector('input[name="expectedOutTime"]');
+                            var retTimeEl = form.querySelector('input[name="expectedReturnTime"]');
+                            var outD = outDateEl.value;
+                            var outT = outTimeEl && outTimeEl.value ? outTimeEl.value : '00:00';
+                            var retD = returnDateEl.value;
+                            var retT = retTimeEl && retTimeEl.value ? retTimeEl.value : '23:59';
+
+                            if (!outD || !retD) return; // required by HTML attrs anyway
+
+                            function toLocalDate(yyyy_mm_dd, hh_mm){
+                                var partsD = yyyy_mm_dd.split('-');
+                                var partsT = hh_mm.split(':');
+                                return new Date(
+                                    parseInt(partsD[0],10),
+                                    parseInt(partsD[1],10)-1,
+                                    parseInt(partsD[2],10),
+                                    parseInt(partsT[0]||'0',10),
+                                    parseInt(partsT[1]||'0',10),
+                                    0
+                                );
+                            }
+
+                            var outDT = toLocalDate(outD, outT);
+                            var retDT = toLocalDate(retD, retT);
+
+                            if (retDT.getTime() < outDT.getTime()) {
+                                e.preventDefault();
+                                alert('Expected Return cannot be before Expected Out. Please adjust the date/time.');
+                                return false;
+                            }
+                        });
+                    }
+                }
+
+                // Init Normal Form
+                initPassForm(
+                    document.getElementById('passType'),
+                    document.getElementById('expectedOutDate'),
+                    document.getElementById('expectedReturnDate')
+                );
+
+                // Init Emergency Form
+                initPassForm(
+                    document.getElementById('emergencyPassType'),
+                    document.getElementById('emergencyExpectedOutDate'),
+                    document.getElementById('emergencyExpectedReturnDate')
+                );
+            });
+        </script>
+</body>
+</html>

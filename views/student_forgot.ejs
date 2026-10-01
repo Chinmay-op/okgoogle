@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Forgot Password</title>
+  <link rel="stylesheet" href="/stylesheets/studentportal.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="/images/4174.png">
+  <style>
+    body {
+      background-size: cover !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+      min-height: 100vh;
+      margin: 0;
+    }
+    @media (min-width: 769px) {
+      body { background-attachment: fixed; }
+    }
+    @media (max-width: 768px) {
+      body {
+        background-attachment: scroll;
+        -webkit-background-size: cover;
+        background-size: cover;
+      }
+    }
+    .student-forgot-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      padding: 24px;
+    }
+    .student-forgot-box {
+      width: 100%;
+      max-width: 460px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      padding: 22px;
+    }
+    .forgot-header {
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .forgot-header img {
+      width: 170px;
+      max-width: 100%;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.18));
+    }
+    .hint {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.45;
+      background: rgba(102, 126, 234, 0.08);
+      border: 1px solid rgba(102, 126, 234, 0.18);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-top: 12px;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+    .btn-primary-soft {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-link-soft {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #333;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="student-forgot-container">
+    <div class="student-forgot-box">
+      <div class="forgot-header">
+        <img src="/images/logo.png" alt="Logo">
+        <h2 style="margin:0;">Forgot Password</h2>
+        <p style="margin:6px 0 0 0; color:#666;">Reset your password securely using OTP</p>
+      </div>
+
+      <% if (message && message.length) { %>
+        <div class="alert alert-danger" style="margin-top:10px;">
+          <i class="fas fa-exclamation-circle"></i>
+          <%- message %>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/student/forgot" style="margin-top: 12px;">
+        <div class="form-group">
+          <label>Student UID</label>
+          <i class="fas fa-user"></i>
+          <input type="text" name="uid" placeholder="Enter your UID" required>
+        </div>
+
+        <button type="submit" class="btn-primary-soft">
+          <i class="fas fa-paper-plane"></i> Send OTP
+        </button>
+
+        <div class="hint">
+          <div><strong>What happens next?</strong></div>
+          <div>
+            We will send a 6-digit OTP to your registered email. After OTP verification, your password will be reset to your
+            <strong>default password (mobile number)</strong>.
+          </div>
+        </div>
+
+        <div class="actions">
+          <a href="/student/login" class="btn-link-soft">
+            <i class="fas fa-arrow-left"></i> Back to login
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const backgroundImages = [
+      '/loginimages/1.jpg',
+      '/loginimages/2.jpg',
+      '/loginimages/3.jpg',
+      '/loginimages/4.jpg',
+      '/loginimages/5.jpg',
+      '/loginimages/6.jpg',
+      '/loginimages/7.jpg'
+    ];
+    let currentImageIndex = 0;
+    function changeBackground() {
+      document.body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
+      currentImageIndex = (currentImageIndex + 1) % backgroundImages.length;
+    }
+    changeBackground();
+    setInterval(changeBackground, 5000);
+  </script>
+</body>
+</html>

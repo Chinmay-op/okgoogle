@@ -1,0 +1,1779 @@
+    <!DOCTYPE html>
+
+    <html lang="en">
+
+    <head>
+
+        <meta charset="UTF-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>My Profile - Student Portal</title>
+
+        <link rel="stylesheet" href="/stylesheets/studentportal.css">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+        <link rel="icon" href="/images/4174.png">
+
+    </head>
+
+    <body>
+
+        <!-- Mobile Menu Toggle -->
+
+        <button class="menu-toggle" onclick="toggleSidebar()">
+
+            <i class="fas fa-bars"></i>
+
+        </button>
+
+        
+
+        <!-- Sidebar Overlay -->
+
+        <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        
+
+        <!-- Sidebar -->
+
+        <div class="sidebar">
+
+            <button class="sidebar-close" onclick="toggleSidebar()">
+
+                <i class="fas fa-times"></i>
+
+            </button>
+
+            <div class="logo">
+
+                <img src="/images/4174.png" alt="Logo">
+
+                <h2>Gate Pass</h2>
+
+            </div>
+
+            
+
+            <ul class="nav-links">
+
+                <li>
+
+                    <a href="/student/dashboard">
+
+                        <i class="fas fa-home"></i>
+
+                        <span>Dashboard</span>
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="/student/roombooking">
+
+                        <i class="fas fa-bed"></i>
+
+                        <span>Room Booking</span>
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="/student/profile" class="active">
+
+                        <i class="fas fa-user"></i>
+
+                        <span>My Profile</span>
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="/student/attendance">
+
+                        <i class="fas fa-calendar-check"></i>
+
+                        <span>Attendance</span>
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="/student/passhistory">
+
+                        <i class="fas fa-history"></i>
+
+                        <span>Pass History</span>
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="/student/requestpass">
+
+                        <i class="fas fa-ticket-alt"></i>
+
+                        <span>Request Pass</span>
+
+                    </a>
+
+                </li>
+
+            <li>
+
+                    <a href="/student/notifications">
+
+                        <i class="fas fa-bell"></i>
+
+                        <span>Notifications</span>
+
+                    </a>
+
+                </li>
+
+                <li>
+                    <a href="/student/sickleave">
+                        <i class="fas fa-notes-medical"></i>
+                        <span>Request Sick Leave</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/student/sickleaverequests">
+                        <i class="fas fa-list-alt"></i>
+                        <span>My Sick Leave Requests</span>
+                    </a>
+                </li>
+            <li>
+                <a href="/student/mess" id="nav_student_breakfast_link">
+                    <i class="fas fa-utensils"></i>
+                    <span>Mess Selection</span>
+                </a>
+            </li>
+
+                <li>
+                    <a href="/student/bonafide">
+                        <i class="fas fa-certificate"></i>
+                        <span>Bonafide Certificate</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/student/bank-details">
+                        <i class="fas fa-university"></i>
+                        <span>Hostel Bank Details</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/student/complain">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Complain Box</span>
+                    </a>
+                </li>
+
+            </ul>
+
+            
+
+            <div class="user-info">
+
+                <div class="user-detail">
+
+                    <img src="<%= student.path || '/images/default-avatar.png' %>" alt="Profile">
+
+                    <div class="stu-name">
+
+                        <div class="name"><%= student.sname %></div>
+
+                        <div class="role"><%= student.uid %></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        
+
+        <!-- Main Content -->
+
+        <div class="main-content">
+
+            <!-- Top Bar -->
+
+            <div class="topbar">
+
+                <div class="page-title">
+
+                    <h1>My Profile</h1>
+
+                    <p>View and manage your profile information</p>
+
+                </div>
+
+                
+
+                <div class="user-actions">
+
+                    <a href="/student/notifications" class="notification-btn">
+
+                        <i class="fas fa-bell"></i>
+
+                    </a>
+
+                    <a href="/student/logout" class="logout-btn" style="text-decoration: none;">
+
+                        <i class="fas fa-sign-out-alt"></i>
+
+                        Logout
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            
+
+            <% if(message && message.length > 0){ %>
+
+                <div class="alert alert-success">
+
+                    <i class="fas fa-check-circle"></i>
+
+                    <%- message %>
+
+                </div>
+
+            <% } %>
+
+            
+
+            <!-- Profile Header -->
+
+            <div class="profile-header">
+
+                <img src="<%= student.path || '/images/default-avatar.png' %>" alt="Profile" class="profile-image">
+
+                <div class="profile-info">
+
+                    <h1><%= student.sname %></h1>
+
+                    <p><i class="fas fa-graduation-cap"></i> <%= student.dept || 'Department' %> - <%= student.year || 'Year' %></p>
+
+                    <p><i class="fas fa-envelope"></i> <%= student.email || 'No email' %></p>
+
+                    <div class="uid-badge">
+
+                        <i class="fas fa-id-badge"></i> <%= student.uid %>
+
+                    </div>
+
+                    <% if (student.hostel_id) { %>
+                    <div class="uid-badge" style="margin-top:10px; background: rgba(255,255,255,0.14);">
+                        <i class="fas fa-id-card"></i> Hostel ID: <%= student.hostel_id %>
+                    </div>
+                    <% } %>
+
+                </div>
+
+            </div>
+
+            
+
+            <!-- Edit Profile Form -->
+
+            <% const profileEditEnabled = (flagsMap && flagsMap.student_profile_edit) ? !!flagsMap.student_profile_edit.enabled : true; %>
+            <% if (profileEditEnabled) { %>
+            <div class="content-section" id="editFormSection" style="display: none;">
+
+                <div class="section-header">
+
+                    <h2><i class="fas fa-edit"></i> Edit Profile</h2>
+
+                </div>
+
+                
+
+                <form action="/student/updateprofile" method="POST" id="editProfileForm">
+
+                    <div class="profile-grid">
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-user"></i></div>
+
+                            <div class="details">
+
+                                <label>Full Name</label>
+
+                                <input type="text" name="sname" value="<%= student.sname || '' %>" class="form-input" required>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-id-badge"></i></div>
+
+                            <div class="details">
+
+                                <label>Student UID</label>
+
+                                <input type="text" value="<%= student.uid %>" class="form-input" disabled>
+
+                                <small class="text-muted">UID cannot be changed</small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-id-card"></i></div>
+
+                            <div class="details">
+
+                                <label>Hostel ID</label>
+
+                                <input type="text" value="<%= student.hostel_id || '' %>" class="form-input" disabled>
+
+                                <small class="text-muted">Backup hostel login ID for admission students</small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-envelope"></i></div>
+
+                            <div class="details">
+
+                                <label>Email</label>
+
+                                <input type="email" name="email" value="<%= student.email || '' %>" class="form-input" required>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-phone"></i></div>
+
+                            <div class="details">
+
+                                <label>Mobile Number</label>
+
+                                <input type="text" value="<%= student.mobileno || 'N/A' %>" class="form-input" disabled>
+
+                                <small class="text-muted">Mobile number cannot be changed</small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-venus-mars"></i></div>
+
+                            <div class="details">
+
+                                <label>Gender</label>
+
+                                <select name="gender" class="form-input" required>
+
+                                    <option value="MALE" <%= student.gender === 'MALE' ? 'selected' : '' %>>Male</option>
+
+                                    <option value="FEMALE" <%= student.gender === 'FEMALE' ? 'selected' : '' %>>Female</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-birthday-cake"></i></div>
+
+                            <div class="details">
+
+                                <label>Date of Birth</label>
+
+                                <% 
+                                    let formattedDob = student.dob || '';
+                                    if (formattedDob instanceof Date) {
+                                        formattedDob = `${formattedDob.getFullYear()}-${String(formattedDob.getMonth()+1).padStart(2,'0')}-${String(formattedDob.getDate()).padStart(2,'0')}`;
+                                    } else if (typeof formattedDob === 'string' && !formattedDob.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                                        let d = new Date(formattedDob);
+                                        if (!isNaN(d.getTime())) {
+                                            formattedDob = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                                        }
+                                    }
+                                %>
+                                <input type="date" name="dob" value="<%= formattedDob %>" class="form-input" required>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-layer-group"></i></div>
+
+                            <div class="details">
+
+                                <label>Year</label>
+
+                                <select name="year" class="form-input" required>
+
+                                    <option value="1" <%= student.year == 1 ? 'selected' : '' %>>1st Year</option>
+
+                                    <option value="2" <%= student.year == 2 ? 'selected' : '' %>>2nd Year</option>
+
+                                    <option value="3" <%= student.year == 3 ? 'selected' : '' %>>3rd Year</option>
+
+                                    <option value="4" <%= student.year == 4 ? 'selected' : '' %>>4th Year</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+
+                            <div class="details">
+
+                                <label>Academic Year</label>
+
+                                <input type="number" name="academicyear" value="<%= student.academicyear || '' %>" class="form-input" min="2020" max="2030" required>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-building"></i></div>
+
+                            <div class="details">
+
+                                <label>Department</label>
+
+                                <input type="text" value="<%= student.dept || 'N/A' %>" class="form-input" disabled>
+
+                                <small class="text-muted">Department cannot be changed</small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-home"></i></div>
+
+                            <div class="details">
+
+                                <label>Category</label>
+
+                                <input type="text" value="<%= student.category || 'N/A' %>" class="form-input" disabled>
+
+                                <small class="text-muted">Category cannot be changed</small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-user-tie"></i></div>
+
+                            <div class="details">
+
+                                <label>Parent Name</label>
+
+                                <input type="text" name="parentname" value="<%= student.parentname || '' %>" class="form-input">
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-phone-alt"></i></div>
+
+                            <div class="details">
+
+                                <label>Parent Contact</label>
+
+                                <input type="text" name="parentnumber" value="<%= student.parentnumber || '' %>" class="form-input">
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item" style="grid-column: 1 / -1;">
+
+                            <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+
+                            <div class="details">
+
+                                <label>Address</label>
+
+                                <textarea name="address" class="form-input" rows="3"><%= student.address || '' %></textarea>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-door-closed"></i></div>
+
+                            <div class="details">
+
+                                <label>Room No</label>
+
+                                <input type="text" name="room_no" value="<%= student.room_no || student.room || student.rno || '' %>" class="form-input" disabled>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-bed"></i></div>
+
+                            <div class="details">
+
+                                <label>Bed No</label>
+
+                                <input type="text" name="bed_no" value="<%= student.bed_no || student.bed || '' %>" class="form-input" disabled>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-utensils"></i></div>
+
+                            <div class="details">
+
+                                <label>Mess Type</label>
+
+                                <select name="mess_type" class="form-input" disabled>
+
+                                    <% 
+
+                                        const currentMess = student.mess_type || student.messtype || student.mess || student.messType || student.other1 || '';
+
+                                        const messLower = currentMess.toLowerCase();
+
+                                    %>
+
+                                    <option value="Veg" <%= (messLower.includes('veg') && !messLower.includes('non')) ? 'selected' : '' %>>Veg</option>
+
+                                    <option value="Non-Veg" <%= (messLower.includes('non') || messLower.includes('non-veg') || messLower.includes('nonveg')) ? 'selected' : '' %>>Non-Veg</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="btn-group" style="margin-top: 20px;">
+
+                        <button type="submit" class="btn-submit">
+
+                            <i class="fas fa-save"></i> Save Changes
+
+                        </button>
+
+                        <button type="button" class="btn-cancel" onclick="cancelEdit()">
+
+                            <i class="fas fa-times"></i> Cancel
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+            <% } %>
+
+
+
+            <!-- Profile Details (View Mode) -->
+
+            <div class="content-section" id="viewSection">
+
+                <div class="section-header">
+
+                    <h2><i class="fas fa-info-circle"></i> Personal Information</h2>
+
+                    <% if (profileEditEnabled) { %>
+                    <button type="button" class="btn-edit" onclick="enableEdit()">
+
+                        <i class="fas fa-edit"></i> Edit Profile
+
+                    </button>
+                    <% } %>
+
+                </div>
+
+                <% if (!profileEditEnabled) { %>
+                <div class="alert alert-info" style="margin-top: 12px;">
+                    <i class="fas fa-info-circle"></i>
+                    Profile editing is currently disabled by admin.
+                </div>
+                <% } %>
+
+                
+
+                <div class="profile-grid">
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-user"></i></div>
+
+                        <div class="details">
+
+                            <label>Full Name</label>
+
+                            <span><%= student.sname || 'N/A' %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-id-badge"></i></div>
+
+                        <div class="details">
+
+                            <label>Student UID</label>
+
+                            <span><%= student.uid %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-envelope"></i></div>
+
+                        <div class="details">
+
+                            <label>Email</label>
+
+                            <span><%= student.email || 'N/A' %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-phone"></i></div>
+
+                        <div class="details">
+
+                            <label>Mobile Number</label>
+
+                            <span><%= student.mobileno || 'N/A' %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-venus-mars"></i></div>
+
+                        <div class="details">
+
+                            <label>Gender</label>
+
+                            <span><%= student.gender || 'N/A' %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-birthday-cake"></i></div>
+
+                        <div class="details">
+
+                            <label>Date of Birth</label>
+
+                            <% 
+                                let formattedDobSpan = student.dob || 'N/A';
+                                if (formattedDobSpan instanceof Date) {
+                                    formattedDobSpan = `${formattedDobSpan.getFullYear()}-${String(formattedDobSpan.getMonth()+1).padStart(2,'0')}-${String(formattedDobSpan.getDate()).padStart(2,'0')}`;
+                                } else if (typeof formattedDobSpan === 'string' && formattedDobSpan !== 'N/A' && !formattedDobSpan.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                                    let d = new Date(formattedDobSpan);
+                                    if (!isNaN(d.getTime())) {
+                                        formattedDobSpan = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                                    }
+                                }
+                            %>
+                            <span><%= formattedDobSpan %></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            
+
+            <!-- Academic Details -->
+
+            <div class="content-section" id="academicSection">
+
+                <div class="section-header">
+
+                    <h2><i class="fas fa-graduation-cap"></i> Academic Information</h2>
+
+                </div>
+
+                
+
+                <div class="profile-grid">
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-building"></i></div>
+
+                        <div class="details">
+
+                            <label>Department</label>
+
+                            <span><%= student.dept || 'N/A' %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-layer-group"></i></div>
+
+                        <div class="details">
+
+                            <label>Year</label>
+
+                            <span><%= student.year || 'N/A' %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+
+                        <div class="details">
+
+                            <label>Academic Year</label>
+
+                            <span><%= student.academicyear || 'N/A' %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-home"></i></div>
+
+                        <div class="details">
+
+                            <label>Category</label>
+
+                            <span><%= student.category || 'N/A' %></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            
+
+            <!-- Parent/Guardian Details -->
+
+            <div class="content-section" id="parentSection">
+
+                <div class="section-header">
+
+                    <h2><i class="fas fa-users"></i> Parent/Guardian Information</h2>
+
+                </div>
+
+                
+
+                <div class="profile-grid">
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-user-tie"></i></div>
+
+                        <div class="details">
+
+                            <label>Parent Name</label>
+
+                            <span><%= student.parentname || 'N/A' %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-phone-alt"></i></div>
+
+                        <div class="details">
+
+                            <label>Parent Contact</label>
+
+                            <span><%= student.parentnumber || 'N/A' %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+
+                        <div class="details">
+
+                            <label>Address</label>
+
+                            <span><%= student.address || 'N/A' %></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            
+
+            <!-- Hostel Information -->
+
+            <% 
+
+                // Determine mess type from possible DB fields without changing server code
+
+                const rawMess = student.mess_type || student.messtype || student.mess || student.messType || student.other1 || null;
+
+                let messDisplay = 'N/A';
+
+                if (rawMess) {
+
+                    const m = ('' + rawMess).toLowerCase();
+
+                    if (m.includes('veg') && !m.includes('non')) messDisplay = 'Veg';
+
+                    else if (m.includes('non') || m.includes('non-veg') || m.includes('nonveg')) messDisplay = 'Non‑Veg';
+
+                    else messDisplay = rawMess;
+
+                }
+
+                const hostelName = student.hostel || student.hostel_name || student.roomblock || 'N/A';
+
+                const roomNo = student.room_no || student.room || student.rno || 'N/A';
+
+                const bedNo = student.bed_no || student.bed || 'N/A';
+
+            %>
+
+            <div class="content-section">
+
+                <div class="section-header">
+
+                    <h2><i class="fas fa-bed"></i> Hostel Information</h2>
+
+                </div>
+
+
+
+                <div class="profile-grid">
+
+                    <!-- <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-building"></i></div>
+
+                        <div class="details">
+
+                            <label>Hostel</label>
+
+                            <span><%= hostelName %></span>
+
+                        </div>
+
+                    </div> -->
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-door-closed"></i></div>
+
+                        <div class="details">
+
+                            <label>Room No</label>
+
+                            <span><%= roomNo %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-bed"></i></div>
+
+                        <div class="details">
+
+                            <label>Bed No</label>
+
+                            <span><%= bedNo %></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-utensils"></i></div>
+
+                        <div class="details">
+
+                            <label>Mess Type</label>
+
+                            <span><%= messDisplay %></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="content-section" style="margin-top:16px;">
+
+                    <div class="section-header">
+
+                        <h2><i class="fas fa-door-open"></i> Allocate / Update Room <span style="font-size: 14px; color: #dc3545; font-weight: normal; margin-left: 10px;">(Restricted currently by admin)</span></h2>
+
+                    </div>
+
+                    <form id="allocateForm" action="/student/allocate-room" method="POST" class="profile-grid">
+                        <fieldset disabled style="display: contents;">
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-th-large"></i></div>
+
+                            <div class="details">
+
+                                <label>Block</label>
+
+                                <% const currentBlock = ((student.block || '') + '').toUpperCase(); %>
+
+                                <select id="allocate-block" name="block" class="form-input" required>
+
+                                    <option value="A" <%= currentBlock === 'A' ? 'selected' : '' %>>A</option>
+
+                                    <option value="B" <%= currentBlock === 'B' ? 'selected' : '' %>>B</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-door-closed"></i></div>
+
+                            <div class="details">
+
+                                <label>Room No</label>
+
+                                <select id="allocate-room" name="room_no" class="form-input" required></select>
+
+                                <small style="color:#666;">Choose your room in the format AS-01 / AF-01 / AG-01 (or BS-01 / BF-01 / BG-01).</small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-item">
+
+                            <div class="icon"><i class="fas fa-bed"></i></div>
+
+                            <div class="details">
+
+                                <label>Bed No</label>
+
+                                <% const currentBed = ((student.bed_no || student.bed || '') + '').toUpperCase(); %>
+
+                                <select id="allocate-bed" name="bed_no" class="form-input" required>
+
+                                    <option value="">Select bed</option>
+
+                                    <option value="A" <%= currentBed === 'A' ? 'selected' : '' %>>A</option>
+
+                                    <option value="B" <%= currentBed === 'B' ? 'selected' : '' %>>B</option>
+
+                                    <option value="C" <%= currentBed === 'C' ? 'selected' : '' %>>C</option>
+
+                                </select>
+
+                                <small class="form-text text-muted">If no beds are listed, select from A, B, C manually.</small>
+
+                            </div>
+
+                        </div>
+
+                        <div style="grid-column:1 / -1; margin-top:8px; display:flex; gap:10px; align-items:center;">
+
+                            <button type="submit" class="btn-submit" id="allocateSubmit"><i class="fas fa-check"></i> Save Allocation</button>
+
+                            <button type="submit" class="btn-secondary" id="updateAllocationBtn"><i class="fas fa-sync"></i> Update</button>
+
+                            <span class="text-muted">Tip: Changes auto-save when you update Block, Room or Bed.</span>
+
+                        </div>
+
+                        </fieldset>
+                    </form>
+
+                </div>
+
+            </div>
+
+
+
+<!-- ═══ TALLY FEE DETAILS ═══ -->
+<% if (typeof tallyFee !== 'undefined' && tallyFee) { %>
+<div class="content-section" id="tallyFeeSection">
+  <div class="section-header">
+    <h2><i class="fas fa-file-invoice-dollar"></i> Hostel Fee Details
+      <span style="font-size: 12px; background-color: #e9ecef; color: #495057; font-weight: 600; margin-left: 12px; padding: 4px 10px; border-radius: 12px; border: 1px solid #ced4da; vertical-align: middle;">
+        <i class="far fa-calendar-alt"></i> As on <%= tallyFee.as_on_date || 'N/A' %>
+      </span>
+    </h2>
+  </div>
+
+  <!-- Receivables Block -->
+  <div style="margin-bottom: 16px;">
+    <h3 style="font-size: 15px; font-weight: 600; color: #495057; margin-bottom: 10px;">
+      <i class="fas fa-arrow-circle-right text-danger me-1"></i> Receivables (Amount Due)
+    </h3>
+    <div class="profile-grid">
+      <div class="profile-item">
+        <div class="icon"><i class="fas fa-history"></i></div>
+        <div class="details">
+          <label>Arrear Fee</label>
+          <span>₹ <%= parseFloat(tallyFee.recv_arrear_fee || 0).toLocaleString('en-IN') %></span>
+        </div>
+      </div>
+      <div class="profile-item">
+        <div class="icon"><i class="fas fa-calendar-check"></i></div>
+        <div class="details">
+          <label>Current Year Fee</label>
+          <span>₹ <%= parseFloat(tallyFee.recv_current_year || 0).toLocaleString('en-IN') %></span>
+        </div>
+      </div>
+      <div class="profile-item">
+        <div class="icon"><i class="fas fa-clock"></i></div>
+        <div class="details">
+          <label>Extra Stay</label>
+          <span>₹ <%= parseFloat(tallyFee.recv_extra_stay || 0).toLocaleString('en-IN') %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Received Block -->
+  <div style="margin-bottom: 16px;">
+    <h3 style="font-size: 15px; font-weight: 600; color: #495057; margin-bottom: 10px;">
+      <i class="fas fa-check-circle text-success me-1"></i> Received (Amount Paid)
+    </h3>
+    <div class="profile-grid">
+      <div class="profile-item">
+        <div class="icon"><i class="fas fa-history"></i></div>
+        <div class="details">
+          <label>Arrear Fee</label>
+          <span>₹ <%= parseFloat(tallyFee.recd_arrear_fee || 0).toLocaleString('en-IN') %></span>
+        </div>
+      </div>
+      <div class="profile-item">
+        <div class="icon"><i class="fas fa-calendar-check"></i></div>
+        <div class="details">
+          <label>Current Year Fee</label>
+          <span>₹ <%= parseFloat(tallyFee.recd_current_year || 0).toLocaleString('en-IN') %></span>
+        </div>
+      </div>
+      <div class="profile-item">
+        <div class="icon"><i class="fas fa-plus-circle"></i></div>
+        <div class="details">
+          <label>Extra</label>
+          <span>₹ <%= parseFloat(tallyFee.recd_extra || 0).toLocaleString('en-IN') %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Balance -->
+  <div class="profile-grid">
+    <div class="profile-item <%= parseFloat(tallyFee.balance || 0) > 0 ? 'balance-due' : 'balance-clear' %>">
+      <div class="icon">
+        <i class="fas fa-balance-scale"></i>
+      </div>
+      <div class="details">
+        <label>Outstanding Balance</label>
+        <span class="balance-text">
+          ₹ <%= parseFloat(tallyFee.balance || 0).toLocaleString('en-IN') %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <% if (parseFloat(tallyFee.balance || 0) > 0) { %>
+  <div class="alert alert-danger" style="margin-top: 16px;">
+    <i class="fas fa-exclamation-triangle"></i>
+    You have an outstanding hostel fee balance of <strong>₹ <%= parseFloat(tallyFee.balance).toLocaleString('en-IN') %></strong>.
+    Please clear it at the hostel office.
+  </div>
+  <% } %>
+</div>
+<% } else { %>
+<div class="content-section" id="tallyFeeSection">
+  <div class="section-header">
+    <h2><i class="fas fa-file-invoice-dollar"></i> Hostel Fee Details</h2>
+  </div>
+  <div class="empty-state" style="padding: 30px 0; text-align: center; color: #6c757d;">
+    <i class="fas fa-receipt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+    <p>Fee details not yet available. Please contact the hostel office.</p>
+  </div>
+</div>
+<% } %>
+
+            <!-- Account Status -->
+
+            <div class="content-section">
+
+                <div class="section-header">
+
+                    <h2><i class="fas fa-shield-alt"></i> Account Status</h2>
+
+                </div>
+
+                
+
+                <div class="profile-grid">
+
+                    <div class="profile-item">
+
+                        <div class="icon"><i class="fas fa-toggle-on"></i></div>
+
+                        <div class="details">
+
+                            <label>Account Status</label>
+
+                            <span class="status-badge <%= student.status === 'Restrict' ? 'restricted' : 'active' %>">
+
+                                <%= student.status === 'Restrict' ? 'Restricted' : 'Active' %>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                
+
+                <% if(student.status === 'Restrict') { %>
+
+                    <div class="alert alert-danger" style="margin-top: 20px;">
+
+                        <i class="fas fa-exclamation-triangle"></i>
+
+                        Your account is currently restricted. Please contact the hostel office for more information.
+
+                    </div>
+
+                <% } %>
+
+            </div>
+
+            
+
+            <!-- Change Password -->
+
+            <div class="content-section">
+
+                <div class="section-header">
+
+                    <h2><i class="fas fa-key"></i> Change Password</h2>
+
+                </div>
+
+                
+
+                <form action="/student/changepassword" method="POST">
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label>Current Password</label>
+
+                            <input type="password" name="currentPassword" required>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label>New Password</label>
+
+                            <input type="password" name="newPassword" required minlength="6">
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group" style="max-width: 50%;">
+
+                        <label>Confirm New Password</label>
+
+                        <input type="password" name="confirmPassword" required minlength="6">
+
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+
+                        <i class="fas fa-save"></i> Update Password
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        
+
+        <style>
+
+            .form-input {
+
+                width: 100%;
+
+                padding: 10px;
+
+                border: 1px solid #ddd;
+
+                border-radius: 5px;
+
+                font-size: 14px;
+
+                margin-top: 5px;
+
+            }
+
+            .form-input:disabled {
+
+                background-color: #f5f5f5;
+
+                cursor: not-allowed;
+
+            }
+
+            .btn-edit {
+
+                background: #667eea;
+
+                color: white;
+
+                border: none;
+
+                padding: 10px 20px;
+
+                border-radius: 5px;
+
+                cursor: pointer;
+
+                font-size: 14px;
+
+                display: flex;
+
+                align-items: center;
+
+                gap: 8px;
+
+            }
+
+            .btn-edit:hover {
+
+                background: #5568d3;
+
+            }
+
+            .btn-cancel {
+
+                background: #dc3545;
+
+                color: white;
+
+                border: none;
+
+                padding: 10px 20px;
+
+                border-radius: 5px;
+
+                cursor: pointer;
+
+                font-size: 14px;
+
+                margin-left: 10px;
+
+            }
+
+            .btn-cancel:hover {
+
+                background: #c82333;
+
+            }
+
+            .section-header {
+
+                display: flex;
+
+                justify-content: space-between;
+
+                align-items: center;
+
+                margin-bottom: 20px;
+
+            }
+
+            .text-muted {
+
+                color: #6c757d;
+
+                font-size: 12px;
+
+                display: block;
+
+                margin-top: 5px;
+
+            }
+
+        </style>
+
+        
+
+        <script>
+
+            function toggleSidebar() {
+
+                document.querySelector('.sidebar').classList.toggle('active');
+
+                document.querySelector('.sidebar-overlay').classList.toggle('active');
+
+                document.body.style.overflow = document.querySelector('.sidebar').classList.contains('active') ? 'hidden' : '';
+
+            }
+
+            
+
+            function enableEdit() {
+
+                document.getElementById('editFormSection').style.display = 'block';
+
+                document.getElementById('viewSection').style.display = 'none';
+
+                document.getElementById('academicSection').style.display = 'none';
+
+                document.getElementById('parentSection').style.display = 'none';
+
+                return false;
+
+            }
+
+            
+
+            function cancelEdit() {
+
+                document.getElementById('editFormSection').style.display = 'none';
+
+                document.getElementById('viewSection').style.display = 'block';
+
+                document.getElementById('academicSection').style.display = 'block';
+
+                document.getElementById('parentSection').style.display = 'block';
+
+            }
+
+
+
+            // Populate room dropdown from backend with only vacant rooms; include student's current room if needed
+
+            document.addEventListener('DOMContentLoaded', function() {
+
+                var blockSel = document.getElementById('allocate-block');
+
+                var roomSel = document.getElementById('allocate-room');
+
+                var bedSel = document.getElementById('allocate-bed');
+
+                if (!blockSel || !roomSel) return;
+
+
+
+                var existingRoom = '<%= (student.room_no || student.room || student.rno || "").replace(/"/g, "&quot;").toUpperCase() %>';
+
+
+
+                function setPlaceholder() {
+
+                    roomSel.innerHTML = '';
+
+                    var placeholder = document.createElement('option');
+
+                    placeholder.value = '';
+
+                    placeholder.textContent = 'Select room';
+
+                    placeholder.disabled = true;
+
+                    placeholder.selected = true;
+
+                    roomSel.appendChild(placeholder);
+
+                }
+
+
+
+                function populateWith(block, rooms) {
+
+                    setPlaceholder();
+
+                    // If student's current room matches this block (any two-letter prefix) but is not in available list, include it so they can keep it
+
+                    if (existingRoom) {
+
+                        var m = existingRoom.match(/^([A-Z])[A-Z]-\d{2}$/);
+
+                        var eb = m ? m[1] : null;
+
+                        if (eb && eb.toUpperCase() === block.toUpperCase()) {
+
+                            var found = rooms && rooms.indexOf(existingRoom) !== -1;
+
+                            if (!found) {
+
+                                var cur = document.createElement('option');
+
+                                cur.value = existingRoom;
+
+                                cur.textContent = existingRoom + ' (current)';
+
+                                roomSel.appendChild(cur);
+
+                            }
+
+                        }
+
+                    }
+
+                    (rooms || []).forEach(function(code) {
+
+                        var opt = document.createElement('option');
+
+                        opt.value = code;
+
+                        opt.textContent = code;
+
+                        roomSel.appendChild(opt);
+
+                    });
+
+                    if (existingRoom) {
+
+                        var opt2 = Array.prototype.find.call(roomSel.options, function(o){ return o.value === existingRoom; });
+
+                        if (opt2) roomSel.value = existingRoom;
+
+                    }
+
+                }
+
+
+
+                function fetchAvailable(block) {
+
+                    setPlaceholder();
+
+                    fetch('/api/available-rooms?block=' + encodeURIComponent(block), { credentials: 'same-origin' })
+
+                    .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
+
+                    .then(function(data){
+
+                        if (data && data.success) {
+
+                            populateWith(block, data.rooms || []);
+
+                        } else {
+
+                            populateWith(block, []);
+
+                        }
+
+                    })
+
+                    .catch(function(){
+
+                        // Fallback to an empty list if API fails
+
+                        populateWith(block, []);
+
+                    });
+
+                }
+
+
+
+                var initialBlock = (blockSel.value || 'A').toUpperCase();
+
+                fetchAvailable(initialBlock);
+
+                blockSel.addEventListener('change', function(){
+
+                    var b = (blockSel.value || 'A').toUpperCase();
+
+                    fetchAvailable(b);
+
+                    // Clear beds when block changes
+
+                    if (bedSel) bedSel.innerHTML = '<option value="">Select bed</option>';
+
+                });
+
+
+
+                function populateBeds(beds) {
+
+                    if (!bedSel) return;
+
+                    var existingBed = '<%= currentBed %>';
+
+                    console.log('populateBeds called with:', beds, 'existingBed:', existingBed);
+
+                    bedSel.innerHTML = '';
+
+                    var placeholder = document.createElement('option');
+
+                    placeholder.value = '';
+
+                    placeholder.textContent = 'Select bed';
+
+                    placeholder.disabled = true;
+
+                    placeholder.selected = true;
+
+                    bedSel.appendChild(placeholder);
+
+                    // Fallback: always include A, B, C if API returns empty
+
+                    if (!beds || beds.length === 0) {
+
+                        console.log('Using fallback A/B/C');
+
+                        ['A','B','C'].forEach(function(b){
+
+                            var opt = document.createElement('option');
+
+                            opt.value = b;
+
+                            opt.textContent = b;
+
+                            bedSel.appendChild(opt);
+
+                        });
+
+                    } else {
+
+                        console.log('Using API beds:', beds);
+
+                        // Keep current bed if not in available
+
+                        if (existingBed && beds.indexOf(existingBed) === -1 && (existingBed === 'A' || existingBed === 'B' || existingBed === 'C')) {
+
+                            var cur = document.createElement('option');
+
+                            cur.value = existingBed;
+
+                            cur.textContent = existingBed + ' (current)';
+
+                            bedSel.appendChild(cur);
+
+                        }
+
+                        beds.forEach(function(b){
+
+                            var opt = document.createElement('option');
+
+                            opt.value = b;
+
+                            opt.textContent = b;
+
+                            bedSel.appendChild(opt);
+
+                        });
+
+                    }
+
+                    if (existingBed) {
+
+                        var found = Array.prototype.find.call(bedSel.options, function(o){ return o.value === existingBed; });
+
+                        if (found) bedSel.value = existingBed;
+
+                    }
+
+                    console.log('Final bedSel.options count:', bedSel.options.length);
+
+                }
+
+
+
+                function fetchAvailableBeds() {
+
+                    if (!bedSel) return;
+
+                    var b = (blockSel.value || '').toUpperCase();
+
+                    var r = (roomSel.value || '').toUpperCase();
+
+                    if (!r) { bedSel.innerHTML = '<option value="">Select bed</option>'; return; }
+
+                    var url = '/api/available-beds?room=' + encodeURIComponent(r) + (b ? ('&block=' + encodeURIComponent(b)) : '');
+
+                    console.log('Fetching beds from:', url);
+
+                    fetch(url, { credentials: 'same-origin' })
+
+                    .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
+
+                    .then(function(data){
+
+                        console.log('Beds API response:', data);
+
+                        if (data && data.success) populateBeds(data.beds || []);
+
+                        else populateBeds([]);
+
+                    })
+
+                    .catch(function(err){ console.error('Beds fetch error:', err); populateBeds([]); });
+
+                }
+
+
+
+                if (roomSel) {
+
+                    roomSel.addEventListener('change', fetchAvailableBeds);
+
+                }
+
+                // Initial bed list for preselected room
+
+                fetchAvailableBeds();
+
+
+
+                // Force fallback if no options after 2 seconds
+
+                setTimeout(function(){
+
+                    if (bedSel && bedSel.options.length <= 1) {
+
+                        console.log('Forcing fallback A/B/C after timeout');
+
+                        populateBeds([]);
+
+                    }
+
+                }, 2000);
+
+
+
+                // Update button: refresh rooms and beds for current block/room
+
+                document.getElementById('updateAllocationBtn').addEventListener('click', function(){
+
+                    var b = (blockSel.value || '').toUpperCase();
+
+                    var r = (roomSel.value || '').toUpperCase();
+
+                    if (b) fetchAvailable(b);
+
+                    if (r) fetchAvailableBeds();
+
+                });
+
+            });
+
+        </script>
+
+    </body>
+
+    </html>
+

@@ -1,0 +1,213 @@
+<!-- views/admission-welcome.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admission Confirmed - TNPS Boys Hostel</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #eef3f8;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1f2937;
+    }
+    .outer {
+      width: 100%;
+      padding: 24px 12px;
+      box-sizing: border-box;
+    }
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
+      border: 1px solid #dbe6f3;
+    }
+    .header {
+      background: linear-gradient(135deg, #123c8a 0%, #1f6f43 100%);
+      color: #fff;
+      padding: 28px 30px 24px;
+      text-align: center;
+    }
+    .header img {
+      width: 120px;
+      max-width: 100%;
+      height: auto;
+      display: inline-block;
+      margin-bottom: 14px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.25;
+    }
+    .header p {
+      margin: 8px 0 0;
+      opacity: 0.95;
+      font-size: 14px;
+    }
+    .content {
+      padding: 28px 30px 24px;
+    }
+    .intro {
+      font-size: 15px;
+      line-height: 1.65;
+      margin: 0 0 18px;
+      color: #334155;
+    }
+    .uid-card {
+      text-align: center;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef7f0 100%);
+      border: 1px solid #d7e9dd;
+      border-radius: 16px;
+      padding: 18px 18px 16px;
+      margin: 18px 0 22px;
+    }
+    .uid-card .label {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .uid-card .uid {
+      display: inline-block;
+      background: #1f7a4d;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 12px;
+      font-size: 26px;
+      letter-spacing: 2px;
+      font-weight: 700;
+      box-shadow: 0 8px 18px rgba(31, 122, 77, 0.24);
+    }
+    .details {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6px 0 18px;
+      border: 1px solid #dbe5ee;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .details td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .details tr:last-child td {
+      border-bottom: none;
+    }
+    .details td:first-child {
+      width: 42%;
+      background: #f8fbff;
+      font-weight: 700;
+      color: #334155;
+    }
+    .note {
+      background: #fefce8;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      border-radius: 12px;
+      padding: 14px 16px;
+      line-height: 1.6;
+      font-size: 14px;
+      margin: 18px 0 16px;
+    }
+    .signature-wrap {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .signature-label {
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+    .signature-img {
+      max-width: 180px;
+      width: 180px;
+      height: auto;
+      display: block;
+      margin-left: auto;
+      margin-bottom: 8px;
+    }
+    .contact {
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      padding: 18px 30px 24px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #475569;
+    }
+    .contact strong {
+      color: #0f172a;
+    }
+    .footer {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    @media only screen and (max-width: 640px) {
+      .content, .header, .contact { padding-left: 18px; padding-right: 18px; }
+      .header h1 { font-size: 20px; }
+      .uid-card .uid { font-size: 22px; letter-spacing: 1px; }
+      .details td { font-size: 13px; padding: 10px 12px; }
+      .details td:first-child { width: 46%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="outer">
+    <div class="container">
+      <div class="header">
+        <img src="cid:hostel-logo" alt="TNPS Boys Hostel Logo">
+        <h1>Admission Confirmed</h1>
+        <p>Welcome to TNPS Boys Hostel</p>
+      </div>
+
+      <div class="content">
+        <p class="intro">
+          Dear <strong><%= full_name %></strong>, your hostel admission application has been approved.
+          We are happy to welcome you to the hostel community. Your allotment details are shown below.
+        </p>
+
+        <div class="uid-card">
+          <div class="label">Your Hostel ID</div>
+          <div class="uid"><%= hostel_id || uid %></div>
+        </div>
+
+        <table class="details" role="presentation">
+          <tr><td>Block</td><td><%= block %></td></tr>
+          <tr><td>Room No.</td><td><%= room_no %></td></tr>
+          <tr><td>Bed No.</td><td><%= bed_no %></td></tr>
+          <tr><td>Mess Type</td><td><%= mess_type %></td></tr>
+          <tr><td>Academic Year</td><td><%= academic_year %></td></tr>
+        </table>
+
+        <div class="note">
+          Your login password is your registered mobile number.
+        </div>
+
+        <p style="margin: 0 0 8px; font-size: 14px; line-height: 1.7; color: #334155;">
+          If you have any queries, please contact the Hostel Admin office. Please do not reply to this email as it is an automated notification.
+        </p>
+
+        <div class="signature-wrap">
+          <div style="font-size:13px; font-weight:700; color:#0f172a;">Fr. Roby PA SAC</div>
+          <div class="signature-label">Hostel Manager</div>
+        </div>
+      </div>
+
+      <div class="contact">
+        <div><strong>Contact Email:</strong> <%= contactEmail %></div>
+        <div><strong>Contact no. (Hostel Manager):</strong> +91 96860 18612</div>
+        <div class="footer">TNPS Boys Hostel - St. Vincent Pallotti College of Engineering & Technology, Nagpur, Gavasi Manapur, Wardha Road, Nagpur-441108</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

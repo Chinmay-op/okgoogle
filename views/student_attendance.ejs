@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance - Student Portal</title>
+    <link rel="stylesheet" href="/stylesheets/studentportal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <button class="sidebar-close" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="logo">
+            <img src="/images/4174.png" alt="Logo">
+            <h2>Gate Pass</h2>
+        </div>
+        
+        <ul class="nav-links">
+            <li>
+                <a href="/student/dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/roombooking">
+                    <i class="fas fa-bed"></i>
+                    <span>Room Booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/profile">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/attendance" class="active">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Attendance</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/passhistory">
+                    <i class="fas fa-history"></i>
+                    <span>Pass History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/requestpass">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Request Pass</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleave">
+                    <i class="fas fa-notes-medical"></i>
+                    <span>Request Sick Leave</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleaverequests">
+                    <i class="fas fa-list-alt"></i>
+                    <span>My Sick Leave Requests</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/mess" id="nav_student_breakfast_link">
+                    <i class="fas fa-utensils"></i>
+                    <span>Mess Selection</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/notifications">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bonafide">
+                    <i class="fas fa-certificate"></i>
+                    <span>Bonafide Certificate</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bank-details">
+                    <i class="fas fa-university"></i>
+                    <span>Hostel Bank Details</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/complain">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Complain Box</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="user-info">
+            <div class="user-detail">
+                <img src="<%= student.path || '/images/default-avatar.png' %>" alt="Profile">
+                <div>
+                    <div class="name"><%= student.sname %></div>
+                    <div class="role"><%= student.uid %></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="page-title">
+                <h1>Attendance Records</h1>
+                <p>View your in/out history</p>
+            </div>
+            
+            <div class="user-actions">
+                <a href="/student/notifications" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                </a>
+                <a href="/student/logout" class="logout-btn" style="text-decoration: none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Total Entries</h3>
+                    <div class="icon green">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </div>
+                </div>
+                <div class="card-value"><%= stats.totalEntries || 0 %></div>
+                <div class="card-label">All time gate entries</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Total Exits</h3>
+                    <div class="icon orange">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                </div>
+                <div class="card-value"><%= stats.totalExits || 0 %></div>
+                <div class="card-label">All time gate exits</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>This Month</h3>
+                    <div class="icon blue">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                </div>
+                <div class="card-value"><%= stats.monthMovements || 0 %></div>
+                <div class="card-label">Movements this month</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Current Status</h3>
+                    <div class="icon <%= currentlyOut ? 'red' : 'green' %>">
+                        <i class="fas <%= currentlyOut ? 'fa-door-open' : 'fa-door-closed' %>"></i>
+                    </div>
+                </div>
+                <div class="card-value">
+                    <span class="status-badge <%= currentlyOut ? 'pending' : 'active' %>">
+                        <%= currentlyOut ? 'OUT' : 'IN' %>
+                    </span>
+                </div>
+                <div class="card-label"><%= currentlyOut ? 'Currently Outside' : 'Inside Campus' %></div>
+            </div>
+        </div>
+        
+        <!-- Date Filter -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-filter"></i> Filter by Date</h2>
+            </div>
+            
+            <form action="/student/attendance" method="GET" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>From Date</label>
+                    <input type="date" name="fromDate" value="<%= fromDate || '' %>">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>To Date</label>
+                    <input type="date" name="toDate" value="<%= toDate || '' %>">
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-search"></i> Filter
+                </button>
+                <a href="/student/attendance" class="btn-submit" style="background: #888; text-decoration: none;">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            </form>
+        </div>
+        
+        <!-- Attendance Table -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-list"></i> Attendance Log</h2>
+            </div>
+            
+            <% if(attendance && attendance.length > 0) { %>
+                <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Out Time</th>
+                            <th>In Time</th>
+                            <th>Duration</th>
+                            <th>Pass Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% attendance.forEach(function(record, index) { %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td>
+                                    <% 
+                                        let dateStr = record.approvaldt || record.outdatetime || record.indatetime;
+                                        if(dateStr) {
+                                            let d = new Date(dateStr);
+                                            if(!isNaN(d.getTime())) {
+                                    %>
+                                        <%= d.toLocaleDateString() %>
+                                    <% } else { %>
+                                        <%= dateStr.split(' ')[0] %>
+                                    <% }} else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if(record.outdatetime) { %>
+                                        <span style="color: #f97316;">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                            <%= record.outdatetime.split(' ').slice(1).join(' ') || record.outdatetime %>
+                                        </span>
+                                    <% } else { %>
+                                        <span style="color: #ccc;">-</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if(record.indatetime) { %>
+                                        <span style="color: #22c55e;">
+                                            <i class="fas fa-sign-in-alt"></i>
+                                            <%= record.indatetime.split(' ').slice(1).join(' ') || record.indatetime %>
+                                        </span>
+                                    <% } else { %>
+                                        <span style="color: #ccc;">-</span>
+                                    <% } %>
+                                </td>
+                                <td><%= record.Duration || 'N/A' %></td>
+                                <td>
+                                    <% if(record.passtype) { %>
+                                        <span class="status-badge <%= record.passtype === 'City Pass' ? 'pending' : 'active' %>">
+                                            <%= record.passtype %>
+                                        </span>
+                                    <% } else { %>
+                                        <span style="color: #ccc;">-</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if(!record.indatetime && record.outdatetime) { %>
+                                        <span class="status-badge pending">Outside</span>
+                                    <% } else if(record.indatetime) { %>
+                                        <span class="status-badge active">Complete</span>
+                                    <% } else { %>
+                                        <span class="status-badge">Pending</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>No Records Found</h3>
+                    <p>No attendance records for the selected period</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+    
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+            document.body.style.overflow = document.querySelector('.sidebar').classList.contains('active') ? 'hidden' : '';
+        }
+    </script>
+</body>
+</html>

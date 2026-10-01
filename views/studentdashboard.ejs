@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Student Portal</title>
+    <link rel="stylesheet" href="../stylesheets/studentportal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <button class="sidebar-close" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="logo">
+            <img src="/images/4174.png" alt="Logo">
+            <h2>Gate Pass</h2>
+        </div>
+        
+        <ul class="nav-links">
+            <li>
+                <a href="/student/dashboard" class="active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/roombooking">
+                    <i class="fas fa-bed"></i>
+                    <span>Room Booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/profile">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="/student/attendance">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Attendance</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/passhistory">
+                    <i class="fas fa-history"></i>
+                    <span>Pass History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/requestpass">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Request Pass</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleave">
+                    <i class="fas fa-notes-medical"></i>
+                    <span>Request Sick Leave</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleaverequests">
+                    <i class="fas fa-list-alt"></i>
+                    <span>My Sick Leave Requests</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/mess" id="nav_student_breakfast_link">
+                    <i class="fas fa-utensils"></i>
+                    <span>Mess Selection</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/notifications">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bonafide">
+                    <i class="fas fa-certificate"></i>
+                    <span>Bonafide Certificate</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bank-details">
+                    <i class="fas fa-university"></i>
+                    <span>Hostel Bank Details</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/complain">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Complain Box</span>
+                </a>
+            </li>
+        </ul>
+
+        
+        <div class="user-info">
+            <div class="user-detail">
+                <img src="<%= student.path || '/images/default-avatar.png' %>" alt="Profile">
+                <div class="stu-name">
+                    <div class="name"><%= student.sname %></div>
+                    <div class="role"><%= student.uid %></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="page-title">
+                <h1>Welcome, <%= student.sname.split(' ')[0] %>!</h1>
+                <p><%= new Date().toLocaleString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Kolkata' }) %></p>
+            </div>
+            
+            <div class="user-actions">
+                <a href="/student/notifications" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                </a>
+                <a href="/student/logout" class="logout-btn" style="text-decoration: none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+        
+        <% if(message && message.length > 0){ %>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <%- message %>
+            </div>
+        <% } %>
+        
+        <!-- Status Cards -->
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Current Status</h3>
+                    <div class="icon <%= student.status === 'Restrict' ? 'red' : 'green' %>">
+                        <i class="fas <%= student.status === 'Restrict' ? 'fa-ban' : 'fa-check-circle' %>"></i>
+                    </div>
+                </div>
+                <div class="card-value">
+                    <span class="status-badge <%= student.status === 'Restrict' ? 'restricted' : 'active' %>">
+                        <%= student.status === 'Restrict' ? 'Restricted' : 'Active' %>
+                    </span>
+                </div>
+                <div class="card-label">Account Status</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Total Passes</h3>
+                    <div class="icon blue">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                </div>
+                <div class="card-value"><%= stats.totalPasses || 0 %></div>
+                <div class="card-label">All time passes</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>This Month</h3>
+                    <div class="icon purple">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                </div>
+                <div class="card-value"><%= stats.monthPasses || 0 %></div>
+                <div class="card-label">Passes this month</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Active Pass</h3>
+                    <div class="icon <%= activePass ? 'orange' : 'green' %>">
+                        <i class="fas <%= activePass ? 'fa-door-open' : 'fa-door-closed' %>"></i>
+                    </div>
+                </div>
+                <div class="card-value">
+                    <span class="status-badge <%= activePass ? 'pending' : 'active' %>">
+                        <%= activePass ? 'OUT' : 'IN' %>
+                    </span>
+                </div>
+                <div class="card-label"><%= activePass ? activePass.passtype : 'Inside Campus' %></div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Fee Status</h3>
+                    <div class="icon <%= activePass ? 'orange' : 'green' %>">
+                        <i class="fas fa-money-bill"></i>
+                    </div>
+                </div>
+                <div class="card-value">
+                    <span class="status-badge pending">
+                        Pending
+                    </span>
+                </div>
+                <div class="card-label">Fee Status</div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="/student/requestpass" class="quick-action-btn">
+                <i class="fas fa-plus-circle"></i>
+                <span>Request Pass</span>
+            </a>
+            <a href="/student/attendance" class="quick-action-btn">
+                <i class="fas fa-calendar-alt"></i>
+                <span>View Attendance</span>
+            </a>
+            <a href="/student/passhistory" class="quick-action-btn">
+                <i class="fas fa-history"></i>
+                <span>Pass History</span>
+            </a>
+            <a href="/student/roombooking" class="quick-action-btn">
+                <i class="fas fa-bed"></i>
+                <span>Room Booking</span>
+            </a>
+            <% const profileEditEnabled = (flagsMap && flagsMap.student_profile_edit) ? !!flagsMap.student_profile_edit.enabled : true; %>
+            <% if (profileEditEnabled) { %>
+            <a href="/student/profile" class="quick-action-btn">
+                <i class="fas fa-user-edit"></i>
+                <span>Edit Profile</span>
+            </a>
+            <% } %>
+            <a href="/student/sickleave" class="quick-action-btn" style="background:linear-gradient(135deg,#ff7a7a,#ff4e4e);color:#fff;">
+                <i class="fas fa-notes-medical"></i>
+                <span>Request Sick Leave</span>
+            </a>
+        </div>
+
+        <!-- Room Booking Section -->
+        <!-- <div class="content-section" id="room-booking-section">
+            <div class="section-header">
+                <h2><i class="fas fa-bed"></i> Room Booking</h2>
+            </div>
+            <div class="filters">
+                <div class="form-group">
+                    <label for="availability-date">Check Availability Date:</label>
+                    <input type="date" id="availability-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="blockFilter">Block:</label>
+                    <select id="blockFilter">
+                        <option value="">All Blocks</option>
+                        <option value="A">Block A</option>
+                        <option value="B">Block B</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="floorFilter">Floor:</label>
+                    <select id="floorFilter">
+                        <option value="">All Floors</option>
+                        <option value="Ground Floor">Ground Floor</option>
+                        <option value="First Floor">First Floor</option>
+                        <option value="Second Floor">Second Floor</option>
+                    </select>
+                </div>
+            </div> -->
+
+            <!-- <div class="room-grid" id="available-rooms">
+              
+                <p>Loading rooms...</p>
+            </div> -->
+
+            <!-- Booking Modal/Form -->
+            <!-- <div id="booking-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h3>Book Room <span id="modal-room-name"></span></h3>
+                    <form id="booking-form">
+                        <input type="hidden" id="modal-room-id">
+                        <div class="form-group">
+                            <label for="check-in-date">Booking Date:</label>
+                            <input type="date" id="check-in-date" required>
+                        </div>
+                      
+                       <label for="total-price">Total Price:</label>
+                       <select name="total-price" id="total-price">
+                        <option value="Single Bed">74000</option>
+                        <option value="Double Bed">69000</option>
+                        <option value="Triple Bed">64000</option>
+                       </select>
+                        <p>Please pay the total price to the hostel office</p>
+                        <button type="submit" class="btn btn-primary">Confirm Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- My Room Bookings Section -->
+        <!-- <div class="content-section" id="my-bookings-section">
+            <div class="section-header">
+                <h2><i class="fas fa-bookmark"></i> My Room Bookings</h2>
+            </div>
+            <div id="my-bookings-list">
+              
+                <p>Loading your bookings...</p>
+            </div>
+        </div> -->
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <!-- Active Pass Card -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-id-card"></i> Current Pass Status</h2>
+                </div>
+                
+                <% if(activePass) { %>
+                    <div class="pass-card">
+                        <div class="pass-type"><%= activePass.passtype %></div>
+                        <div class="pass-status">
+                            <i class="fas fa-door-open"></i> Currently Outside
+                        </div>
+                        <div class="pass-details">
+                            <div class="pass-detail-item">
+                                <label>Approved On</label>
+                                <span><%= activePass.approvaldt ? new Date(activePass.approvaldt + 'Z').toLocaleString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }) : 'N/A' %></span>
+                            </div>
+                            <div class="pass-detail-item">
+                                <label>Gate Out Time</label>
+                                <span><%= activePass.outdatetime ? new Date(activePass.outdatetime + 'Z').toLocaleString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }) : 'Not yet' %></span>
+                            </div>
+                            <div class="pass-detail-item">
+                                <label>Approved By</label>
+                                <span><%= activePass.hosteloutauth || 'N/A' %></span>
+                            </div>
+                            <div class="pass-detail-item">
+                                <label>Status</label>
+                                <span><%= activePass.status %></span>
+                            </div>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>No Active Pass</h3>
+                        <p>You are currently inside the campus</p>
+                    </div>
+                <% } %>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-clock"></i> Recent Activity</h2>
+                    <a href="/student/passhistory" class="btn btn-primary">View All</a>
+                </div>
+                
+                <% if(recentLogs && recentLogs.length > 0) { %>
+                    <div class="timeline">
+                        <% recentLogs.slice(0, 5).forEach(function(log) { %>
+                            <div class="timeline-item">
+                                <div class="time"><%= (log.approvaldt || log.outdatetime || log.indatetime) ? new Date((log.approvaldt || log.outdatetime || log.indatetime) + 'Z').toLocaleString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }) : '' %></div>
+                                <div class="content">
+                                    <h4><%= log.passtype || 'Entry/Exit' %></h4>
+                                    <p>
+                                        <% if(log.outdatetime && !log.indatetime) { %>
+                                            Gate Out: <%= new Date(log.outdatetime + 'Z').toLocaleString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }) %>
+                                        <% } else if(log.indatetime) { %>
+                                            Gate In: <%= new Date(log.indatetime + 'Z').toLocaleString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }) %>
+                                        <% } else { %>
+                                            Pass Generated
+                                        <% } %>
+                                    </p>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h3>No Recent Activity</h3>
+                        <p>Your activity will appear here</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        
+        <!-- Profile Summary -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-user"></i> Profile Summary</h2>
+                <a href="/student/profile" class="btn btn-primary">View Full Profile</a>
+            </div>
+            
+            <div class="profile-grid">
+                <div class="profile-item">
+                    <div class="icon"><i class="fas fa-id-badge"></i></div>
+                    <div class="details">
+                        <label>Student UID</label>
+                        <span><%= student.uid %></span>
+                    </div>
+                </div>
+                <div class="profile-item">
+                    <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="details">
+                        <label>Department</label>
+                        <span><%= student.dept || 'N/A' %></span>
+                    </div>
+                </div>
+                <div class="profile-item">
+                    <div class="icon"><i class="fas fa-layer-group"></i></div>
+                    <div class="details">
+                        <label>Year</label>
+                        <span><%= student.year || 'N/A' %></span>
+                    </div>
+                </div>
+                <div class="profile-item">
+                    <div class="icon"><i class="fas fa-building"></i></div>
+                    <div class="details">
+                        <label>Category</label>
+                        <span><%= student.category || 'N/A' %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+            document.body.style.overflow = document.querySelector('.sidebar').classList.contains('active') ? 'hidden' : '';
+        }
+
+        // Room Booking JavaScript
+        const availableRoomsDiv = document.getElementById('available-rooms');
+        const myBookingsListDiv = document.getElementById('my-bookings-list');
+        const bookingModal = document.getElementById('booking-modal');
+        const closeButton = bookingModal.querySelector('.close-button');
+        const bookingForm = document.getElementById('booking-form');
+        const modalRoomName = document.getElementById('modal-room-name');
+        const modalRoomId = document.getElementById('modal-room-id');
+        const availabilityDateInput = document.getElementById('availability-date'); // Date picker for checking availability
+        const bookingDateInput = document.getElementById('check-in-date'); // Date input in booking modal
+        const totalPriceSelect = document.getElementById('total-price'); // Now a select element
+        const blockFilter = document.getElementById('blockFilter');
+        const floorFilter = document.getElementById('floorFilter');
+
+        // Function to show flash messages
+        function showFlashMessage(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.classList.add('alert', `alert-${type}`);
+            alertDiv.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+            document.querySelector('.main-content').prepend(alertDiv);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        // Helper to group rooms by block and floor
+        function groupRooms(rooms) {
+            const grouped = {};
+            rooms.forEach(room => {
+                if (!grouped[room.block]) {
+                    grouped[room.block] = {};
+                }
+                if (!grouped[room.block][room.floor]) {
+                    grouped[room.block][room.floor] = [];
+                }
+                grouped[room.block][room.floor].push(room);
+            });
+            return grouped;
+        }
+
+        // Fetch Rooms
+        async function fetchRooms() {
+            try {
+                const bookingDate = availabilityDateInput.value; // Get selected date for availability check
+                const selectedBlock = blockFilter.value;
+                const selectedFloor = floorFilter.value;
+
+                if (!bookingDate) {
+                    availableRoomsDiv.innerHTML = '<p>Please select a date to check room availability.</p>';
+                    return;
+                }
+
+                let url = '/api/rooms';
+                const params = new URLSearchParams();
+                params.append('bookingDate', bookingDate); // Always include booking date (required by backend)
+                if (selectedBlock) params.append('block', selectedBlock);
+                if (selectedFloor) params.append('floor', selectedFloor);
+
+                url += `?${params.toString()}`;
+
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const rooms = await response.json();
+                availableRoomsDiv.innerHTML = ''; // Clear loading message
+
+                if (rooms.length === 0) {
+                    availableRoomsDiv.innerHTML = '<p>No rooms available at the moment for the selected filters.</p>';
+                    return;
+                }
+
+                const groupedRooms = groupRooms(rooms);
+                
+                for (const block in groupedRooms) {
+                    const blockDiv = document.createElement('div');
+                    blockDiv.classList.add('room-block-section');
+                    blockDiv.innerHTML = `<h3>Block ${block}</h3>`;
+
+                    for (const floor in groupedRooms[block]) {
+                        const floorDiv = document.createElement('div');
+                        floorDiv.classList.add('room-floor-section');
+                        floorDiv.innerHTML = `<h4>${floor}</h4><div class="room-grid"></div>`;
+                        
+                        const roomGrid = floorDiv.querySelector('.room-grid');
+                        groupedRooms[block][floor].forEach(room => {
+                            let statusClass = 'unavailable';
+                            let statusText = 'Unavailable';
+                            if (room.is_available) {
+                                if (room.current_status === 'available') {
+                                    statusClass = 'available';
+                                    statusText = 'Available';
+                                } else if (room.current_status === 'on_hold') {
+                                    statusClass = 'on-hold'; // New class for yellow
+                                    statusText = 'On Hold';
+                                }
+                            }
+                            
+                            const roomCard = document.createElement('div');
+                            roomCard.classList.add('room-card');
+                            roomCard.innerHTML = `
+                                <h3>${room.name}</h3>
+                                <p>Type: ${room.room_type}</p>
+                                <p>Price: $${room.price_per_night} / night</p>
+                                <p class="availability ${statusClass}">
+                                    ${statusText}
+                                </p>
+                                ${(room.is_available && room.current_status === 'available') ? 
+                                    `<button class="btn btn-primary book-now-btn" 
+                                             data-room-id="${room.id}" 
+                                             data-room-name="${room.name}" 
+                                             data-room-type="${room.room_type}"
+                                             data-price-per-night="${room.price_per_night}">
+                                             Book Now
+                                    </button>` : ''
+                                }
+                            `;
+                            roomGrid.appendChild(roomCard);
+                        });
+                        blockDiv.appendChild(floorDiv);
+                    }
+                    availableRoomsDiv.appendChild(blockDiv);
+                }
+
+                document.querySelectorAll('.book-now-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const roomId = e.target.dataset.roomId;
+                        const roomName = e.target.dataset.roomName;
+                        const roomType = e.target.dataset.roomType; // New: pass room type
+                        openBookingModal(roomId, roomName, roomType);
+                    });
+                });
+
+            } catch (error) {
+                console.error('Error fetching rooms:', error);
+                availableRoomsDiv.innerHTML = '<p>Error loading rooms. Please try again later.</p>';
+                showFlashMessage('Error loading rooms.', 'error');
+            }
+        }
+
+        // Fetch My Bookings
+        async function fetchMyBookings() {
+            try {
+                const response = await fetch('/api/student/bookings');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const bookings = await response.json();
+                myBookingsListDiv.innerHTML = ''; // Clear loading message
+                if (bookings.length === 0) {
+                    myBookingsListDiv.innerHTML = '<p>You have no room bookings yet.</p>';
+                    return;
+                }
+                bookings.forEach(booking => {
+                    let bookingStatusClass = '';
+                    if (booking.booking_status === 'confirmed') bookingStatusClass = 'status-confirmed';
+                    else if (booking.booking_status === 'on_hold') bookingStatusClass = 'status-pending'; // Reusing pending for on_hold for yellow color
+                    else if (booking.booking_status === 'cancelled') bookingStatusClass = 'status-cancelled';
+
+                    let paymentStatusClass = '';
+                    if (booking.payment_status === 'confirmed') paymentStatusClass = 'status-confirmed';
+                    else if (booking.payment_status === 'pending') paymentStatusClass = 'status-pending';
+
+                    const bookingCard = document.createElement('div');
+                    bookingCard.classList.add('booking-card');
+                    bookingCard.innerHTML = `
+                        <h3>Room: ${booking.room_name} (${booking.block} - ${booking.floor})</h3>
+                        <p>Type: ${booking.room_type}</p>
+                        <p>Booking Date: ${new Date(booking.booking_date + 'Z').toLocaleString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' })}</p>
+                        <p>Total Price: $${booking.total_price}</p>
+                        <p class="booking-status">Booking Status: <span class="${bookingStatusClass}">${booking.booking_status}</span></p>
+                        <p class="payment-status">Payment Status: <span class="${paymentStatusClass}">${booking.payment_status}</span></p>
+                    `;
+                    myBookingsListDiv.appendChild(bookingCard);
+                });
+            } catch (error) {
+                console.error('Error fetching my bookings:', error);
+                myBookingsListDiv.innerHTML = '<p>Error loading your bookings. Please try again later.</p>';
+                showFlashMessage('Error loading your bookings.', 'error');
+            }
+        }
+
+        // Open Booking Modal
+        function openBookingModal(roomId, roomName, roomType) {
+            modalRoomId.value = roomId;
+            modalRoomName.textContent = roomName; // Display only room name
+            bookingDateInput.value = availabilityDateInput.value || ''; // Pre-fill with selected availability date
+            
+            // Set initial value of total-price select based on roomType
+            // And set the display of the dropdown
+            switch (roomType) {
+                case 'Single':
+                    totalPriceSelect.value = '74000'; // Value from your EJS option
+                    break;
+                case 'Double':
+                    totalPriceSelect.value = '69000';
+                    break;
+                case 'Triple':
+                    totalPriceSelect.value = '64000';
+                    break;
+                default:
+                    totalPriceSelect.value = ''; // Default to empty or a placeholder
+            }
+            totalPriceSelect.disabled = true; // Disable editing if price is fixed by room type for now
+
+            bookingModal.style.display = 'block';
+        }
+
+        // Close Booking Modal
+        closeButton.addEventListener('click', () => {
+            bookingModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === bookingModal) {
+                bookingModal.style.display = 'none';
+            }
+        });
+
+        // Handle Booking Form Submission
+        bookingForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const roomId = modalRoomId.value;
+            const bookingDate = bookingDateInput.value;
+            const selectedRoomPrice = totalPriceSelect.value; // Get selected price from dropdown
+
+            if (!bookingDate) {
+                showFlashMessage('Please select a valid booking date.', 'error');
+                return;
+            }
+            if (!selectedRoomPrice) {
+                showFlashMessage('Please select a room price.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ roomId, bookingDate, selectedRoomPrice }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Error creating booking');
+                }
+
+                showFlashMessage(data.message || 'Booking created successfully!', 'success');
+                bookingModal.style.display = 'none';
+                fetchRooms(); // Refresh rooms to update availability
+                fetchMyBookings(); // Refresh my bookings
+
+            } catch (error) {
+                console.error('Booking error:', error);
+                showFlashMessage(error.message || 'Failed to create booking. Please try again.', 'error');
+            }
+        });
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set min date for both date inputs to today
+            const today = new Date().toISOString().split('T')[0];
+            availabilityDateInput.setAttribute('min', today);
+            availabilityDateInput.value = today; // Set default to today for availability check
+            bookingDateInput.setAttribute('min', today);
+            
+            fetchRooms();
+            fetchMyBookings();
+
+            // Add event listeners for filter changes to re-fetch rooms
+            availabilityDateInput.addEventListener('change', fetchRooms);
+            blockFilter.addEventListener('change', fetchRooms);
+            floorFilter.addEventListener('change', fetchRooms);
+        });
+
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Reports</title>
+    <link rel="stylesheet" href="/stylesheets/hostelpanel.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="icon" href="/images/4174.png">
+    <script>
+
+        // var select = document.querySelector(".dept-select")
+        // console.log(select)
+        // select.addEventListener("click", function (event) {
+        //     var selected = event.target.value;
+        //     console.log(selected)
+        //     paddfilter(selected)
+        // });
+        function passfilter() {
+            var selectElement = document.getElementById("dept-select")
+            var value = selectElement.options[selectElement.selectedIndex].value;
+            var input, filter, table, tr, td, i, txtValue;
+
+            filter = value.toUpperCase();
+            table = document.getElementById("myTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function dateFormat(input_D) {
+            // input date parsed
+            format_D = 'dd-MM-yyyy';
+            const Time = input_D.split(" ", 3);
+            const date = new Date(input_D);
+
+            //extracting parts of date string
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+
+
+            //to replace month
+            format_D = format_D.replace("MM", month.toString().padStart(2, "0"));
+
+            //to replace year
+            if (format_D.indexOf("yyyy") > -1) {
+                format_D = format_D.replace("yyyy", year.toString());
+            } else if (format_D.indexOf("yy") > -1) {
+                format_D = format_D.replace("yy", year.toString().substr(2, 2));
+            }
+
+            //to replace day
+            format_D = format_D.replace("dd", day.toString().padStart(2, "0"));
+
+            return format_D + " " + Time[2];
+
+
+        }
+
+        window.onload = function () {
+            var approvalDates = document.getElementsByClassName("approvalDate");
+            for (var i = 0; i < approvalDates.length; i++) {
+                if (approvalDates[i].innerHTML == 0) {
+                    approvalDates[i].innerHTML = "";
+                }
+                else {
+                    approvalDates[i].innerHTML = dateFormat(approvalDates[i].innerHTML);
+                }
+            }
+        };
+
+    </script>
+</head>
+
+<body>
+    <div>
+        <center>
+            <% if(message.length>0){ %>
+                <div class="alert-danger">
+                    <h5>
+                        <%- message %>
+                    </h5>
+                </div>
+                <% } %>
+                    <a href="/daterange"><img src="/images/logo.png" /></a><br><br>
+                    <br>
+
+                    <div class="container">
+
+                        <div class="row justify-content-center">
+                          <div>
+                            <form action="/daterangecampusreport" align="right" method="post">
+                              <div>
+                                <div align="center">
+                                  <label class="form-label">Date From</label>
+                                  <input type="date" name="datefrom">
+                    
+                                  <label class="form-label">Date To</label>
+                                  <input type="date" name="dateto">
+                                  <button class="btn btn-primary"><span>Go</span></button>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                          <div> <label for="pet-select">Select Dept:</label>
+
+                            <select name="dept" id="dept-select" onclick="passfilter(this)">
+                                <option selected value="">All</option>
+                                <option value="Mechanical Engineering"> Mechanical Engineering</option>
+                                <option value="Basic science and humanities">Basic science and humanities</option>
+                                <option value="Computer Engineering">Computer Engineering</option>
+                                <option value="Electronics and Telecommunication">Electronics and Telecommunication
+                                </option>
+                                <option value="Electrical Engineering">Electrical Engineering</option>
+                                <option value="Civil Engineering">Civil Engineering</option>
+                                <option value="B Vocational">B Vocational</option>
+                            </select>
+
+                          </div>
+                        </div>
+                      </div>
+                      <div class="container table-responsive py-5">
+                        <table class="table table-bordered table-hover" id="myTable">
+                          <thead class="thead-dark">
+                    
+                            <tr>
+                              <th scope="col" hidden>Dept</th>
+                              <th scope="col">S.N</th>
+                              <th scope="col">UID</th>
+                              <th scope="col">NAME</th>
+                              <th scope="col">Gate OUT</th>
+                              <th scope="col">Gate IN</th>
+                              <th scope="col">Gate Duration</th>
+
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% if(result.length> 0) { %>
+                    
+                              <% for(var i=0;i<result.length;i++){ %>
+                    
+                                <tr>
+                                    <td hidden><%-result[i].dept %></td>
+                                    <td scope="row"><%- i + 1 %></td>
+                                    <td><a href="/studentprofile/<%-result[i].uid%>"><%-result[i].uid%></a></td>
+                                    <td><%- result[i].sname%></td>
+                                    <td class="approvalDate"><%- result[i].outdatetime%></td>
+                                    <td class="approvalDate"><%-result[i].indatetime %></td>
+                                    <td><%-result[i].Duration %></td>
+                                </tr>
+                    
+                                <% } %>
+                    
+                                  <% }else{ %>
+                                    <tr class="warning no-result">
+                                      <td colspan="10"> <i class="fa fa-warning"></i>
+                                        <center>Data Not found</center>
+                                      </td>
+                                    </tr>
+                                    <% } %>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      
+
+                  
+</body>
+
+</html>

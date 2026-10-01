@@ -1,0 +1,48 @@
+#calender{
+    padding-left:80px;
+    display: inline-block;
+}
+.styled-table {
+    
+    margin: 25px 0;
+    font-size: 0.833em;
+    font-family: sans-serif;
+    max-width: auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    
+    
+}
+#table-mix {
+    display: flex ;
+    padding: 30px;
+    margin-left: auto;  
+    margin-top: auto;
+    margin-right: auto;  
+    width: 22%;  
+    border-collapse: separate; 
+    border-spacing:20px 10px;
+    background: #fffffff3;
+    position: relative;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+  }
+
+.styled-table thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+    border: 1px solid black;
+    max-width:100%;
+   white-space:nowrap;
+   
+    
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+

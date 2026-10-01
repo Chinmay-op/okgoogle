@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostel Admission Form — TNPS Boys Hostel</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { background-color: #edfffb; font-family: 'Poppins', sans-serif; color: #333; }
+    .header-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; border-radius: 15px 15px 0 0; text-align: center; }
+    .form-card { border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); background: white; margin-bottom: 40px; border: none; }
+    .step-card { padding: 30px; }
+    .btn-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; font-weight: 600; padding: 12px 24px; border-radius: 8px; transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); color: white; }
+    .btn-gradient:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+    .success-card { text-align: center; padding: 50px 20px; }
+    .success-icon { font-size: 80px; color: #28a745; margin-bottom: 20px; }
+
+    /* Remove arrows from number input */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    /* Progress bar */
+    .step-progress { display: flex; justify-content: space-between; align-items: flex-start; margin: 20px 0 30px; position: relative; }
+    .step-circle { margin: 0 auto; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; border: 3px solid #ccc; background: white; color: #aaa; z-index: 2; transition: all 0.3s ease; }
+    .step-circle.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: #667eea; box-shadow: 0 0 15px rgba(102,126,234,0.4); }
+    .step-circle.completed { background: #28a745; color: white; border-color: #28a745; }
+    .step-circle.incomplete { background: #fff; color: #dc3545; border-color: #dc3545; }
+    .step-label { font-size: 0.75rem; color: #888; text-align: center; margin-top: 5px; }
+    .step-label.active-label { color: #667eea; font-weight: 600; }
+    .step-label.incomplete-label { color: #dc3545; font-weight: 600; }
+    .draft-note { color: #dc3545; font-weight: 600; }
+
+    /* Mess preference cards */
+    .mess-card { border: 2px solid #dee2e6; border-radius: 15px; padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; background: white; }
+    .mess-card:hover { border-color: #aaa; transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+    .mess-card.selected { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
+    #vegCard.selected { border-color: #28a745; border-width: 3px; }
+    #nonVegCard.selected { border-color: #dc3545; border-width: 3px; }
+    .mess-icon { font-size: 48px; margin-bottom: 15px; }
+
+    /* Payment mode cards */
+    .payment-card { border: 2px solid #dee2e6; border-radius: 15px; padding: 24px 18px; text-align: center; cursor: pointer; transition: all 0.3s ease; background: white; min-height: 150px; }
+    .payment-card:hover { border-color: #667eea; transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+    .payment-card.selected { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.15); border-width: 3px; }
+    .payment-card.cash.selected { border-color: #17a2b8; }
+    .payment-card.online.selected { border-color: #28a745; }
+    .payment-icon { font-size: 42px; margin-bottom: 12px; }
+
+    /* Declaration cards */
+    .declaration-card { border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px; background: #fcfcfc; transition: opacity 0.4s ease, max-height 0.4s ease; }
+    .declaration-text { background-color: #eef2f7; padding: 15px; border-radius: 0 5px 5px 0; font-style: italic; line-height: 1.7; }
+
+    /* Signature upload cards */
+    .sig-upload-card { border: 2px dashed #dee2e6; border-radius: 15px; padding: 25px; text-align: center; transition: border-color 0.3s; }
+    .sig-upload-card:hover { border-color: #667eea; }
+
+    /* ========== ANTI-RAGGING AFFIDAVIT SCREEN ========== */
+    #antiRaggingScreen { display: none; }
+    .ar-screen-card { border: 1.5px solid #dee2e6; border-radius: 12px; padding: 28px 32px; background: #fff; }
+    .ar-screen-card h2 { font-size: 1.15rem; font-weight: 700; text-decoration: underline; color: #1a3a8f; }
+    .ar-screen-card h5 { font-size: 1.0rem; font-weight: 700; }
+    .ar-opening { font-size: 0.95rem; margin-bottom: 10px; }
+    .ar-clause-list { font-size: 0.9rem; line-height: 1.75; padding-left: 20px; }
+    .ar-clause-list li { margin-bottom: 6px; }
+    .ar-declared { font-size: 0.9rem; margin-top: 16px; margin-bottom: 20px; }
+    .ar-sig-block { text-align: center; }
+    .ar-sig-img { display: block; margin: 0 auto 4px auto; max-width: 180px; max-height: 80px; object-fit: contain; border: 1px solid #ccc; border-radius: 4px; background: #fafafa; }
+    .ar-sig-empty { display: inline-block; width: 180px; height: 60px; border: 2px dashed #aaa; border-radius: 4px; background: #fafafa; }
+    .ar-sig-label { font-size: 0.78rem; color: #555; margin-top: 3px; }
+    .ar-sig-name { font-weight: 600; font-size: 0.88rem; }
+    .ar-sig-mobile { font-size: 0.82rem; color: #555; }
+    .ar-sub-clause-list { margin-top: 5px; margin-bottom: 2px; padding-left: 22px; list-style-type: lower-alpha; font-size: 0.9rem; line-height: 1.75; }
+    .ar-sub-clause-list li { margin-bottom: 5px; }
+
+    /* Extra utility styles */
+    .progress { height: 22px; border-radius: 12px; background-color: #e9ecef; }
+    .progress-bar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 0.75rem; font-weight: 600; border-radius: 12px; transition: width 0.4s ease; }
+    .step-connector { flex: 1; height: 3px; background: #dee2e6; z-index: 1; margin-top: 21px; }
+    .card-step-heading { font-size: 1.3rem; font-weight: 600; color: #4a4a6a; margin-bottom: 5px; }
+    .form-label { font-weight: 500; margin-bottom: 4px; }
+    .form-control:focus, .form-select:focus { border-color: #667eea; box-shadow: 0 0 0 0.2rem rgba(102,126,234,0.25); }
+
+    /* ========== MOBILE RESPONSIVE ========== */
+    @media (max-width: 576px) {
+      .step-card { padding: 18px 14px; }
+      .header-gradient { padding: 20px 14px; }
+      .header-gradient h1 { font-size: 1.2rem; }
+      .header-gradient h5 { font-size: 0.85rem; }
+
+      /* 1. Smaller buttons on mobile */
+      .btn-gradient { padding: 8px 14px !important; font-size: 0.82rem !important; }
+      .btn-outline-secondary { padding: 8px 14px !important; font-size: 0.82rem !important; }
+      .btn-gradient.btn-lg, .btn-outline-primary.btn-lg { padding: 10px 18px !important; font-size: 0.9rem !important; }
+
+      /* 4. Step circles – smaller and tighter spacing */
+      .step-progress { margin: 12px 0 20px; gap: 2px; }
+      .step-circle { width: 34px; height: 34px; font-size: 0.8rem; border-width: 2px; }
+      .step-label { font-size: 0.62rem; max-width: 75px; line-height: 1.2; }
+      .step-connector { height: 2px; margin-top: 16px; }
+      .progress { height: 18px; }
+      .progress-bar { font-size: 0.65rem; }
+      .card-step-heading { font-size: 1.1rem; }
+
+      /* 3. Signature previews constrained */
+      .sig-upload-card { padding: 15px 10px; }
+      .sig-upload-card img { max-width: 100% !important; max-height: 160px !important; width: auto !important; height: auto !important; }
+
+      /* Mess cards */
+      .mess-card { padding: 20px 12px; }
+      .mess-icon { font-size: 36px; margin-bottom: 10px; }
+
+      /* Payment cards */
+      .payment-card { padding: 18px 10px; min-height: 130px; }
+      .payment-icon { font-size: 32px; margin-bottom: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container py-4" style="max-width: 900px;">
+
+  <!-- Page Header Card -->
+  <div class="form-card">
+    <div class="header-gradient">
+      <h1 class="mb-1">The Nagpur Pallottine Society Boys Hostel</h1>
+      <h5 class="mb-2">Gavasi Manapur, Wardha Road, Nagpur-441108</h5>
+      <p class="fst-italic mb-0">"Home Away From Home"</p>
+    </div>
+
+    <div class="step-card">
+
+      <% if(submitted) { %>
+        <!-- ============ SUCCESS STATE ============ -->
+        <div class="success-card">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h2 class="fw-bold" style="color: #28a745;">Application Submitted Successfully!</h2>
+          <p class="text-muted mt-3 mb-4" style="font-size:1.1rem;">Your application has been submitted. The hostel office will review it and contact you.</p>
+          <script>
+            try { localStorage.removeItem('tnps_hostel_admission_draft_v1'); } catch (e) {}
+          </script>
+          <a href="/loginpanel" class="btn btn-gradient btn-lg"><i class="fas fa-home me-2"></i>Back to Home</a>
+        </div>
+
+      <% } else { %>
+        <!-- ============ FLASH MESSAGE ============ -->
+        <% if (message && message.length > 0) { %>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= message %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <% } %>
+
+        <!-- ============ PROGRESS BAR ============ -->
+        <div class="progress mb-3">
+          <div class="progress-bar" role="progressbar" id="progressBar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Step 1 of 5</div>
+        </div>
+
+        <!-- Step Circles -->
+        <div class="step-progress">
+          <div class="text-center">
+            <div class="step-circle active" id="stepCircle1">1</div>
+            <div class="step-label active-label" id="stepLabel1">Personal Details</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="text-center">
+            <div class="step-circle" id="stepCircle2">2</div>
+            <div class="step-label" id="stepLabel2">Mess Preference</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="text-center">
+            <div class="step-circle" id="stepCircle3">3</div>
+            <div class="step-label" id="stepLabel3">Declarations</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="text-center">
+            <div class="step-circle" id="stepCircle4">4</div>
+            <div class="step-label" id="stepLabel4">Signatures</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="text-center">
+            <div class="step-circle" id="stepCircle5">5</div>
+            <div class="step-label" id="stepLabel5">Payment &amp; Submit</div>
+          </div>
+        </div>
+
+        <!-- ============ FORM ============ -->
+        <form action="/student/admission-form" method="POST" enctype="multipart/form-data" id="admissionForm">
+          <input type="hidden" name="submission_token" value="<%= submissionToken %>">
+
+          <!-- ===================== STEP 1 — Personal Details ===================== -->
+          <div id="step1">
+            <div class="card border-0 mb-4">
+              <div class="card-body p-0">
+                <h4 class="card-step-heading"><i class="fas fa-user me-2" style="color:#667eea;"></i>Step 1: Personal Details</h4>
+                <hr>
+
+                <div class="alert alert-info py-2">
+                  <i class="fas fa-info-circle me-1"></i> All fields marked <strong>*</strong> are required.
+                </div>
+
+                <!-- Full Name -->
+                <div class="mb-3">
+                  <label for="full_name" class="form-label">Full Name in Block Letters <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control text-uppercase" name="full_name" id="full_name" required maxlength="100" placeholder="YOUR FULL NAME">
+                </div>
+
+                <!-- Father / Mother row -->
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="father_name" class="form-label">Father's Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="father_name" id="father_name" required maxlength="100">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="father_occupation" class="form-label">Father's Occupation <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="father_occupation" id="father_occupation" maxlength="100" required>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="mother_name" class="form-label">Mother's Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="mother_name" id="mother_name" required maxlength="100">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="mother_occupation" class="form-label">Mother's Occupation <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="mother_occupation" id="mother_occupation" maxlength="100" required>
+                  </div>
+                </div>
+
+                <!-- Permanent Address -->
+                <div class="mb-3">
+                  <label for="permanent_address" class="form-label">Permanent / Postal Address <span class="text-danger">*</span></label>
+                  <textarea class="form-control" name="permanent_address" id="permanent_address" rows="3" required maxlength="500"></textarea>
+                </div>
+
+                <!-- Phone numbers -->
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="parent_phone" class="form-label">Parent Phone No. <span class="text-danger">*</span></label>
+                    <!-- pattern="[0-9+\-\s]{7,15}" -->
+                    <input type="tel" class="form-control" name="parent_phone" id="parent_phone" required  maxlength="15" placeholder="e.g. 9876543210">
+                  </div> 
+
+                  <div class="col-md-6 mb-3">
+                    <label for="student_mobile" class="form-label">Student Mobile Number <span class="text-danger">*</span></label>
+                    <!-- pattern="[6-9][0-9]{9}" -->
+                    <input type="tel" class="form-control" name="student_mobile" id="student_mobile" required  maxlength="10" title="Enter 10-digit Indian mobile number starting with 6-9" placeholder="e.g. 9876543210">
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="student_email" class="form-label">Student Personal Email <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" name="student_email" id="student_email" required maxlength="255" placeholder="e.g. student@example.com">
+                  </div>
+                </div>
+
+                <!-- Admission Year / Branch -->
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="admission_year" class="form-label">Year of Admission <span class="text-danger">*</span></label>
+                    <select class="form-select" name="admission_year" id="admission_year" required>
+                      <option value="">-- Select Year --</option>
+                      <option value="1">First Year</option>
+                      <option value="2">Second Year</option>
+                      <option value="3">Third Year</option>
+                      <option value="4">Fourth Year</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="branch" class="form-label">Branch / Department <span class="text-danger">*</span></label>
+                    <select class="form-select" name="branch" id="branch" required>
+                      <option value="">-- Select Branch / Department --</option>
+                      <optgroup label="B.Tech.">
+                        <option value="COMPUTER ENGINEERING">Computer Science &amp; Engineering (CSE)</option>
+                        <option value="ELECTRICAL ENGINEERING">Electrical Engineering</option>
+                        <option value="INFORMATION TECHNOLOGY">Information Technology (IT)</option>
+                        <option value="ELECTRONICS &amp; TELECOMMUNICATION ENGINEERING">Electronics &amp; Telecommunication Engineering (ETC)</option>
+                        <option value="MECHANICAL ENGINEERING">Mechanical Engineering</option>
+                        <option value="CIVIL ENGINEERING">Civil Engineering</option>
+                        <option value="ARTIFICIAL INTELLIGENCE">Artificial Intelligence (AI)</option>
+                        <option value="COMPUTER SCIENCE &amp; ENGINEERING (DATA SCIENCE)">Computer Science &amp; Engineering (Data Science)</option>
+                        <option value="COMPUTER SCIENCE &amp; ENGINEERING (CYBER SECURITY)">Computer Science &amp; Engineering (Cyber Security)</option>
+                        <option value="INDUSTRIAL IOT">Industrial IoT (IIoT)</option>
+                        <option value="COMPUTER SCIENCE AND BUSINESS SYSTEMS">Computer Science and Business Systems (CSBS)</option>
+                        <option value="ROBOTICS &amp; ARTIFICIAL INTELLIGENCE">Robotics &amp; Artificial Intelligence (RAI)</option>
+                        <option value="MECHANICAL CAD-CAM">Mechanical CAD-CAM</option>
+                      </optgroup>
+                      <optgroup label="B.Voc.">
+                        <option value="B.VOC. IN CYBER SECURITY">B.Voc. in Cyber Security</option>
+                        <option value="B.VOC. IN SOFTWARE DEVELOPMENT">B.Voc. in Software Development</option>
+                        <option value="B.VOC. IN VIRTUAL REALITY &amp; AUGMENTED REALITY">B.Voc. in Virtual Reality &amp; Augmented Reality</option>
+                        <option value="B VOCATIONAL">B Vocational</option>
+                      </optgroup>
+                      <optgroup label="Other Programs">
+                        <option value="BCA">BCA</option>
+                        <option value="BBA">BBA</option>
+                        <option value="MCA">MCA</option>
+                        <option value="MBA">MBA</option>
+                        <option value="M.TECH">M.Tech</option>
+                        <option value="M.TECH CSE">M.Tech CSE</option>
+                        <option value="M.TECH CADCAM">M.Tech CAD-CAM</option>
+                      </optgroup>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- DOB / Religion -->
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="dob" class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" name="dob" id="dob" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="religion" class="form-label">Religion <span class="text-danger">*</span></label>
+                    <select class="form-select" name="religion" id="religion" required onchange="toggleReligionOther(this)">
+                      <option value="">-- Select --</option>
+                      <option value="Hindu">Hindu</option>
+                      <option value="Muslim">Muslim</option>
+                      <option value="Christian">Christian</option>
+                      <option value="Sikh">Sikh</option>
+                      <option value="Parsi">Parsi</option>
+                      <option value="Buddhist">Buddhist</option>
+                      <option value="Jain">Jain</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <input type="text" class="form-control mt-2" name="religion_other" id="religion_other" maxlength="50" placeholder="Please specify your religion" style="display:none;">
+                  </div>
+                </div>
+
+                <!-- Caste Category -->
+                <div class="mb-3">
+                  <label for="caste_category_select" class="form-label">Caste Category <span class="text-danger">*</span></label>
+                  <select class="form-select" name="caste_category" id="caste_category_select" required onchange="toggleCasteOther(this)">
+                    <option value="">-- Select Caste Category --</option>
+                    <option value="SC">SC</option>
+                    <option value="ST">ST</option>
+                    <option value="OBC">OBC</option>
+                    <option value="VJNT">VJNT</option>
+                    <option value="General">General</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <input type="text" class="form-control mt-2" name="caste_category_other" id="caste_category_other" maxlength="50" placeholder="Please specify your caste category" style="display:none;">
+                </div>
+
+                <!-- Student Passport Photo Upload -->
+                <div class="mb-4 p-3 rounded" style="background: #f8f9fa; border: 1px solid #e0e0e0;">
+                  <label for="student_photo_input" class="form-label fw-semibold">
+                    <i class="fas fa-camera me-1" style="color:#667eea;"></i> Passport Size Photograph <span class="text-danger">*</span>
+                  </label>
+                  <small class="d-block text-muted mb-2">Accepted: JPEG, PNG, WebP &nbsp;|&nbsp; Max size: 500 KB</small>
+                  <input type="file" class="form-control" name="student_photo" id="student_photo_input" accept="image/jpeg,image/jpg,image/png,image/webp" required>
+                  <img id="photo_preview" style="display:none; width:120px; height:150px; object-fit:cover; border:2px solid #ddd; border-radius:8px; margin-top:10px;" alt="Photo Preview">
+                  <div id="photo_status" class="mt-2"></div>
+                </div>
+
+                <!-- Step 1 Buttons -->
+                <div class="d-flex justify-content-end mt-4">
+                  <button type="button" class="btn btn-gradient" id="step1-next" disabled>
+                    Next: Mess Preference <i class="fas fa-arrow-right ms-2"></i>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <!-- END STEP 1 -->
+
+          <!-- ===================== STEP 2 — Mess Preference ===================== -->
+          <div id="step2" style="display:none;">
+            <div class="card border-0 mb-4">
+              <div class="card-body p-0">
+                <h4 class="card-step-heading"><i class="fas fa-utensils me-2" style="color:#667eea;"></i>Step 2: Mess Preference</h4>
+                <hr>
+
+                <div class="row justify-content-center g-4 my-3">
+                  <!-- Veg Card -->
+                  <div class="col-md-5">
+                    <div class="mess-card" id="vegCard">
+                      <div class="mess-icon text-success">
+                        <i class="fas fa-leaf"></i>
+                      </div>
+                      <h4 class="fw-bold">Vegetarian</h4>
+                      <small class="text-muted">Vegetarian meals served daily</small>
+                      <input type="radio" name="mess_preference" value="Veg" id="messVeg" class="d-none" required>
+                    </div>
+                  </div>
+                  <!-- Non-Veg Card -->
+                  <div class="col-md-5">
+                    <div class="mess-card" id="nonVegCard">
+                      <div class="mess-icon text-danger">
+                        <i class="fas fa-drumstick-bite"></i>
+                      </div>
+                      <h4 class="fw-bold">Non-Vegetarian</h4>
+                      <small class="text-muted">Includes egg &amp; meat options</small>
+                      <input type="radio" name="mess_preference" value="Non-Veg" id="messNonVeg" class="d-none" required>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 2 Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                  <button type="button" class="btn btn-outline-secondary px-4 py-2" id="step2-prev">
+                    <i class="fas fa-arrow-left me-2"></i> Previous
+                  </button>
+                  <button type="button" class="btn btn-gradient" id="step2-next" disabled>
+                    Next: Declarations <i class="fas fa-arrow-right ms-2"></i>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <!-- END STEP 2 -->
+
+          <!-- ===================== STEP 3 — Declarations ===================== -->
+          <div id="step3" style="display:none;">
+            <div class="card border-0 mb-4">
+              <div class="card-body p-0">
+                <h4 class="card-step-heading"><i class="fas fa-file-alt me-2" style="color:#667eea;"></i>Step 3: Read &amp; Accept Declarations</h4>
+                <hr>
+
+                <div class="alert alert-warning py-2">
+                  <i class="fas fa-exclamation-triangle me-1"></i> Please read all three declarations carefully. You must accept each to continue.
+                </div>
+
+                <!-- Declaration 1 -->
+                <div class="declaration-card" style="border-left: 4px solid #667eea;">
+                  <h5 class="fw-bold mb-3">Declaration - 1</h5>
+                  <div class="declaration-text">
+                    <ol>
+                      <li>I have received and read the Hostel rule book, and I will abide by it.</li>
+                      <li>I undertake to promote harmony and well being of the country and shall not perform any public or private ceremonies in the Hostel which might cause friction and harmony.</li>
+                      <li>I will pay the fine if any, incurred on me due to my behaviour in the hostel and incase of grievous reason I shall leave the Hostel of my own account.</li>
+                      <li>I will not engage in any kind of Ragging activity.</li>
+                    </ol>
+                  </div>
+                  <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" id="decl1_check">
+                    <label class="form-check-label fw-semibold" for="decl1_check">I have read and accept Declaration - 1</label>
+                  </div>
+                </div>
+
+                <!-- Declaration 2 -->
+                <div id="decl2_wrapper" style="display:none;">
+                  <div class="declaration-card" style="border-left: 4px solid #764ba2;">
+                    <h5 class="fw-bold mb-3">Declaration - 2</h5>
+                    <div class="declaration-text">
+                      <p>I hereby declare that, I have read and understood the rule book especially <strong>Point VIII : Fee &amp; Refund,</strong> and I fully agree to it.</p>
+                    </div>
+                    <div class="form-check mt-3">
+                      <input class="form-check-input" type="checkbox" id="decl2_check">
+                      <label class="form-check-label fw-semibold" for="decl2_check">I have read and accept Declaration - 2</label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Undertaking -->
+                <div id="undert_wrapper" style="display:none;">
+                  <div class="declaration-card" style="border-left: 4px solid #20c997;">
+                    <h5 class="fw-bold mb-3">Undertaking</h5>
+                    <div class="declaration-text">
+                      <p>I hereby state that I have decided to stay in the hostel of my own accord, after having already learned the hostel rules and regulations. I assure that I will conduct myself in such a way as to promote harmony and wellbeing in the hostel. I am also well aware that continuation in the Hostel will depend upon my academic performance, general behaviour and attendance in the Hostel and College.</p>
+                    </div>
+                    <div class="form-check mt-3">
+                      <input class="form-check-input" type="checkbox" id="undert_check">
+                      <label class="form-check-label fw-semibold" for="undert_check">I have read and accept the Undertaking</label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 3 Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                  <button type="button" class="btn btn-outline-secondary px-4 py-2" id="step3-prev">
+                    <i class="fas fa-arrow-left me-2"></i> Previous
+                  </button>
+                  <button type="button" class="btn btn-gradient" id="step3-next" disabled>
+                    Next: Signatures <i class="fas fa-arrow-right ms-2"></i>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <!-- END STEP 3 -->
+
+          <!-- ===================== STEP 4 — Signatures & Submit ===================== -->
+          <div id="step4" style="display:none;">
+            <div class="card border-0 mb-4">
+              <div class="card-body p-0">
+                <h4 class="card-step-heading"><i class="fas fa-pen-nib me-2" style="color:#667eea;"></i>Step 4: Upload Signatures</h4>
+                <hr>
+
+                <div class="alert alert-info py-2">
+                  <i class="fas fa-info-circle me-1"></i> Both student and parent signatures are required. Sign on white paper with blue/black ink, photograph clearly, and upload.
+                </div>
+
+                <div class="row g-4 mb-4">
+                  <!-- Student Signature -->
+                  <div class="col-md-6">
+                    <div class="sig-upload-card">
+                      <h5 class="fw-semibold mb-1"><i class="fas fa-user-pen me-1" style="color:#667eea;"></i> Student Signature <span class="text-danger">*</span></h5>
+                      <small class="text-muted d-block mb-3">JPEG, PNG, WebP &nbsp;|&nbsp; Max 500 KB</small>
+                      <input type="file" class="form-control" name="student_signature" id="student_sig_input" accept="image/jpeg,image/jpg,image/png,image/webp" required>
+                      <img id="student_sig_preview" style="display:none; max-width:100%; max-height:200px; width:auto; height:auto; margin-top:12px; border-radius:8px; border:1px solid #ddd;" alt="Student Signature Preview">
+                      <div id="student_sig_status" class="mt-2"></div>
+                    </div>
+                  </div>
+                  <!-- Parent Signature -->
+                  <div class="col-md-6">
+                    <div class="sig-upload-card">
+                      <h5 class="fw-semibold mb-1"><i class="fas fa-users me-1" style="color:#667eea;"></i> Parent / Guardian Signature <span class="text-danger">*</span></h5>
+                      <small class="text-muted d-block mb-3">JPEG, PNG, WebP &nbsp;|&nbsp; Max 500 KB</small>
+                      <input type="file" class="form-control" name="parent_signature" id="parent_sig_input" accept="image/jpeg,image/jpg,image/png,image/webp" required>
+                      <img id="parent_sig_preview" style="display:none; max-width:100%; max-height:200px; width:auto; height:auto; margin-top:12px; border-radius:8px; border:1px solid #ddd;" alt="Parent Signature Preview">
+                      <div id="parent_sig_status" class="mt-2"></div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+                <!-- Step 4 Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                  <button type="button" class="btn btn-outline-secondary px-4 py-2" id="step4-prev">
+                    <i class="fas fa-arrow-left me-2"></i> Previous
+                  </button>
+                  <button type="button" class="btn btn-gradient px-4 py-2" id="step4-next" disabled>
+                    Next: Payment Mode <i class="fas fa-arrow-right ms-2"></i>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <!-- END STEP 4 -->
+
+          <!-- ===================== STEP 5 — Payment Mode ===================== -->
+          <div id="step5" style="display:none;">
+            <div class="card border-0 mb-4">
+              <div class="card-body p-0">
+                <h4 class="card-step-heading"><i class="fas fa-wallet me-2" style="color:#667eea;"></i>Step 5: Payment Amount &amp; Mode</h4>
+                <hr>
+
+                <div class="alert alert-warning py-2">
+                  <i class="fas fa-shield-alt me-1"></i> Enter the advance amount paying for hostel admission and select exactly one payment mode..
+                </div>
+
+                <div class="row g-4 mb-4">
+                  <div class="col-md-6">
+                    <div class="sig-upload-card text-start mb-3">
+                      <h5 class="fw-semibold mb-1"><i class="fas fa-indian-rupee-sign me-1" style="color:#667eea;"></i> Advance Amount <span class="text-danger">*</span></h5>
+                      <label for="advance_amount" class="form-label fw-semibold">Amount Paying (Rs.)</label>
+                      <input type="number" class="form-control" name="advance_amount" id="advance_amount" min="0.01" step="0.01" inputmode="decimal" placeholder="e.g. 50000.00" required>
+                      <div id="advance_amount_status" class="mt-2 small text-muted"></div>
+                    </div>
+                    <div class="px-2">
+                      <label for="submission_date_display" class="form-label fw-semibold">Date of Submission</label>
+                      <input type="text" class="form-control" readonly id="submission_date_display">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="sig-upload-card h-100 text-start">
+                      <h5 class="fw-semibold mb-3"><i class="fas fa-right-left me-1" style="color:#667eea;"></i> Payment Mode <span class="text-danger">*</span></h5>
+                      <div class="row g-3">
+                        <div class="col-6">
+                          <div class="payment-card cash" id="cashCard">
+                            <div class="payment-icon text-info"><i class="fas fa-money-bill-wave"></i></div>
+                            <h5 class="fw-bold mb-1">Cash</h5>
+                            <small class="text-muted">Paid directly at hostel office</small>
+                            <input type="radio" name="payment_mode" value="Cash" id="paymentCash" class="d-none" required>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="payment-card online" id="onlineCard">
+                            <div class="payment-icon text-success"><i class="fas fa-mobile-screen-button"></i></div>
+                            <h5 class="fw-bold mb-1">Online</h5>
+                            <small class="text-muted">UPI, net banking, or card</small>
+                            <input type="radio" name="payment_mode" value="Online" id="paymentOnline" class="d-none" required>
+                          </div>
+                        </div>
+                      </div>
+                      <div id="payment_mode_status" class="mt-3 small text-muted">Select one mode to continue.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                  <button type="button" class="btn btn-outline-secondary px-4 py-2" id="step5-prev">
+                    <i class="fas fa-arrow-left me-2"></i> Previous
+                  </button>
+                  <div class="d-flex gap-2 flex-wrap justify-content-end">
+                    <button type="button" class="btn btn-outline-primary btn-lg" id="reviewDetailsBtn">
+                      <i class="fas fa-eye me-2"></i> Review Details
+                    </button>
+                    <button type="button" class="btn btn-gradient btn-lg" id="final-submit" disabled>
+                      <i class="fas fa-paper-plane me-2"></i> Submit Application
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <!-- END STEP 5 -->
+
+        </form>
+
+        <!-- ============ ANTI-RAGGING AFFIDAVIT INTERMEDIATE SCREEN ============ -->
+        <!-- This screen appears between Step 4 and Step 5; it is NOT a numbered step.
+             It is purely client-side — no new POST fields, no DB columns. -->
+        <div id="antiRaggingScreen">
+          <div class="ar-screen-card mb-4">
+
+            <div class="text-center mb-3">
+              <h2 class="text-center">AFFIDAVIT BY THE HOSTEL STUDENT</h2>
+            </div>
+
+            <!-- Opening line: "I, {NAME}, S/o Mr./Ms./Mrs. {FATHER}," —— filled by JS -->
+            <p class="ar-opening" id="ar_opening_line"></p>
+
+            <ol class="ar-clause-list">
+              <!-- Clause 1: branch and session year filled by JS via spans -->
+              <li>having been admitted to TNPS Boys Hostel in <span id="ar_branch_span" style="font-weight:600;">______</span> for the academic session <span id="ar_session_span" style="font-weight:600;">20__ - 20__</span> and seeking admission in the Hostel, having been aware of the UGC Regulations on Curbing the Menace of Ragging in Higher Educational Institutions, 2009, carefully read and fully understood the provisions contained in the said Regulations.</li>
+              <li>I have, in particular, perused clause 3 of the Regulations and am aware as to what constitutes ragging.</li>
+              <li>I have also, in particular, perused clause 7 and clause 9.1 of the Regulations and am fully aware of the penal and administrative action that is liable to be taken against me in case I am found guilty of or abetting ragging, actively or passively, or being part of a conspiracy to promote ragging.</li>
+              <li>I hereby solemnly aver and undertake that.
+                <ol type="a" class="ar-sub-clause-list">
+                  <li>I will not indulge in any behavior or act that may be constituted as ragging under the provisions of the Regulations.</li>
+                  <li>I will not participate or abet or propagate through any act of commission or omission that may Violate provisions of the Regulations, without prejudice to any other criminal action that may be taken against me under any penal law or any law for the time being in force.</li>
+                </ol>
+              </li>
+              <li>I hereby affirm that, if found guilty of ragging, I am liable for punishment according to the provisions of the Regulations, without prejudice to any other criminal action that may be taken against me under any penal law or any law for the time being in force.</li>
+              <li>I hereby declare that I have not been expelled or debarred from admission in any institution in the country on account of being found guilty of, abetting or being part of a conspiracy to promote, ragging; and further affirm that, in case the declaration is found to be untrue, I am aware that my admission is liable to be cancelled. -</li>
+            </ol>
+
+            <!-- Declared date: "Declared this 7th Day of July Month of 2026 Year." —— filled by JS -->
+            <p class="ar-declared" id="ar_declared_line"></p>
+
+            <div class="row mt-4">
+              <div class="col-6">
+                <div class="ar-sig-block">
+                  <img id="ar_parent_sig_img" class="ar-sig-img" style="display:none;" alt="Parent Signature">
+                  <div id="ar_parent_sig_empty" class="ar-sig-empty"></div>
+                  <div class="ar-sig-label fw-semibold">Signature of Parent</div>
+                  <div class="ar-sig-name" id="ar_parent_name"></div>
+                  <div class="ar-sig-mobile" id="ar_parent_mobile"></div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="ar-sig-block">
+                  <img id="ar_student_sig_img" class="ar-sig-img" style="display:none;" alt="Student Signature">
+                  <div id="ar_student_sig_empty" class="ar-sig-empty"></div>
+                  <div class="ar-sig-label fw-semibold">Signature of Deponent</div>
+                  <div class="ar-sig-name" id="ar_student_name"></div>
+                  <div class="ar-sig-mobile" id="ar_student_mobile"></div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /.ar-screen-card -->
+
+          <!-- Navigation buttons for the anti-ragging screen -->
+          <div class="d-flex justify-content-between mt-2">
+            <button type="button" class="btn btn-outline-secondary px-4 py-2" id="ar-back-btn">
+              <i class="fas fa-arrow-left me-2"></i> Back
+            </button>
+            <button type="button" class="btn btn-gradient px-4 py-2" id="ar-continue-btn">
+              Continue to Payment <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+          </div>
+        </div>
+        <!-- END ANTI-RAGGING SCREEN -->
+
+        <!-- ============ CONFIRMATION MODAL ============ -->
+        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:15px; overflow:hidden;">
+              <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; border:none;">
+                <h5 class="modal-title" id="confirmModalLabel"><i class="fas fa-question-circle me-2"></i>Confirm Submission</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body text-center py-4">
+                <i class="fas fa-exclamation-circle" style="font-size:48px; color:#f0ad4e; margin-bottom:15px;"></i>
+                <p class="mb-0" style="font-size:1.05rem;">Are you sure all details are correct? Once submitted, you cannot edit the application.</p>
+              </div>
+              <div class="modal-footer justify-content-center" style="border:none;">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-gradient px-4" id="confirmSubmitBtn"><i class="fas fa-check me-1"></i> Yes, Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="border-radius:15px; overflow:hidden;">
+              <div class="modal-header" style="background: linear-gradient(135deg, #20c997 0%, #0d6efd 100%); color:white; border:none;">
+                <h5 class="modal-title" id="reviewModalLabel"><i class="fas fa-eye me-2"></i>Review Filled Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4">
+                <div class="alert alert-danger py-2">
+                  <i class="fas fa-triangle-exclamation me-1"></i> Please review all details below before final submission. If you refreshed the page, uploaded files are not kept by the browser and must be uploaded again.
+                </div>
+
+                <div id="reviewSummary" class="row g-3 mb-4"></div>
+
+                <h6 class="fw-bold text-success mb-3 border-bottom pb-2">Uploaded Images</h6>
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <div class="border rounded-3 p-3 h-100 bg-light text-center">
+                      <div class="small text-muted fw-bold mb-2 text-uppercase">Passport Photo</div>
+                      <img id="reviewPhoto" class="img-fluid rounded border" style="display:none; max-height:220px; object-fit:cover;" alt="Passport Preview">
+                      <div id="reviewPhotoEmpty" class="text-muted fst-italic py-4">Not available right now</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="border rounded-3 p-3 h-100 bg-light text-center">
+                      <div class="small text-muted fw-bold mb-2 text-uppercase">Student Signature</div>
+                      <img id="reviewStudentSig" class="img-fluid rounded border" style="display:none; max-height:220px; object-fit:cover;" alt="Student Signature Preview">
+                      <div id="reviewStudentSigEmpty" class="text-muted fst-italic py-4">Not available right now</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="border rounded-3 p-3 h-100 bg-light text-center">
+                      <div class="small text-muted fw-bold mb-2 text-uppercase">Parent Signature</div>
+                      <img id="reviewParentSig" class="img-fluid rounded border" style="display:none; max-height:220px; object-fit:cover;" alt="Parent Signature Preview">
+                      <div id="reviewParentSigEmpty" class="text-muted fst-italic py-4">Not available right now</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-between" style="border:none;">
+                <div class="draft-note small">If a file disappeared after refresh, upload it again before submitting.</div>
+                <div class="d-flex gap-2 flex-wrap justify-content-end">
+                  <button type="button" class="btn btn-outline-danger px-4" id="goMissingUploadsBtn" style="display:none;">
+                    <i class="fas fa-arrow-up-right-from-square me-1"></i> Go to Missing Uploads
+                  </button>
+                  <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal"><i class="fas fa-check me-1"></i> Close Review</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <% } %>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Toggle "Other" text input for Caste Category
+function toggleCasteOther(sel) {
+  var otherInput = document.getElementById('caste_category_other');
+  if (sel.value === 'Other') {
+    otherInput.style.display = 'block';
+    otherInput.required = true;
+    otherInput.focus();
+  } else {
+    otherInput.style.display = 'none';
+    otherInput.required = false;
+    otherInput.value = '';
+  }
+}
+
+// Toggle "Other" text input for Religion
+function toggleReligionOther(sel) {
+  var otherInput = document.getElementById('religion_other');
+  if (sel.value === 'Other') {
+    otherInput.style.display = 'block';
+    otherInput.required = true;
+    otherInput.focus();
+  } else {
+    otherInput.style.display = 'none';
+    otherInput.required = false;
+    otherInput.value = '';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  // When "Other" is selected for caste, copy typed value into the select's submitted value
+  var admissionForm = document.querySelector('form');
+  if (admissionForm) {
+    admissionForm.addEventListener('submit', function() {
+      var casteSel = document.getElementById('caste_category_select');
+      var casteOther = document.getElementById('caste_category_other');
+      if (casteSel && casteSel.value === 'Other' && casteOther && casteOther.value.trim()) {
+        // Replace the select value with the custom typed value
+        casteSel.name = '';                     // remove name from select so it won't submit
+        casteOther.name = 'caste_category';     // give the text input the real field name
+      }
+      // Same for Religion
+      var religionSel = document.getElementById('religion');
+      var religionOther = document.getElementById('religion_other');
+      if (religionSel && religionSel.value === 'Other' && religionOther && religionOther.value.trim()) {
+        religionSel.name = '';
+        religionOther.name = 'religion';
+      }
+    });
+  }
+
+  var ADMISSION_DRAFT_KEY = 'tnps_hostel_admission_draft_v1';
+  var draftPayload = null;
+  var restoringDraft = false;
+  try {
+    draftPayload = JSON.parse(localStorage.getItem(ADMISSION_DRAFT_KEY) || 'null');
+  } catch (e) {
+    draftPayload = null;
+  }
+
+  function safeSetDraftItem(payload) {
+    try {
+      localStorage.setItem(ADMISSION_DRAFT_KEY, JSON.stringify(payload));
+    } catch (e) {}
+  }
+
+  function saveAdmissionDraft() {
+    if (restoringDraft) return;
+
+    var form = document.getElementById('admissionForm');
+    if (!form) return;
+
+    var payload = {
+      currentStep: currentStep,
+      values: {}
+    };
+
+    var controls = form.querySelectorAll('input, select, textarea');
+    controls.forEach(function(field) {
+      var key = field.id || field.name;
+      if (!key || field.type === 'submit' || field.type === 'button' || field.type === 'hidden') return;
+
+      if (field.type === 'file') {
+        if (field.id === 'student_photo_input') payload.values.__hasPhoto = !!(field.files && field.files.length);
+        if (field.id === 'student_sig_input') payload.values.__hasStudentSignature = !!(field.files && field.files.length);
+        if (field.id === 'parent_sig_input') payload.values.__hasParentSignature = !!(field.files && field.files.length);
+        return;
+      }
+
+      if (field.type === 'radio') {
+        if (field.checked) payload.values['radio:' + field.name] = field.value;
+        return;
+      }
+
+      if (field.type === 'checkbox') {
+        payload.values['check:' + key] = field.checked;
+        return;
+      }
+
+      payload.values[key] = field.value;
+    });
+
+    safeSetDraftItem(payload);
+  }
+
+  function renderUploadWarning(statusEl, message) {
+    if (!statusEl) return;
+    statusEl.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>' + message + '</span>';
+  }
+
+  function renderUploadNeutral(statusEl, message) {
+    if (!statusEl) return;
+    statusEl.innerHTML = '<span class="text-muted">' + message + '</span>';
+  }
+
+  function refreshUploadState() {
+    var photoFile = photoInput && photoInput.files && photoInput.files.length > 0;
+    var studentSig = document.getElementById('student_sig_input');
+    var parentSig = document.getElementById('parent_sig_input');
+    var studentFile = studentSig && studentSig.files && studentSig.files.length > 0;
+    var parentFile = parentSig && parentSig.files && parentSig.files.length > 0;
+
+    if (photoFile) {
+      photoPreview.style.display = 'block';
+      renderUploadNeutral(photoStatus, 'Photo selected and ready.');
+    } else if (draftPayload && draftPayload.values && draftPayload.values.__hasPhoto) {
+      photoPreview.style.display = 'none';
+      renderUploadWarning(photoStatus, 'Photo was not retained after refresh. Please upload again.');
+    } else {
+      photoPreview.style.display = 'none';
+      renderUploadNeutral(photoStatus, 'Passport photo not uploaded yet.');
+    }
+
+    var studentPreview = document.getElementById('student_sig_preview');
+    var studentStatus = document.getElementById('student_sig_status');
+    if (studentFile) {
+      studentPreview.style.display = 'block';
+      renderUploadNeutral(studentStatus, 'Signature uploaded and ready.');
+    } else if (draftPayload && draftPayload.values && draftPayload.values.__hasStudentSignature) {
+      studentPreview.style.display = 'none';
+      renderUploadWarning(studentStatus, 'Student signature was not retained after refresh. Please upload again.');
+    } else {
+      studentPreview.style.display = 'none';
+      renderUploadNeutral(studentStatus, 'Student signature not uploaded yet.');
+    }
+
+    var parentPreview = document.getElementById('parent_sig_preview');
+    var parentStatus = document.getElementById('parent_sig_status');
+    if (parentFile) {
+      parentPreview.style.display = 'block';
+      renderUploadNeutral(parentStatus, 'Signature uploaded and ready.');
+    } else if (draftPayload && draftPayload.values && draftPayload.values.__hasParentSignature) {
+      parentPreview.style.display = 'none';
+      renderUploadWarning(parentStatus, 'Parent signature was not retained after refresh. Please upload again.');
+    } else {
+      parentPreview.style.display = 'none';
+      renderUploadNeutral(parentStatus, 'Parent signature not uploaded yet.');
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function fieldValue(id) {
+    var el = document.getElementById(id);
+    return el ? ((el.value || '') + '').trim() : '';
+  }
+
+  function radioValue(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : '';
+  }
+
+  function checkboxLabel(id, label) {
+    var el = document.getElementById(id);
+    return '<span class="badge ' + (el && el.checked ? 'bg-success' : 'bg-secondary') + '">' + escapeHtml(label) + ': ' + (el && el.checked ? 'Accepted' : 'Not Accepted') + '</span>';
+  }
+
+  function isFileValid(inputId) {
+    var input = document.getElementById(inputId);
+    if (!input || !input.files || input.files.length === 0) return false;
+    return !(input.files[0] && input.files[0].size > 500 * 1024);
+  }
+
+  function isStep1Complete() {
+    var step1 = document.getElementById('step1');
+    if (!step1) return false;
+    var requiredFields = step1.querySelectorAll('input[required], select[required], textarea[required]');
+    for (var i = 0; i < requiredFields.length; i++) {
+      var field = requiredFields[i];
+      if (field.type === 'file') {
+        if (!field.files || field.files.length === 0 || field.files[0].size > 500 * 1024) return false;
+      } else if (!field.checkValidity()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function isStep2Complete() {
+    return !!(document.getElementById('messVeg') && document.getElementById('messVeg').checked
+      || document.getElementById('messNonVeg') && document.getElementById('messNonVeg').checked);
+  }
+
+  function isStep3Complete() {
+    return !!(document.getElementById('decl1_check') && document.getElementById('decl1_check').checked
+      && document.getElementById('decl2_check') && document.getElementById('decl2_check').checked
+      && document.getElementById('undert_check') && document.getElementById('undert_check').checked);
+  }
+
+  function isStep4Complete() {
+    return isFileValid('student_sig_input') && isFileValid('parent_sig_input');
+  }
+
+  function isStep5Complete() {
+    var amountRaw = ((document.getElementById('advance_amount') || {}).value || '').trim();
+    var amount = amountRaw ? parseFloat(amountRaw) : NaN;
+    var hasValidAmount = amountRaw !== '' && !isNaN(amount) && amount > 0;
+    var hasMode = !!((document.getElementById('paymentCash') && document.getElementById('paymentCash').checked)
+      || (document.getElementById('paymentOnline') && document.getElementById('paymentOnline').checked));
+    return hasValidAmount && hasMode;
+  }
+
+  function isStepComplete(stepNo) {
+    if (stepNo === 1) return isStep1Complete();
+    if (stepNo === 2) return isStep2Complete() && isStep1Complete();
+    if (stepNo === 3) return isStep3Complete() && isStep2Complete() && isStep1Complete();
+    if (stepNo === 4) return isStep4Complete() && isStep3Complete() && isStep2Complete() && isStep1Complete();
+    if (stepNo === 5) return isStep5Complete() && isStep4Complete() && isStep3Complete() && isStep2Complete() && isStep1Complete();
+    return false;
+  }
+
+  function buildReviewSummary() {
+    var rows = [
+      ['Full Name', fieldValue('full_name') || '--'],
+      ["Father's Name", fieldValue('father_name') || '--'],
+      ["Father's Occupation", fieldValue('father_occupation') || '--'],
+      ["Mother's Name", fieldValue('mother_name') || '--'],
+      ["Mother's Occupation", fieldValue('mother_occupation') || '--'],
+      ['Permanent Address', fieldValue('permanent_address') || '--'],
+      ['Parent Phone', fieldValue('parent_phone') || '--'],
+      ['Student Mobile', fieldValue('student_mobile') || '--'],
+      ['Student Email', fieldValue('student_email') || '--'],
+      ['Admission Year', fieldValue('admission_year') || '--'],
+      ['Branch', fieldValue('branch') || '--'],
+      ['Date of Birth', fieldValue('dob') || '--'],
+      ['Religion', fieldValue('religion') === 'Other' ? fieldValue('religion_other') || 'Other' : fieldValue('religion') || '--'],
+      ['Caste Category', fieldValue('caste_category_select') === 'Other' ? fieldValue('caste_category_other') || 'Other' : fieldValue('caste_category_select') || '--'],
+      ['Mess Preference', radioValue('mess_preference') || '--'],
+      ['Advance Amount', fieldValue('advance_amount') ? ('Rs. ' + parseFloat(fieldValue('advance_amount')).toFixed(2)) : '--'],
+      ['Payment Mode', radioValue('payment_mode') || '--'],
+      ['Submission Date', fieldValue('submission_date_display') || '--']
+    ];
+
+    var html = '';
+    rows.forEach(function(row) {
+      html += '<div class="col-md-6"><div class="border rounded-3 p-3 h-100 bg-white shadow-sm">'
+        + '<div class="small text-muted text-uppercase fw-bold mb-1">' + escapeHtml(row[0]) + '</div>'
+        + '<div class="fw-semibold" style="word-break:break-word;">' + escapeHtml(row[1]) + '</div>'
+        + '</div></div>';
+    });
+
+    html += '<div class="col-md-12"><div class="border rounded-3 p-3 bg-light shadow-sm">'
+      + '<div class="small text-muted text-uppercase fw-bold mb-2">Declarations</div>'
+      + '<div class="d-flex flex-wrap gap-2">'
+      + checkboxLabel('decl1_check', 'Declaration 1')
+      + checkboxLabel('decl2_check', 'Declaration 2')
+      + checkboxLabel('undert_check', 'Undertaking')
+      + '</div></div></div>';
+
+    return html;
+  }
+
+  function setReviewImage(imgId, emptyId, previewId, fileInputId, draftFlagName, fallbackText) {
+    var img = document.getElementById(imgId);
+    var empty = document.getElementById(emptyId);
+    var preview = document.getElementById(previewId);
+    var input = document.getElementById(fileInputId);
+    var box = img ? img.closest('.border') : null;
+    var hasFile = !!(input && input.files && input.files.length > 0);
+    var previewVisible = !!(preview && preview.src && preview.style.display !== 'none');
+
+    if (hasFile && previewVisible) {
+      img.src = preview.src;
+      img.style.display = 'inline-block';
+      empty.style.display = 'none';
+      if (box) box.classList.remove('border-danger');
+      return;
+    }
+
+    if (draftPayload && draftPayload.values && draftPayload.values[draftFlagName]) {
+      img.style.display = 'none';
+      empty.style.display = 'block';
+      empty.innerHTML = '<div class="alert alert-danger py-2 mb-0"><i class="fas fa-triangle-exclamation me-1"></i>' + escapeHtml(fallbackText) + '</div>';
+      if (box) box.classList.add('border-danger');
+      return;
+    }
+
+    img.style.display = 'none';
+    empty.style.display = 'block';
+    empty.innerHTML = '<div class="alert alert-light py-2 mb-0 border"><span class="text-muted">Not available right now</span></div>';
+    if (box) box.classList.remove('border-danger');
+  }
+
+  function renderReviewModal() {
+    var summary = document.getElementById('reviewSummary');
+    if (summary) summary.innerHTML = buildReviewSummary();
+
+    setReviewImage('reviewPhoto', 'reviewPhotoEmpty', 'photo_preview', 'student_photo_input', '__hasPhoto', 'Passport photo was not retained after refresh. Please upload again.');
+    setReviewImage('reviewStudentSig', 'reviewStudentSigEmpty', 'student_sig_preview', 'student_sig_input', '__hasStudentSignature', 'Student signature was not retained after refresh. Please upload again.');
+    setReviewImage('reviewParentSig', 'reviewParentSigEmpty', 'parent_sig_preview', 'parent_sig_input', '__hasParentSignature', 'Parent signature was not retained after refresh. Please upload again.');
+
+    var goMissingBtn = document.getElementById('goMissingUploadsBtn');
+    if (goMissingBtn) {
+      var missingUpload = !!(draftPayload && draftPayload.values && (
+        (draftPayload.values.__hasPhoto && !(photoInput && photoInput.files && photoInput.files.length)) ||
+        (draftPayload.values.__hasStudentSignature && !(document.getElementById('student_sig_input') && document.getElementById('student_sig_input').files && document.getElementById('student_sig_input').files.length)) ||
+        (draftPayload.values.__hasParentSignature && !(document.getElementById('parent_sig_input') && document.getElementById('parent_sig_input').files && document.getElementById('parent_sig_input').files.length))
+      ));
+      goMissingBtn.style.display = missingUpload ? 'inline-block' : 'none';
+    }
+  }
+
+  function restoreAdmissionDraft() {
+    if (!draftPayload || !draftPayload.values) return;
+
+    restoringDraft = true;
+    try {
+      var form = document.getElementById('admissionForm');
+      if (!form) return;
+
+      var controls = form.querySelectorAll('input, select, textarea');
+      controls.forEach(function(field) {
+        var key = field.id || field.name;
+        if (!key || field.type === 'submit' || field.type === 'button' || field.type === 'hidden' || field.type === 'file') {
+          return;
+        }
+
+        if (field.type === 'radio') {
+          field.checked = draftPayload.values['radio:' + field.name] === field.value;
+          return;
+        }
+
+        if (field.type === 'checkbox') {
+          field.checked = !!draftPayload.values['check:' + key];
+          return;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(draftPayload.values, key)) {
+          field.value = draftPayload.values[key];
+        }
+      });
+
+      var religionSel = document.getElementById('religion');
+      var casteSel = document.getElementById('caste_category_select');
+      if (religionSel) toggleReligionOther(religionSel);
+      if (casteSel) toggleCasteOther(casteSel);
+
+      if (draftPayload.currentStep) {
+        var stepNo = parseInt(draftPayload.currentStep, 10);
+        if (!isNaN(stepNo) && stepNo >= 1 && stepNo <= 5) {
+          currentStep = stepNo;
+        }
+      }
+    } finally {
+      restoringDraft = false;
+    }
+  }
+
+  // ============================================================
+  // Auto-advance: Enter key moves to the next Step 1 field
+  // ============================================================
+  var step1FieldIds = [
+    'full_name', 'father_name', 'father_occupation',
+    'mother_name', 'mother_occupation', 'permanent_address',
+    'parent_phone', 'student_mobile', 'student_email',
+    'admission_year', 'branch',
+    'dob', 'religion', 'religion_other',
+    'caste_category_select', 'caste_category_other',
+    'student_photo_input'
+  ];
+
+  function getNextVisibleField(currentIndex) {
+    for (var i = currentIndex + 1; i < step1FieldIds.length; i++) {
+      var el = document.getElementById(step1FieldIds[i]);
+      if (el && el.offsetParent !== null && el.style.display !== 'none') {
+        return el;
+      }
+    }
+    return null;
+  }
+
+  step1FieldIds.forEach(function(fieldId, index) {
+    var field = document.getElementById(fieldId);
+    if (!field) return;
+
+    var tagName = field.tagName.toLowerCase();
+
+    if (tagName === 'select') {
+      // For dropdowns: advance on selection change (when a value is picked)
+      field.addEventListener('change', function() {
+        if (this.value) {
+          var next = getNextVisibleField(index);
+          if (next) next.focus();
+        }
+      });
+    } else if (tagName === 'textarea') {
+      // For textarea: Shift+Enter advances, plain Enter keeps newline
+      field.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.shiftKey) {
+          e.preventDefault();
+          var next = getNextVisibleField(index);
+          if (next) next.focus();
+        }
+      });
+    } else {
+      // For text/tel/date/file inputs: Enter advances
+      field.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          var next = getNextVisibleField(index);
+          if (next) next.focus();
+        }
+      });
+    }
+  });
+
+  // ============================================================
+  // 1. Step Navigation
+  // ============================================================
+  let currentStep = 1;
+  const totalSteps = 5;
+  const steps = [null, document.getElementById('step1'), document.getElementById('step2'), document.getElementById('step3'), document.getElementById('step4'), document.getElementById('step5')];
+
+  // Guard: if steps don't exist (submitted state), bail out
+  if (!steps[1]) return;
+
+  if (admissionForm) {
+    admissionForm.addEventListener('input', saveAdmissionDraft);
+    admissionForm.addEventListener('change', saveAdmissionDraft);
+  }
+
+  restoreAdmissionDraft();
+
+  function showStep(n) {
+    for (let i = 1; i <= totalSteps; i++) {
+      steps[i].style.display = (i === n) ? 'block' : 'none';
+    }
+    currentStep = n;
+    updateProgress();
+    saveAdmissionDraft();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = ((currentStep - 1) / (totalSteps - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressBar').textContent = 'Step ' + currentStep + ' of ' + totalSteps;
+    for (let i = 1; i <= totalSteps; i++) {
+      const circle = document.getElementById('stepCircle' + i);
+      const label = document.getElementById('stepLabel' + i);
+      circle.className = 'step-circle';
+      label.className = 'step-label';
+      if (i === currentStep) {
+        circle.classList.add('active');
+        circle.innerHTML = i;
+        label.classList.add('active-label');
+      } else if (isStepComplete(i)) {
+        circle.classList.add('completed');
+        circle.innerHTML = '<i class="fas fa-check"></i>';
+      } else if (i < currentStep) {
+        circle.classList.add('incomplete');
+        circle.innerHTML = i;
+        label.classList.add('incomplete-label');
+      } else {
+        circle.innerHTML = i;
+      }
+    }
+  }
+
+  var progressUpdateTimer = null;
+  function scheduleProgressUpdate() {
+    if (progressUpdateTimer) return;
+    progressUpdateTimer = setTimeout(function() {
+      progressUpdateTimer = null;
+      updateProgress();
+    }, 0);
+  }
+
+  // ============================================================
+  // 2. Step 1 — Personal Details Validation
+  // ============================================================
+  const step1Next = document.getElementById('step1-next');
+
+function validateStep1() {
+const step1 = document.getElementById('step1');
+
+
+const requiredFields = step1.querySelectorAll(
+    'input[required], select[required], textarea[required]'
+);
+
+let valid = true;
+
+requiredFields.forEach(field => {
+
+    if (field.type === 'file') {
+        if (!field.files || field.files.length === 0) {
+            valid = false;
+            return;
+        }
+
+        if (field.files[0].size > 500 * 1024) {
+            valid = false;
+            return;
+        }
+    } else {
+        if (!field.checkValidity()) {
+            valid = false;
+            return;
+        }
+    }
+});
+
+step1Next.disabled = !valid;
+scheduleProgressUpdate();
+
+
+}
+
+const step1Fields = document.querySelectorAll(
+'#step1 input, #step1 select, #step1 textarea'
+);
+
+step1Fields.forEach(field => {
+field.addEventListener('input', validateStep1);
+field.addEventListener('change', validateStep1);
+field.addEventListener('blur', validateStep1);
+});
+
+const photoInput = document.getElementById('student_photo_input');
+const photoPreview = document.getElementById('photo_preview');
+const photoStatus = document.getElementById('photo_status');
+
+photoInput.addEventListener('change', function () {
+
+
+if (this.files.length) {
+
+    const file = this.files[0];
+    const sizeKB = (file.size / 1024).toFixed(1);
+
+    if (file.size > 500 * 1024) {
+
+        photoStatus.innerHTML =
+            '<span class="text-danger"><i class="fas fa-exclamation-circle"></i> File too large (' +
+            sizeKB +
+            ' KB). Max 500 KB.</span>';
+
+        photoPreview.style.display = 'none';
+
+    } else {
+
+        photoStatus.innerHTML =
+            '<span class="text-success"><i class="fas fa-check-circle"></i> Photo selected (' +
+            sizeKB +
+            ' KB)</span>';
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            photoPreview.src = e.target.result;
+            photoPreview.style.display = 'block';
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+} else {
+
+    photoPreview.style.display = 'none';
+    photoStatus.innerHTML = '';
+}
+
+validateStep1();
+
+
+});
+
+validateStep1();
+
+
+  step1Next.addEventListener('click', function() {
+    showStep(2);
+  });
+
+  // ============================================================
+  // 3. Step 2 — Mess Preference
+  // ============================================================
+  var vegCard = document.getElementById('vegCard');
+  var nonVegCard = document.getElementById('nonVegCard');
+  var messVeg = document.getElementById('messVeg');
+  var messNonVeg = document.getElementById('messNonVeg');
+  var step2Next = document.getElementById('step2-next');
+
+  function selectMess(type) {
+    if (type === 'Veg') {
+      messVeg.checked = true;
+      vegCard.classList.add('selected');
+      nonVegCard.classList.remove('selected');
+    } else {
+      messNonVeg.checked = true;
+      nonVegCard.classList.add('selected');
+      vegCard.classList.remove('selected');
+    }
+    step2Next.disabled = false;
+    saveAdmissionDraft();
+    scheduleProgressUpdate();
+  }
+
+  vegCard.addEventListener('click', function() { selectMess('Veg'); });
+  nonVegCard.addEventListener('click', function() { selectMess('Non-Veg'); });
+  step2Next.addEventListener('click', function() { showStep(3); });
+  document.getElementById('step2-prev').addEventListener('click', function() { showStep(1); });
+
+  // ============================================================
+  // 4. Step 3 — Declarations (Progressive Disclosure)
+  // ============================================================
+  var decl1 = document.getElementById('decl1_check');
+  var decl2 = document.getElementById('decl2_check');
+  var undert = document.getElementById('undert_check');
+  var decl2Wrapper = document.getElementById('decl2_wrapper');
+  var undertWrapper = document.getElementById('undert_wrapper');
+  var step3Next = document.getElementById('step3-next');
+
+  decl1.addEventListener('change', function() {
+    decl2Wrapper.style.display = this.checked ? 'block' : 'none';
+    if (!this.checked) {
+      decl2.checked = false;
+      undert.checked = false;
+      decl2Wrapper.style.display = 'none';
+      undertWrapper.style.display = 'none';
+    }
+    checkDeclarations();
+  });
+
+  decl2.addEventListener('change', function() {
+    undertWrapper.style.display = this.checked ? 'block' : 'none';
+    if (!this.checked) {
+      undert.checked = false;
+      undertWrapper.style.display = 'none';
+    }
+    checkDeclarations();
+  });
+
+  undert.addEventListener('change', checkDeclarations);
+
+  function checkDeclarations() {
+    step3Next.disabled = !(decl1.checked && decl2.checked && undert.checked);
+    scheduleProgressUpdate();
+  }
+
+  step3Next.addEventListener('click', function() { showStep(4); });
+  document.getElementById('step3-prev').addEventListener('click', function() { showStep(2); });
+
+  // ============================================================
+  // 5. Step 4 — Signature Uploads
+  // ============================================================
+  function setupSigUpload(inputId, previewId, statusId) {
+    var input = document.getElementById(inputId);
+    var preview = document.getElementById(previewId);
+    var status = document.getElementById(statusId);
+    input.addEventListener('change', function() {
+      if (this.files.length) {
+        var file = this.files[0];
+        var sizeKB = (file.size / 1024).toFixed(1);
+        if (file.size > 500 * 1024) {
+          status.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle"></i> Too large (' + sizeKB + ' KB). Max 500 KB.</span>';
+          preview.style.display = 'none';
+        } else {
+          status.innerHTML = '<span class="text-success"><i class="fas fa-check-circle"></i> Uploaded (' + sizeKB + ' KB)</span>';
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      } else {
+        preview.style.display = 'none';
+        status.innerHTML = '';
+      }
+      validateStep4();
+    });
+  }
+
+  setupSigUpload('student_sig_input', 'student_sig_preview', 'student_sig_status');
+  setupSigUpload('parent_sig_input', 'parent_sig_preview', 'parent_sig_status');
+
+  var step4Next = document.getElementById('step4-next');
+  var finalSubmit = document.getElementById('final-submit');
+  var reviewDetailsBtn = document.getElementById('reviewDetailsBtn');
+  var reviewModalEl = document.getElementById('reviewModal');
+  var reviewModal = reviewModalEl ? new bootstrap.Modal(reviewModalEl) : null;
+  var signaturesValid = false;
+  var submissionInProgress = false;
+
+  function validateStep4() {
+    var s1 = document.getElementById('student_sig_input');
+    var s2 = document.getElementById('parent_sig_input');
+    var valid = s1.files.length > 0 && s2.files.length > 0;
+    if (s1.files.length && s1.files[0].size > 500 * 1024) valid = false;
+    if (s2.files.length && s2.files[0].size > 500 * 1024) valid = false;
+    signaturesValid = valid;
+    step4Next.disabled = !valid;
+    if (!valid) {
+      finalSubmit.disabled = true;
+    } else {
+      validateStep5();
+    }
+    scheduleProgressUpdate();
+  }
+
+  // ============================================================
+  // Anti-Ragging Affidavit Screen helpers
+  // ============================================================
+
+  /** Strip trailing parenthetical abbreviation from branch text.
+   *  e.g. "Computer Science & Engineering (CSE)" → "Computer Science & Engineering"
+   *  Handles CSBS edge case by removing from the LAST " (" onward.
+   */
+  function stripBranchAbbreviation(branchText) {
+    var lastParen = branchText.lastIndexOf(' (');
+    if (lastParen !== -1) {
+      return branchText.substring(0, lastParen).trim();
+    }
+    return branchText.trim();
+  }
+
+  /** Return ordinal suffix for a day number: 1→"st", 2→"nd", 3→"rd", others→"th" */
+  function ordinalSuffix(day) {
+    var j = day % 10, k = day % 100;
+    if (j === 1 && k !== 11) return 'st';
+    if (j === 2 && k !== 12) return 'nd';
+    if (j === 3 && k !== 13) return 'rd';
+    return 'th';
+  }
+
+  var MONTH_NAMES = ['January','February','March','April','May','June',
+                     'July','August','September','October','November','December'];
+
+  function populateAntiRaggingScreen() {
+    var now = new Date();
+
+    // --- Opening line ---
+    var fullName  = (document.getElementById('full_name')  || {}).value || '';
+    var fatherName = (document.getElementById('father_name') || {}).value || '';
+    var branchSel = document.getElementById('branch');
+    var branchRaw = branchSel ? (branchSel.options[branchSel.selectedIndex] || {}).text || '' : '';
+    var branchClean = stripBranchAbbreviation(branchRaw);
+
+    var sessionStart = now.getFullYear();
+    var sessionEnd   = sessionStart + 1;
+
+    var openingEl = document.getElementById('ar_opening_line');
+    if (openingEl) {
+      // Image exact wording: "I, {NAME}, S/o Mr./Ms./Mrs. {FATHER},"
+      openingEl.textContent = 'I, ' + fullName + ', S/o Mr. ' + fatherName + ',';
+    }
+
+    // Clause 1 dynamic spans: branch name and academic session year
+    var branchSpan  = document.getElementById('ar_branch_span');
+    var sessionSpan = document.getElementById('ar_session_span');
+    if (branchSpan)  branchSpan.textContent  = branchClean || '______';
+    if (sessionSpan) sessionSpan.textContent = sessionStart + ' - ' + sessionEnd;
+
+    // --- Declared date line ---
+    var day   = now.getDate();
+    var month = MONTH_NAMES[now.getMonth()];
+    var year  = now.getFullYear();
+    var declaredEl = document.getElementById('ar_declared_line');
+    if (declaredEl) {
+      declaredEl.textContent = 'Declared this ' + day + ordinalSuffix(day)
+        + ' Day of ' + month + ' Month of ' + year + ' Year.';
+    }
+
+    // --- Parent signature ---
+    var parentSigInput   = document.getElementById('parent_sig_input');
+    var parentSigImg     = document.getElementById('ar_parent_sig_img');
+    var parentSigEmpty   = document.getElementById('ar_parent_sig_empty');
+    var parentNameEl     = document.getElementById('ar_parent_name');
+    var parentMobileEl   = document.getElementById('ar_parent_mobile');
+    var parentPhoneVal   = (document.getElementById('parent_phone') || {}).value || '';
+
+    if (parentNameEl)   parentNameEl.textContent   = 'Name : ' + fatherName;
+    if (parentMobileEl) parentMobileEl.textContent = 'Mobile No : ' + parentPhoneVal;
+
+    if (parentSigInput && parentSigInput.files && parentSigInput.files.length > 0) {
+      var parentReader = new FileReader();
+      parentReader.onload = function(e) {
+        if (parentSigImg)   { parentSigImg.src = e.target.result; parentSigImg.style.display = 'block'; }
+        if (parentSigEmpty) parentSigEmpty.style.display = 'none';
+      };
+      parentReader.readAsDataURL(parentSigInput.files[0]);
+    } else {
+      // Fallback: try existing preview
+      var parentPreview = document.getElementById('parent_sig_preview');
+      if (parentPreview && parentPreview.src && parentPreview.style.display !== 'none') {
+        if (parentSigImg)   { parentSigImg.src = parentPreview.src; parentSigImg.style.display = 'block'; }
+        if (parentSigEmpty) parentSigEmpty.style.display = 'none';
+      } else {
+        if (parentSigImg)   parentSigImg.style.display = 'none';
+        if (parentSigEmpty) parentSigEmpty.style.display = 'inline-block';
+      }
+    }
+
+    // --- Student / Deponent signature ---
+    var studentSigInput  = document.getElementById('student_sig_input');
+    var studentSigImg    = document.getElementById('ar_student_sig_img');
+    var studentSigEmpty  = document.getElementById('ar_student_sig_empty');
+    var studentNameEl    = document.getElementById('ar_student_name');
+    var studentMobileEl  = document.getElementById('ar_student_mobile');
+    var studentMobileVal = (document.getElementById('student_mobile') || {}).value || '';
+
+    if (studentNameEl)   studentNameEl.textContent   = 'Name : ' + fullName;
+    if (studentMobileEl) studentMobileEl.textContent = 'Mobile No : ' + studentMobileVal;
+
+    if (studentSigInput && studentSigInput.files && studentSigInput.files.length > 0) {
+      var studentReader = new FileReader();
+      studentReader.onload = function(e) {
+        if (studentSigImg)   { studentSigImg.src = e.target.result; studentSigImg.style.display = 'block'; }
+        if (studentSigEmpty) studentSigEmpty.style.display = 'none';
+      };
+      studentReader.readAsDataURL(studentSigInput.files[0]);
+    } else {
+      // Fallback: try existing preview
+      var studentPreview = document.getElementById('student_sig_preview');
+      if (studentPreview && studentPreview.src && studentPreview.style.display !== 'none') {
+        if (studentSigImg)   { studentSigImg.src = studentPreview.src; studentSigImg.style.display = 'block'; }
+        if (studentSigEmpty) studentSigEmpty.style.display = 'none';
+      } else {
+        if (studentSigImg)   studentSigImg.style.display = 'none';
+        if (studentSigEmpty) studentSigEmpty.style.display = 'inline-block';
+      }
+    }
+  }
+
+  function showAntiRaggingScreen() {
+    // Hide all step divs
+    for (var i = 1; i <= totalSteps; i++) {
+      steps[i].style.display = 'none';
+    }
+    // Show the anti-ragging screen
+    var arScreen = document.getElementById('antiRaggingScreen');
+    if (arScreen) arScreen.style.display = 'block';
+    populateAntiRaggingScreen();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function hideAntiRaggingScreen() {
+    var arScreen = document.getElementById('antiRaggingScreen');
+    if (arScreen) arScreen.style.display = 'none';
+  }
+
+  // Anti-ragging screen buttons
+  var arBackBtn = document.getElementById('ar-back-btn');
+  var arContinueBtn = document.getElementById('ar-continue-btn');
+  if (arBackBtn) {
+    arBackBtn.addEventListener('click', function() {
+      hideAntiRaggingScreen();
+      showStep(4);
+    });
+  }
+  if (arContinueBtn) {
+    arContinueBtn.addEventListener('click', function() {
+      hideAntiRaggingScreen();
+      showStep(5);
+    });
+  }
+
+  // step4-next now shows the Anti-Ragging screen instead of jumping directly to step 5
+  step4Next.addEventListener('click', function() {
+    showAntiRaggingScreen();
+  });
+  if (reviewDetailsBtn) {
+    reviewDetailsBtn.addEventListener('click', function() {
+      renderReviewModal();
+      if (reviewModal) reviewModal.show();
+    });
+  }
+  var goMissingUploadsBtn = document.getElementById('goMissingUploadsBtn');
+  if (goMissingUploadsBtn) {
+    goMissingUploadsBtn.addEventListener('click', function() {
+      if (reviewModal) reviewModal.hide();
+      showStep(1);
+      setTimeout(function() {
+        var target = document.getElementById('student_photo_input');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (target && typeof target.focus === 'function') {
+          target.focus({ preventScroll: true });
+        }
+      }, 150);
+    });
+  }
+  finalSubmit.addEventListener('click', function() {
+    if (submissionInProgress) return;
+    new bootstrap.Modal(document.getElementById('confirmModal')).show();
+  });
+
+  document.getElementById('confirmSubmitBtn').addEventListener('click', function() {
+    if (submissionInProgress) return;
+    submissionInProgress = true;
+    this.disabled = true;
+    this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Submitting...';
+    if (finalSubmit) finalSubmit.disabled = true;
+    // Force uppercase full name
+    var fn = document.querySelector('input[name="full_name"]');
+    if (fn) fn.value = fn.value.toUpperCase();
+    document.getElementById('admissionForm').submit();
+  });
+
+  document.getElementById('step4-prev').addEventListener('click', function() { showStep(3); });
+
+  // ============================================================
+  // 6. Step 5 — Payment Amount & Mode
+  // ============================================================
+  var advanceAmountInput = document.getElementById('advance_amount');
+  var paymentCash = document.getElementById('paymentCash');
+  var paymentOnline = document.getElementById('paymentOnline');
+  var cashCard = document.getElementById('cashCard');
+  var onlineCard = document.getElementById('onlineCard');
+  var advanceAmountStatus = document.getElementById('advance_amount_status');
+  var paymentModeStatus = document.getElementById('payment_mode_status');
+
+  function selectPaymentMode(mode) {
+    if (mode === 'Cash') {
+      paymentCash.checked = true;
+      paymentOnline.checked = false;
+      cashCard.classList.add('selected');
+      onlineCard.classList.remove('selected');
+    } else if (mode === 'Online') {
+      paymentOnline.checked = true;
+      paymentCash.checked = false;
+      onlineCard.classList.add('selected');
+      cashCard.classList.remove('selected');
+    }
+    validateStep5();
+    saveAdmissionDraft();
+  }
+
+  function validateStep5() {
+    var amountRaw = (advanceAmountInput.value || '').trim();
+    var amount = amountRaw ? parseFloat(amountRaw) : NaN;
+    var hasValidAmount = amountRaw !== '' && !isNaN(amount) && amount > 0;
+    var hasMode = paymentCash.checked || paymentOnline.checked;
+
+    if (amountRaw === '') {
+      advanceAmountStatus.innerHTML = '<span class="text-muted">Enter the advance amount to proceed.</span>';
+    } else if (!hasValidAmount) {
+      advanceAmountStatus.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Please enter a valid amount greater than zero.</span>';
+    } else {
+      advanceAmountStatus.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Stored as Rs. ' + amount.toFixed(2) + '</span>';
+    }
+
+    if (!hasMode) {
+      paymentModeStatus.innerHTML = '<span class="text-muted">Select Cash or Online.</span>';
+    } else {
+      paymentModeStatus.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>' + (paymentCash.checked ? 'Cash selected' : 'Online selected') + '</span>';
+    }
+
+    finalSubmit.disabled = !(hasValidAmount && hasMode && signaturesValid);
+    scheduleProgressUpdate();
+  }
+
+  cashCard.addEventListener('click', function() { selectPaymentMode('Cash'); });
+  onlineCard.addEventListener('click', function() { selectPaymentMode('Online'); });
+  paymentCash.addEventListener('change', validateStep5);
+  paymentOnline.addEventListener('change', validateStep5);
+  advanceAmountInput.addEventListener('input', validateStep5);
+  advanceAmountInput.addEventListener('change', validateStep5);
+  document.getElementById('step5-prev').addEventListener('click', function() { showStep(4); });
+
+  function syncRestoredWizardState() {
+    if (!draftPayload || !draftPayload.values) {
+      refreshUploadState();
+      validateStep1();
+      checkDeclarations();
+      validateStep4();
+      validateStep5();
+      showStep(currentStep || 1);
+      return;
+    }
+
+    var savedMess = draftPayload.values['radio:mess_preference'];
+    if (savedMess === 'Veg' || savedMess === 'Non-Veg') {
+      selectMess(savedMess);
+    }
+
+    var savedPayment = draftPayload.values['radio:payment_mode'];
+    if (savedPayment === 'Cash' || savedPayment === 'Online') {
+      selectPaymentMode(savedPayment);
+    }
+
+    if (decl1.checked) {
+      decl2Wrapper.style.display = 'block';
+    }
+    if (!decl1.checked) {
+      decl2.checked = false;
+      undert.checked = false;
+      decl2Wrapper.style.display = 'none';
+      undertWrapper.style.display = 'none';
+    } else if (!decl2.checked) {
+      undert.checked = false;
+      undertWrapper.style.display = 'none';
+    } else {
+      undertWrapper.style.display = 'block';
+    }
+
+    refreshUploadState();
+    validateStep1();
+    checkDeclarations();
+    validateStep4();
+    validateStep5();
+    showStep(currentStep || 1);
+  }
+
+  // ============================================================
+  // 7. Set DOB max & Submission Date
+  // ============================================================
+  document.getElementById('dob').max = new Date().toISOString().split('T')[0];
+  document.getElementById('submission_date_display').value = new Date().toLocaleDateString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  });
+
+  // Init
+  syncRestoredWizardState();
+});
+</script>
+</body>
+</html>

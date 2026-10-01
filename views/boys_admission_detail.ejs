@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boys Hostel - Admission Detail View</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.1);
+        }
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .label-text {
+            color: #6c757d;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .value-text {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #2e3440;
+            margin-bottom: 14px;
+            word-break: break-word;
+        }
+        .signature-img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 5px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid mt-4 px-4 pb-5">
+    <div class="mb-3 d-flex gap-2 align-items-center">
+        <a href="/boys/admission-applications" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to View
+        </a>
+        <% if (app.status === 'Admitted') { %>
+        <a href="/admin/admission-applications/<%= app.id %>/print"
+           target="_blank"
+           class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-print me-1"></i>Print Form
+        </a>
+        <% } %>
+    </div>
+
+    <div class="header-gradient d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="mb-1"><i class="fas fa-file-alt me-2"></i>Application #<%= app.id %></h2>
+            <div class="opacity-75">Admission form details and final allotment summary</div>
+        </div>
+        <div>
+            <% if(String(app.status || '').toLowerCase() === 'admitted') { %>
+                <span class="badge bg-success fs-5 px-3 py-2">Admitted</span>
+            <% } else if(String(app.status || '').toLowerCase() === 'rejected') { %>
+                <span class="badge bg-danger fs-5 px-3 py-2">Rejected</span>
+            <% } else { %>
+                <span class="badge bg-warning text-dark fs-5 px-3 py-2">Pending</span>
+            <% } %>
+        </div>
+    </div>
+
+    <% if (message && message.length > 0) { %>
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <%= message %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <% if (app.status === 'Admitted' && app.student_uid) { %>
+        <div class="alert alert-success border-2 mb-4" style="border-color:#198754!important;">
+            <h5 class="mb-2"><i class="fas fa-check-circle me-2"></i>Admission Approved</h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="label-text">Generated UID</div>
+                    <div class="value-text font-monospace text-primary fw-bold"><%= app.student_uid %></div>
+                </div>
+                <div class="col-md-3">
+                    <div class="label-text">Allotted Block</div>
+                    <div class="value-text"><%= app.allotted_block || '--' %></div>
+                </div>
+                <div class="col-md-3">
+                    <div class="label-text">Allotted Room</div>
+                    <div class="value-text"><%= app.allotted_room || '--' %></div>
+                </div>
+                <div class="col-md-3">
+                    <div class="label-text">Allotted Bed</div>
+                    <div class="value-text"><%= app.allotted_bed || '--' %></div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="detail-card">
+                <h4 class="mb-4 text-primary border-bottom pb-2"><i class="fas fa-user"></i> Student Details</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="label-text">Full Name</div>
+                        <div class="value-text"><%= app.full_name || '--' %></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="label-text">Date of Birth</div>
+                        <div class="value-text"><%= app.dob ? new Date(app.dob).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : '--' %></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="label-text">Father's Name</div>
+                        <div class="value-text"><%= app.father_name || '--' %></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="label-text">Mother's Name</div>
+                        <div class="value-text"><%= app.mother_name || '--' %></div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="label-text">Permanent Address</div>
+                        <div class="value-text"><%= app.permanent_address || '--' %></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="label-text">Parent Phone</div>
+                        <div class="value-text"><%= app.parent_phone || '--' %></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="label-text">Student Mobile</div>
+                        <div class="value-text"><%= app.student_mobile || '--' %></div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="label-text">Student Email</div>
+                        <div class="value-text"><%= app.student_email || '--' %></div>
+                    </div>
+                </div>
+
+                <h4 class="mb-4 mt-4 text-primary border-bottom pb-2"><i class="fas fa-graduation-cap"></i> Academic Details</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="label-text">Branch</div>
+                        <div class="value-text"><%= app.branch || '--' %></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="label-text">Admission Year</div>
+                        <div class="value-text"><%= app.admission_year || '--' %></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="label-text">Mess Preference</div>
+                        <div class="value-text"><%= app.mess_preference || '--' %></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="label-text">Submission Date</div>
+                        <div class="value-text"><%= app.created_at ? new Date(app.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '--' %></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card" style="border-left:4px solid #198754;">
+                <h4 class="mb-4 text-success border-bottom pb-2"><i class="fas fa-wallet"></i> Payment Details</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="label-text">Advance Amount</div>
+                        <div class="value-text"><%= (app.advance_amount != null && !isNaN(Number(app.advance_amount))) ? Number(app.advance_amount).toFixed(2) : '--' %></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="label-text">Payment Mode</div>
+                        <div class="value-text">
+                            <% if(app.payment_mode) { %>
+                                <span class="badge bg-info text-dark"><%= app.payment_mode %></span>
+                            <% } else { %>
+                                --
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h4 class="mb-4 text-primary border-bottom pb-2"><i class="fas fa-clipboard-check"></i> Action Summary</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="label-text">Status</div>
+                        <div class="value-text">
+                            <% if(String(app.status || '').toLowerCase() === 'admitted') { %>
+                                <span class="text-success fw-bold">Admitted</span>
+                            <% } else if(String(app.status || '').toLowerCase() === 'rejected') { %>
+                                <span class="text-danger fw-bold">Rejected</span>
+                            <% } else { %>
+                                <span class="text-warning fw-bold">Pending</span>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="label-text">Reviewed By</div>
+                        <div class="value-text"><%= app.reviewed_by || '--' %></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="label-text">Reviewed At</div>
+                        <div class="value-text"><%= app.reviewed_at ? new Date(app.reviewed_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '--' %></div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="label-text">Remarks</div>
+                        <div class="value-text"><%= app.admin_remarks || '--' %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="detail-card text-center">
+                <h4 class="mb-3 text-primary border-bottom pb-2"><i class="fas fa-camera"></i> Student Photo</h4>
+                <% if(app.student_photo_path) { %>
+                    <img src="<%= app.student_photo_path %>" alt="Student Photo" style="width:150px;height:190px;object-fit:cover;border:2px solid #ddd;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.1);">
+                <% } else { %>
+                    <div class="text-muted fst-italic py-5">Not provided</div>
+                <% } %>
+            </div>
+
+            <div class="detail-card">
+                <h4 class="mb-3 text-primary border-bottom pb-2"><i class="fas fa-signature"></i> Signatures</h4>
+                <div class="mb-3">
+                    <div class="label-text">Student Signature</div>
+                    <% if(app.decl1_signature_path) { %>
+                        <img src="<%= app.decl1_signature_path %>" alt="Student Signature" class="signature-img">
+                    <% } else if(app.undertaking_signature_path) { %>
+                        <img src="/uploads/admissions/<%= app.undertaking_signature_path %>" alt="Student Signature" class="signature-img">
+                    <% } else { %>
+                        <div class="text-muted fst-italic">Not provided</div>
+                    <% } %>
+                </div>
+                <div>
+                    <div class="label-text">Parent / Guardian Signature</div>
+                    <% if(app.parent_signature_path) { %>
+                        <img src="<%= app.parent_signature_path %>" alt="Parent Signature" class="signature-img">
+                    <% } else { %>
+                        <div class="text-muted fst-italic">Not provided</div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

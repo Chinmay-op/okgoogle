@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hostel Analytics Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* General Styling */
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', sans-serif; }
+        
+        /* Navbar Customization */
+        .navbar-custom { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            padding: 1.2rem 1rem; /* Increased top/bottom padding for navbar */
+        }
+        
+        /* Card Styling for Better Visual Hierarchy */
+        .card-stat { 
+            border: none; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            transition: transform 0.2s; 
+            padding: 1.5rem; /* Increased internal padding */
+        }
+        .card-stat:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Text/Value Styling */
+        .stat-title { font-size: 0.85rem; color: #666; font-weight: 700; text-transform: uppercase; }
+        .stat-value { font-size: 2.0rem; font-weight: 800; color: #333; }
+        
+        /* Background Colors */
+        .bg-success-light { background-color: #d4edda; color: #155724; }
+        .bg-danger-light { background-color: #f8d7da; color: #721c24; }
+        .bg-info-light { background-color: #cfe2ff; color: #084298; }
+        .bg-warning-light { background-color: #fff3cd; color: #856404; }
+        
+        /* Header and Chart Containers */
+        .chart-container {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+    </style>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark navbar-custom">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1 ps-3"><i class="fas fa-chart-line me-2"></i>Hostel Analytics</span>
+            <a href="/attendance" class="btn btn-outline-light btn-sm me-3"><i class="fas fa-calendar-check me-1"></i>Attendance Grid</a>
+        </div>
+    </nav>
+
+    <div class="container mt-5 pb-5"> 
+        
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card card-stat p-0">
+                    <div class="card-header bg-white fw-bold py-3 border-bottom-0"><i class="fas fa-clipboard-list me-2"></i>Hostel Monitoring Report</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0 text-center align-middle" style="font-size: 0.95rem;">
+                                <thead class="table-light" style="font-size: 0.85rem; text-transform: uppercase;">
+                                    <tr>
+                                        <th scope="col" class="py-3">Total Students</th>
+                                        <th scope="col" class="py-3">Gate Out<br><span style="font-size: 0.75rem; text-transform: lowercase; font-weight: 600; color: #495057;">(today's count)</span></th>
+                                        <th scope="col" class="py-3">Hostel Out<br><span style="font-size: 0.75rem; text-transform: lowercase; font-weight: 600; color: #495057;">(today's count)</span></th>
+                                        <th scope="col" class="py-3">Veg Out<br><span style="font-size: 0.75rem; text-transform: lowercase; font-weight: 600; color: #495057;">(currently outside)</span></th>
+                                        <th scope="col" class="py-3">Non-Veg Out<br><span style="font-size: 0.75rem; text-transform: lowercase; font-weight: 600; color: #495057;">(currently outside)</span></th>
+                                        <th scope="col" class="py-3 text-primary fw-bold">Total Present<br><span style="font-size: 0.75rem; text-transform: lowercase; font-weight: 600; color: #084298;">(currently inside)</span></th>
+                                        <th scope="col" class="py-3 text-success">Veg Present</th>
+                                        <th scope="col" class="py-3 text-danger">Non-Veg Present</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% logs.forEach(log => { %>
+                                    <tr>
+                                        <td class="fw-bold py-3"><%- result.totalStudents %></td>
+                                        <td class="py-3"><%- result.gateOut %></td>
+                                        <td class="py-3"><%- result.hostelOut %></td>
+                                        <td class="py-3"><%- (result.vegOut !=null ? result.vegOut : 0) %></td>
+                                        <td class="py-3"><%- (result.nonVegOut !=null ? result.nonVegOut : 0) %></td>
+                                        <td class="fw-bold py-3 text-primary" style="font-size: 1.1rem;"><%- result.totalPresent %></td>
+                                        <td class="text-success fw-bold py-3"><%= log.veg %></td>
+                                        <td class="text-danger fw-bold py-3"><%= log.nonveg %></td>
+                                    </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="mb-5 fw-bold text-dark">Today's Hostel Overview</h3>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card card-stat" style="border-left: 6px solid #6c5ce7;">
+                    <div class="stat-title">Total Students (Hostel)</div>
+                    <h3 class="fw-bold mb-0 stat-value"><%= stats.attendance.Total || 0 %></h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-stat bg-info-light" style="border-left: 6px solid #007bff;">
+                    <div class="stat-title text-primary">Gone Outside Today (Home Pass)</div>
+                    <h3 class="fw-bold mb-0 stat-value"><%= stats.todayHomePass || 0 %></h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-stat bg-warning-light" style="border-left: 6px solid #ffc107;">
+                    <div class="stat-title text-warning">Gone Outside Today (City Pass)</div>
+                    <h3 class="fw-bold mb-0 stat-value"><%= stats.todayCityPass || 0 %></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <!-- Spacer -->
+            </div>
+            <div class="col-md-4">
+                <div class="card card-stat bg-info-light" style="border-left: 6px solid #17a2b8;">
+                    <div class="stat-title text-info" style="color: #17a2b8 !important;">Requested Today (Home Pass)</div>
+                    <h3 class="fw-bold mb-0 stat-value"><%= stats.reqHomePass || 0 %></h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-stat bg-warning-light" style="border-left: 6px solid #ff9800;">
+                    <div class="stat-title text-warning" style="color: #ff9800 !important;">Requested Today (City Pass)</div>
+                    <h3 class="fw-bold mb-0 stat-value"><%= stats.reqCityPass || 0 %></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-5">
+            <div class="col-md-6">
+                <div class="card card-stat h-100 chart-container">
+                    <div class="card-header bg-white fw-bold py-3"><i class="fas fa-utensils me-2"></i>Mess Preference</div>
+                    <div class="card-body p-0">
+                        <div id="mess_chart" style="width: 100%; height: 350px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card card-stat h-100 chart-container">
+                    <div class="card-header bg-white fw-bold py-3"><i class="fas fa-graduation-cap me-2"></i>Student Breakdown by Year</div>
+                    <div class="card-body p-0">
+                        <div id="year_chart" style="width: 100%; height: 350px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-5 mt-2 mb-5">
+            <div class="col-md-6">
+                <div class="card card-stat h-100 chart-container">
+                    <div class="card-header bg-white fw-bold py-3"><i class="fas fa-shield-alt me-2 text-danger"></i>Restricted Status</div>
+                    <div class="card-body p-0">
+                        <div id="status_chart" style="width: 100%; height: 350px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart', 'bar']});
+        google.charts.setOnLoadCallback(drawCharts);
+        google.charts.setOnLoadCallback(fetchAndDrawStatusChart);
+
+        function fetchAndDrawStatusChart() {
+            fetch('/datastatus')
+                .then(response => response.json())
+                .then(data => {
+                    var chartData = new google.visualization.DataTable();
+                    chartData.addColumn('string', 'Status');
+                    chartData.addColumn('number', 'Count');
+                    
+                    // To ensure consistent coloring based on status text:
+                    var sliceColors = [];
+                    data.forEach(item => {
+                        chartData.addRow([item.status, item.Count]);
+                        if (item.status.toLowerCase() === 'restrict') {
+                            sliceColors.push('#dc3545'); // Red
+                        } else if (item.status.toLowerCase() === 'unrestrict') {
+                            sliceColors.push('#28a745'); // Green
+                        } else {
+                            sliceColors.push('#6c5ce7'); // Default/Other
+                        }
+                    });
+
+                    var options = {
+                        title: 'Restricted vs Unrestricted',
+                        pieHole: 0.4,
+                        colors: sliceColors,
+                        legend: { position: 'bottom' },
+                        chartArea: { width: '90%', height: '80%' }
+                    };
+                    
+                    var chart = new google.visualization.PieChart(document.getElementById('status_chart'));
+                    chart.draw(chartData, options);
+                })
+                .catch(error => console.error('Error fetching status data:', error));
+        }
+
+        function drawCharts() {
+            // --- 1. MESS CHART ---
+            var messData = new google.visualization.DataTable();
+            messData.addColumn('string', 'Type');
+            messData.addColumn('number', 'Count');
+            
+            var vegCount = 0;
+            var nonVegCount = 0;
+            <% stats.mess.forEach(function(item) { %>
+                var mType = <%- JSON.stringify(item.mess_type || '') %>.toLowerCase().trim();
+                if (mType.indexOf('non') !== -1) {
+                    nonVegCount += <%= item.count || 0 %>;
+                } else if (mType.indexOf('veg') !== -1) {
+                    vegCount += <%= item.count || 0 %>;
+                }
+            <% }); %>
+            messData.addRow(['Veg', vegCount]);
+            messData.addRow(['Non-Veg', nonVegCount]);
+
+            var messOptions = { 
+                title: 'Veg vs Non-Veg Count', 
+                pieHole: 0.4, 
+                colors: ['#28a745', '#dc3545'], 
+                legend: { position: 'bottom' },
+                chartArea: { width: '90%', height: '80%' }
+            };
+            var messChart = new google.visualization.PieChart(document.getElementById('mess_chart'));
+            messChart.draw(messData, messOptions);
+
+            // --- 2. YEAR BREAKDOWN CHART ---
+            var yearData = new google.visualization.DataTable();
+            yearData.addColumn('string', 'Year');
+            yearData.addColumn('number', 'Students');
+
+            <% stats.year.forEach(function(item) { %>
+                yearData.addRow([<%- JSON.stringify(String(item.year || 'Unknown')) %>, <%= item.count || 0 %>]);
+            <% }); %>
+
+            var yearOptions = {
+                title: 'Student Count by Academic Year',
+                bars: 'vertical',
+                hAxis: { title: 'Academic Year' },
+                vAxis: { title: 'Number of Students' },
+                legend: { position: 'none' },
+                colors: ['#6c5ce7'],
+                chartArea: { width: '95%', height: '75%' }
+            };
+            var yearChart = new google.visualization.ColumnChart(document.getElementById('year_chart'));
+            yearChart.draw(yearData, yearOptions);
+        }
+    </script>
+</body>
+</html>

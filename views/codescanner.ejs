@@ -1,0 +1,96 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codescanner</title>
+    <link rel="stylesheet" href="/stylesheets/codescanner.css">
+    <link rel="icon" href="/images/4174.png">
+    <img src="/images/logo.png" height="auto" width="auto" class="center"/></a><br><br>
+    <script>
+      var barcode = '';
+            var interval;
+            document.addEventListener('keydown', function(evt) {
+                if (interval)
+                    clearInterval(interval);
+                if (evt.code == 'Enter') {
+                    if (barcode)
+                        handleBarcode(barcode);
+                    barcode = '';
+                    return;
+                }
+                if (evt.key != 'Shift')
+                    barcode += evt.key;
+                interval = setInterval(() => barcode = '', 20);
+            });
+
+            function handleBarcode(scanned_barcode) {
+                location.href = "/codescanner/"+scanned_barcode;
+            }    
+
+           
+    </script>
+
+    <script>
+
+ function myfunction(){
+  var aaaa='<%= result1[0].outdatetime %>';
+  var aaaa1='<%= result1[0].indatetime %>';
+  //alert('Old value: fgdfgdf', aaaa );
+  
+        if(aaaa == '' )
+            {
+                if(aaaa1 == '')
+                {
+                  document.getElementById('buttonin').style.visibility='hidden';
+                }
+            }
+            else 
+            {
+              document.getElementById('buttonout').style.visibility='hidden';
+              if(aaaa1 != '')
+                {
+                  document.getElementById('buttonin').style.visibility='hidden';
+                  document.getElementById('buttonout').style.visibility='visible';
+                }
+            }
+          } 
+    
+    </script>
+</head>
+
+<body onload="myfunction()" >
+  <form action="/codescanner/<%= result[0].uid %>?back=<%= encodeURIComponent(backUrl || '/homepage') %>" method="post">
+    <div class="container" id="container" onload="img()">
+      
+        <div class="card">
+          <h2><%= result[0].sname %></h2>
+          <div class="title title--epic" id="uid"><%= result[0].uid %></div>
+          <% if (result[0] && result[0].path) { %>
+            <div id="imgdiv"> 
+              <img src="<%=result[0].path%>" id="stuimg" width="160" height="160" style="object-fit: cover; border-radius: 50%;">
+            </div><br>
+          <%} else { %>
+            <div id="imgdiv"> 
+              <img src="/images/blank_profile.webp" id="stuimg" width="160" height="160" style="object-fit: cover; border-radius: 50%;">
+            </div><br>
+          <% } %>
+         
+        
+            <div class="actions" name="action" >
+            <button class="actions__like" id="buttonin" name="buttonin" value="IN"   >IN &nbsp; <i class="fas fa-heart"></i> </button>
+            
+            <button class="actions__cancel" id="buttonout" name="buttonout" value="OUT"   >OUT &nbsp; <i class="fas fa-times"></i> </button>
+           <!-- 
+    
+
+            <input type='text' id='stt' name="uid" placeholder='Enter UID' value="<%= result[0].outdatetime %>" class='form-input-size'  required /> --> 
+
+          </div>
+        </div>
+        
+         
+        </div>
+      </form>
+</body>
+</html>

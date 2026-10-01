@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Student Portal</title>
+    <link rel="stylesheet" href="/stylesheets/studentportal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+    <style>
+        .btn-filter-inactive {
+            background: #f5f5f5 !important;
+            color: #333 !important;
+            text-decoration: none;
+        }
+        .btn-filter-active {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <button class="sidebar-close" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="logo">
+            <img src="/images/4174.png" alt="Logo">
+            <h2>Gate Pass</h2>
+        </div>
+
+        <ul class="nav-links">
+            <li>
+                <a href="/student/dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/roombooking">
+                    <i class="fas fa-bed"></i>
+                    <span>Room Booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/profile">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/attendance">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Attendance</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/passhistory">
+                    <i class="fas fa-history"></i>
+                    <span>Pass History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/requestpass">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Request Pass</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleave">
+                    <i class="fas fa-notes-medical"></i>
+                    <span>Request Sick Leave</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleaverequests">
+                    <i class="fas fa-list-alt"></i>
+                    <span>My Sick Leave Requests</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/mess" id="nav_student_breakfast_link">
+                    <i class="fas fa-utensils"></i>
+                    <span>Mess Selection</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/notifications" class="active">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bonafide">
+                    <i class="fas fa-certificate"></i>
+                    <span>Bonafide Certificate</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bank-details">
+                    <i class="fas fa-university"></i>
+                    <span>Hostel Bank Details</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/complain">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Complain Box</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="user-info">
+            <div class="user-detail">
+                <img src="<%= student.path || '/images/default-avatar.png' %>" alt="Profile">
+                <div>
+                    <div class="name">
+                        <%= student.sname %>
+                    </div>
+                    <div class="role">
+                        <%= student.uid %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="page-title">
+                <h1>Notifications</h1>
+                <p>Stay updated with your pass approvals and announcements</p>
+            </div>
+
+            <div class="user-actions">
+                <a href="/student/logout" class="logout-btn" style="text-decoration: none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Notification Filters -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-filter"></i> Filter</h2>
+                <div style="display: flex; gap: 10px;">
+                    <a href="/student/notifications" class="btn <%= !filter ? 'btn-primary btn-filter-active' : 'btn-filter-inactive' %>">All</a>
+                    <a href="/student/notifications?filter=pass"
+                        class="btn <%= filter === 'pass' ? 'btn-primary btn-filter-active' : 'btn-filter-inactive' %>">Pass Updates</a>
+                    <a href="/student/notifications?filter=announcements"
+                        class="btn <%= filter === 'announcements' ? 'btn-primary btn-filter-active' : 'btn-filter-inactive' %>">Announcements</a>
+                    <a href="/student/notifications?filter=system"
+                        class="btn <%= filter === 'system' ? 'btn-primary btn-filter-active' : 'btn-filter-inactive' %>">System</a>
+                </div>
+            </div>
+        </div>
+
+        <% if(!filter || filter === 'pass') { %>
+        <!-- Notifications List -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-bell"></i> <%= filter === 'pass' ? 'Pass Updates' : 'All Notifications' %></h2>
+            </div>
+
+            <% if(notifications && notifications.length> 0) { %>
+                <% notifications.forEach(function(notif) { %>
+                    <div class="notification-item <%= notif.read ? '' : 'unread' %>">
+                        <div class="notif-icon">
+                            <% if(notif.type==='pass_approved' ) { %>
+                                <i class="fas fa-check-circle"></i>
+                                <% } else if(notif.type==='pass_rejected' ) { %>
+                                    <i class="fas fa-times-circle"></i>
+                                    <% } else if(notif.type==='restriction' ) { %>
+                                        <i class="fas fa-ban"></i>
+                                        <% } else if(notif.type==='unrestriction' ) { %>
+                                            <i class="fas fa-unlock"></i>
+                                            <% } else { %>
+                                                <i class="fas fa-info"></i>
+                                                <% } %>
+                        </div>
+                        <div class="notif-content">
+                            <h4>
+                                <%= notif.title %>
+                            </h4>
+                            <p>
+                                <%= notif.message %>
+                            </p>
+                            <span class="time">
+                                <%= notif.created_at %>
+                            </span>
+                        </div>
+                    </div>
+                    <% }); %>
+                        <% } else { %>
+                            <!-- Default notifications based on recent activity -->
+                            <% if(student.status==='Restrict' ) { %>
+                                <div class="notification-item unread">
+                                    <div class="notif-icon"
+                                        style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                                        <i class="fas fa-ban"></i>
+                                    </div>
+                                    <div class="notif-content">
+                                        <h4>Account Restricted</h4>
+                                        <p>Your account has been restricted. Please contact the hostel office for
+                                            more information.</p>
+                                        <span class="time">Current Status</span>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <% if(recentPasses && recentPasses.length> 0) { %>
+                                        <% recentPasses.forEach(function(pass) { %>
+                                            <div class="notification-item">
+                                                <div class="notif-icon">
+                                                    <i class="fas fa-ticket-alt"></i>
+                                                </div>
+                                                <div class="notif-content">
+                                                    <h4>
+                                                        <%= pass.passtype %> Generated
+                                                    </h4>
+                                                    <p>Your <%= pass.passtype %> was generated successfully.</p>
+                                                    <span class="time">
+                                                        <%= pass.approvaldt %>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <% }); %>
+                                                <% } %>
+
+                                                    <% if((!recentPasses || recentPasses.length===0) && student.status
+                                                        !=='Restrict' ) { %>
+                                                        <div class="empty-state">
+                                                            <i class="fas fa-bell-slash"></i>
+                                                            <h3>No Notifications Available.</h3>
+                                                            <p>You're all caught up! New notifications will appear here.
+                                                            </p>
+                                                        </div>
+                                                        <% } %>
+                                                            <% } %>
+        </div>
+        <% } %>
+
+        <% if(!filter || filter === 'announcements') { %>
+        <!-- Admin Announcements -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-bullhorn"></i> Admin Announcements</h2>
+            </div>
+
+            <% if(announcements && announcements.length > 0) { %>
+                <% announcements.forEach(function(ann) { %>
+                    <div class="notification-item" style="border-left-color: #667eea;">
+                        <div class="notif-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="notif-content">
+                            <h4><%= ann.title %></h4>
+                            <p><%= ann.description %></p>
+                            <span class="time">
+                                <% if(ann.target_year === 'all') { %>
+                                    All Students
+                                <% } else { %>
+                                    <%= ann.target_year %><%= ann.target_year === '1' ? 'st' : (ann.target_year === '2' ? 'nd' : (ann.target_year === '3' ? 'rd' : 'th')) %> Year
+                                <% } %>
+                                &bull; <%= ann.created_at ? new Date(ann.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '' %>
+                            </span>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-bullhorn"></i>
+                    <h3>No Announcements</h3>
+                    <p>There are no announcements at the moment.</p>
+                </div>
+            <% } %>
+        </div>
+        <% } %>
+
+        <% if(!filter || filter === 'system') { %>
+        <!-- System Notifications -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-info-circle"></i> System Notifications</h2>
+            </div>
+
+            <div class="notification-item" style="border-left-color: #22c55e;">
+                <div class="notif-icon" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="notif-content">
+                    <h4>Hostel Timings</h4>
+                    <p>Please ensure you return to hostel before the designated closing time. Late entries will be
+                        recorded and may affect your pass privileges.</p>
+                    <span class="time">General Reminder</span>
+                </div>
+            </div>
+
+            <div class="notification-item" style="border-left-color: #f97316;">
+                <div class="notif-icon" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <div class="notif-content">
+                    <h4>Always Carry ID Card</h4>
+                    <p>Please always carry your student ID card when exiting the campus. It is mandatory for gate pass
+                        verification.</p>
+                    <span class="time">General Reminder</span>
+                </div>
+            </div>
+
+            <div class="notification-item" style="border-left-color: #667eea;">
+                <div class="notif-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <div class="notif-content">
+                    <h4>Emergency Contact</h4>
+                    <p>In case of any emergency while outside the campus, please contact the hostel warden immediately.
+                    </p>
+                    <span class="time">General Information</span>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+            document.body.style.overflow = document.querySelector('.sidebar').classList.contains('active') ? 'hidden' : '';
+        }
+    </script>
+</body>
+
+</html>

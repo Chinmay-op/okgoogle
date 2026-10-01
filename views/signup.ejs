@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Sign Up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/stylesheets/loginpanel.css">
+</head>
+<body>
+  <header><img src="/images/logo.png" height="auto" max-width="100%" class="center" /></header>
+  <br><br>
+  <% if(message && message.length>0){ %>
+    <div class="alert-danger">
+      <h3><%- message %></h3>
+    </div>
+  <% } %>
+  <div class="form-bg">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-offset-3 col-md-6 col-sm-offset-2 col-sm-8">
+          <div class="form-container">
+            <form class="form-horizontal" action="/signup" method="post">
+              <h3 class="title">Create an account</h3>
+
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="UID (username)" name="UID" required>
+              </div>
+
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="Full name" name="name">
+              </div>
+
+              <div class="form-group">
+                <input class="form-control" type="password" placeholder="Password" name="password" required>
+              </div>
+
+              <div class="form-group">
+                <select name="category" class="form-control" required>
+                  <option value="">Select role</option>
+                  <option value="SuperID">SuperID</option>
+                  <option value="Gateauthority">Gate Authority</option>
+                  <option value="Hostelauthority">Hostel Authority</option>
+                  <option value="BoysHostelAdmin">BoysHostelAdmin</option>
+                  <option value="GirlsHostelAdmin">GirlsHostelAdmin</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="Hostel (optional)" name="Hostel">
+              </div>
+
+              <button class="btn signin">Sign Up</button>
+              <a href="/loginpanel" style="margin-left:10px;">Back to Login</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

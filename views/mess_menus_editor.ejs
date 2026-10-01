@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mess Management - Super Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 30px;
+            padding-bottom: 40px;
+            color: #1a1a2e;
+        }
+
+        .premium-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f2f5;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .page-title {
+            margin: 0;
+            font-weight: 700;
+            color: #1a1a2e;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-title-icon {
+            width: 42px; height: 42px;
+            background: #e8f0fe;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: #1976d2; font-size: 1.2rem;
+        }
+        .page-subtitle {
+            margin: 4px 0 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding-left: 54px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            font-weight: 600;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .back-btn:hover {
+            background-color: #f8f9fa;
+            border-color: #c1c9d0;
+            color: #212529;
+            transform: translateY(-1px);
+        }
+        
+        .action-btn-neutral {
+            color: #6b7280;
+            background: transparent;
+            border: none;
+            padding: 0.25rem 0.4rem;
+            transition: color 0.2s;
+        }
+        .action-btn-neutral:hover { color: #1f2937; }
+    </style>
+</head>
+<body>
+    <div class="premium-container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">
+                    <div class="page-title-icon"><i class="fas fa-utensils"></i></div>
+                    Mess Management
+                </h1>
+                <p class="page-subtitle"><%= role === 'BoysHostelAdmin' ? 'Admin Dashboard' : 'Super Admin Dashboard' %> - Menus</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="/daterange" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+        </div>
+        
+        <% if(message && message.length > 0){ %>
+            <div class="alert alert-info"><%- message %></div>
+        <% } %>
+        
+        
+        <h3 class="fs-4 fw-bold mb-4 mt-5 border-bottom pb-2 text-dark">Reference Menus Editor</h3>
+
+        
+        <%- include('partials/weekly_menus') %>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script id="weeklyMenuDataStr" type="application/json">
+        <%- JSON.stringify(typeof weeklyMenu !== 'undefined' ? weeklyMenu : []) %>
+    </script>
+    <script id="weeklyOptionalMenuDataStr" type="application/json">
+        <%- JSON.stringify(typeof weeklyOptionalMenu !== 'undefined' ? weeklyOptionalMenu : []) %>
+    </script>
+    <script>
+        var weeklyMenuData = JSON.parse(document.getElementById('weeklyMenuDataStr').textContent);
+        var weeklyOptionalMenuData = JSON.parse(document.getElementById('weeklyOptionalMenuDataStr').textContent);
+        
+        function editSingleDay(meal_type, day, food, drink) {
+            document.getElementById('singleMealLabel').textContent = meal_type.toUpperCase();
+            document.getElementById('singleDayLabel').textContent = day;
+            document.getElementById('singleMealType').value = meal_type;
+            document.getElementById('singleWeekday').value = day;
+            document.getElementById('singleFoodName').value = food;
+            document.getElementById('singleDrink').value = drink;
+            
+            let drinkContainer = document.getElementById('singleDrink').closest('.mb-3');
+            if(drinkContainer) drinkContainer.style.display = (meal_type === 'breakfast') ? 'block' : 'none';
+
+            new bootstrap.Modal(document.getElementById('editSingleModal')).show();
+        }
+
+        function editFullWeek(meal_type) {
+            document.getElementById('fullWeekMealType').value = meal_type;
+            document.getElementById('fullWeekMealLabel').textContent = meal_type.toUpperCase();
+            
+            let theadThs = document.querySelectorAll('#editFullWeekModal table thead th');
+            if(theadThs.length >= 3) {
+                theadThs[2].style.display = (meal_type === 'breakfast') ? 'table-cell' : 'none';
+            }
+            
+            ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].forEach(d => {
+                let item = weeklyMenuData.find(m => m.weekday === d && m.meal_type === meal_type);
+                document.querySelector('.full-week-food-' + d).value = item ? item.food_name : '';
+                
+                let drinkInput = document.querySelector('.full-week-drink-' + d);
+                drinkInput.value = item ? item.drink : '';
+                drinkInput.closest('td').style.display = (meal_type === 'breakfast') ? 'table-cell' : 'none';
+            });
+            new bootstrap.Modal(document.getElementById('editFullWeekModal')).show();
+        }
+
+        function editSingleOptionalDay(meal_type, day, vfood, vdrink, nvfood, nvdrink) {
+            document.getElementById('singleOptionalMealLabel').textContent = meal_type.toUpperCase();
+            document.getElementById('singleOptionalDayLabel').textContent = day;
+            document.getElementById('singleOptionalMealType').value = meal_type;
+            document.getElementById('singleOptionalWeekday').value = day;
+            
+            document.getElementById('vegFoodContainer').innerHTML = '';
+            document.getElementById('nonVegFoodContainer').innerHTML = '';
+            
+            if (vfood && vfood.trim() !== '') {
+                vfood.split(',').forEach(item => {
+                    if(item.trim()) addOptionalFoodRow('vegFoodContainer', item.trim());
+                });
+            } else {
+                addOptionalFoodRow('vegFoodContainer', '');
+            }
+            
+            if (nvfood && nvfood.trim() !== '') {
+                nvfood.split(',').forEach(item => {
+                    if(item.trim()) addOptionalFoodRow('nonVegFoodContainer', item.trim());
+                });
+            } else {
+                addOptionalFoodRow('nonVegFoodContainer', '');
+            }
+
+            document.getElementById('singleOptionalVegDrink').value = vdrink;
+            document.getElementById('singleOptionalNonVegDrink').value = nvdrink;
+
+            if (meal_type === 'breakfast') {
+                document.getElementById('singleOptVegHeader').innerHTML = 'Breakfast Option <button type="button" class="btn btn-sm btn-outline-primary" onclick="addOptionalFoodRow(\'vegFoodContainer\')" id="singleOptVegAddBtn"><i class="fas fa-plus"></i> Add</button>';
+                document.getElementById('singleOptVegHeader').className = 'border-bottom pb-2 mb-3 text-primary d-flex justify-content-between align-items-center';
+                document.getElementById('singleOptVegDrinkLabel').textContent = 'Drink';
+                document.getElementById('singleOptNonVegSection').style.display = 'none';
+            } else {
+                document.getElementById('singleOptVegHeader').innerHTML = 'Veg Option <button type="button" class="btn btn-sm btn-outline-success" onclick="addOptionalFoodRow(\'vegFoodContainer\')" id="singleOptVegAddBtn"><i class="fas fa-plus"></i> Add</button>';
+                document.getElementById('singleOptVegHeader').className = 'border-bottom pb-2 mb-3 text-success d-flex justify-content-between align-items-center';
+                document.getElementById('singleOptVegDrinkLabel').textContent = 'Drink (Veg)';
+                document.getElementById('singleOptNonVegSection').style.display = 'block';
+            }
+
+            let vDrinkContainer = document.getElementById('singleOptionalVegDrink').closest('.mb-3');
+            if(vDrinkContainer) vDrinkContainer.style.display = (meal_type === 'breakfast') ? 'block' : 'none';
+            
+            let nvDrinkContainer = document.getElementById('singleOptionalNonVegDrink').closest('.mb-3');
+            if(nvDrinkContainer) nvDrinkContainer.style.display = (meal_type === 'breakfast') ? 'none' : 'none'; // Optional menu doesn't have drink for lunch/dinner at all, but for breakfast we only want one
+
+            new bootstrap.Modal(document.getElementById('editSingleOptionalModal')).show();
+        }
+
+        function editFullOptionalWeek(meal_type) {
+            document.getElementById('fullWeekOptionalMealType').value = meal_type;
+            document.getElementById('fullWeekOptionalMealLabel').textContent = meal_type.toUpperCase();
+            
+            let vFoodTh = document.getElementById('fullOptVegFoodTh');
+            let vDrinkTh = document.getElementById('fullOptVegDrinkTh');
+            let nvFoodTh = document.getElementById('fullOptNonVegFoodTh');
+            let nvDrinkTh = document.getElementById('fullOptNonVegDrinkTh');
+
+            if(vFoodTh && nvFoodTh) {
+                if (meal_type === 'breakfast') {
+                    vFoodTh.textContent = 'Breakfast Food';
+                    vFoodTh.className = 'text-primary';
+                    vDrinkTh.textContent = 'Drink';
+                    vDrinkTh.className = 'text-primary';
+                    vDrinkTh.style.display = 'table-cell';
+                    nvFoodTh.style.display = 'none';
+                    nvDrinkTh.style.display = 'none';
+                } else {
+                    vFoodTh.textContent = 'Veg Food';
+                    vFoodTh.className = 'text-success';
+                    vDrinkTh.textContent = 'Veg Drink';
+                    vDrinkTh.className = 'text-success';
+                    vDrinkTh.style.display = 'none'; // No drinks for lunch/dinner
+                    nvFoodTh.style.display = 'table-cell';
+                    nvDrinkTh.style.display = 'none'; // No drinks for lunch/dinner
+                }
+            }
+
+            ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].forEach(d => {
+                let vItem = weeklyOptionalMenuData.find(m => m.weekday === d && m.meal_type === meal_type && m.food_type === 'Veg');
+                let nvItem = weeklyOptionalMenuData.find(m => m.weekday === d && m.meal_type === meal_type && m.food_type === 'Non-Veg');
+                
+                let vFoodInput = document.querySelector('.full-week-opt-vfood-' + d);
+                vFoodInput.value = vItem ? vItem.food_name : '';
+                
+                let nvFoodInput = document.querySelector('.full-week-opt-nvfood-' + d);
+                nvFoodInput.value = nvItem ? nvItem.food_name : '';
+                nvFoodInput.closest('td').style.display = (meal_type === 'breakfast') ? 'none' : 'table-cell';
+                
+                let vDrinkInput = document.querySelector('.full-week-opt-vdrink-' + d);
+                vDrinkInput.value = vItem ? vItem.drink : '';
+                vDrinkInput.closest('td').style.display = (meal_type === 'breakfast') ? 'table-cell' : 'none';
+
+                let nvDrinkInput = document.querySelector('.full-week-opt-nvdrink-' + d);
+                nvDrinkInput.value = nvItem ? nvItem.drink : '';
+                nvDrinkInput.closest('td').style.display = 'none'; // Neither breakfast nor lunch/dinner shows non-veg drink in this layout anymore
+            });
+            new bootstrap.Modal(document.getElementById('editFullOptionalWeekModal')).show();
+        }
+
+        function addOptionalFoodRow(containerId, initialValue = '') {
+            let container = document.getElementById(containerId);
+            let row = document.createElement('div');
+            row.className = 'mb-2 d-flex gap-2 align-items-center dynamic-food-row';
+            
+            let input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'form-control dynamic-food-input';
+            input.placeholder = 'Food Name';
+            input.value = initialValue;
+            
+            let btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-outline-danger btn-sm';
+            btn.innerHTML = '<i class="fas fa-trash"></i>';
+            btn.onclick = function() {
+                container.removeChild(row);
+            };
+            
+            row.appendChild(input);
+            row.appendChild(btn);
+            container.appendChild(row);
+        }
+
+        document.getElementById('editSingleOptionalForm').addEventListener('submit', function(e) {
+            let vegInputs = document.getElementById('vegFoodContainer').querySelectorAll('.dynamic-food-input');
+            let vegValues = Array.from(vegInputs).map(inp => inp.value.trim()).filter(v => v !== '');
+            document.getElementById('singleOptionalVegFood').value = vegValues.join(', ');
+
+            let nonVegInputs = document.getElementById('nonVegFoodContainer').querySelectorAll('.dynamic-food-input');
+            let nonVegValues = Array.from(nonVegInputs).map(inp => inp.value.trim()).filter(v => v !== '');
+            document.getElementById('singleOptionalNonVegFood').value = nonVegValues.join(', ');
+        });
+    </script>
+<%- include('partials/mess_modals') %>
+</body>
+</html>
+

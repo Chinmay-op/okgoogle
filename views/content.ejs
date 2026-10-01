@@ -1,0 +1,228 @@
+<!-- <style>
+  .birthday-section {
+    padding: 2rem 1rem;
+  }
+
+  .birthday-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .birthday-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .birthday-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+  }
+
+  .birthday-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .birthday-card-header {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    padding: 1.25rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .birthday-card-header b {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .birthday-card-body {
+    padding: 1.5rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .birthday-card-body img {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .carousel-container {
+    padding: 2rem 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .carousel {
+    margin: 2rem 0;
+  }
+
+  .carousel__content {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .carousel__nav {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    font-size: 1.5rem;
+    padding: 15px 20px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .carousel__nav:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: scale(1.1);
+  }
+
+  .carousel--img {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .carousel__pagination {
+    margin-top: 1.5rem;
+    gap: 0.6rem;
+  }
+
+  .carousel__pagination input {
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 3px solid #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  }
+
+  .carousel__pagination input:checked {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #764ba2;
+  }
+
+  @media (max-width: 768px) {
+    .birthday-title {
+      font-size: 1.5rem;
+    }
+
+    .birthday-card {
+      margin-bottom: 1.5rem;
+    }
+
+    .carousel-container {
+      padding: 1rem 0.5rem;
+    }
+  }
+</style>
+
+<div class="container px-4">
+  <div class="row gx-5">
+    <div class="col">
+      <div class="row">
+        <div class="col">
+          <% if(role=="BoysHostelAdmin" || role=="GirlsHostelAdmin") { %>
+            <% if(result && result.length > 0) { %>
+              <div class="birthday-section">
+                <h2 class="birthday-title">
+                  <i class="fas fa-birthday-cake me-2"></i>Today's Birthdays
+                </h2>
+                <div class="container-lg">
+                  <div class="row justify-content-center">
+                    <% for(var i=0;i<result.length;i++){ %>
+                      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                        <div class="card birthday-card">
+                          <div class="card-header birthday-card-header">
+                            <b><i class="fas fa-user-graduate me-2"></i><%-result[i].sname %></b>
+                          </div>
+                          <div class="card-body birthday-card-body">
+                            <img src="/images/happy-birthday (2).png" alt="Happy Birthday" />
+                          </div>
+                        </div>
+                      </div>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="carousel-container">
+                <%
+                const imgs = [
+                  { src: '/images/hostellogo.jpeg', alt: 'Image Description' },
+                  { src: '/hostelphotos/hostel1.jpeg', alt: 'Image Description' },
+                  { src: '/hostelphotos/hostel2.jpeg', alt: 'Image Description' },
+                  { src: '/hostelphotos/hostel3.jpeg', alt: 'Image Description' },
+                  { src: '/hostelphotos/hostel4.jpeg', alt: 'Image Description' },
+                  { src: '/hostelphotos/hostel5.jpeg', alt: 'Image Description' },
+                  { src: '/hostelphotos/hostel6.jpeg', alt: 'Image Description' },
+                  { src: '/hostelphotos/hostel7.jpeg', alt: 'Image Description' },
+                  { src: '/hostelphotos/hostel8.jpeg', alt: 'Image Description' }
+                ];
+                %>
+
+                <div class="carousel">
+                  <% imgs.forEach((img, i) => { %>
+                    <div class="carousel__content--wrapper">
+                      <div class="carousel__content">
+                        <% let prev = i === 0 ? imgs.length - 1 : i - 1; %>
+                        <% let next = i === imgs.length - 1 ? 0 : i + 1; %>
+
+                        <label class="carousel__nav carousel__nav--prev" for="radio<%= prev %>">
+                          <i class="fas fa-chevron-left"></i>
+                        </label>
+                        <label class="carousel__nav carousel__nav--next" for="radio<%= next %>">
+                          <i class="fas fa-chevron-right"></i>
+                        </label>
+                        
+                        <figure class="carousel--img">
+                          <img src="<%= img.src %>" alt="<%= img.alt %>">
+                        </figure>
+                      </div>
+                    </div>
+                  <% }); %>
+
+                  <div class="carousel__pagination">
+                    <% imgs.forEach((img, i) => { %>
+                      <input type="radio" id="radio<%= i %>" name="selectedImage" <%= i === 0 ? 'checked' : '' %>>
+                    <% }); %>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->

@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Requests - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+    <style>
+        body { background: #f0f2f5; padding: 24px; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        .page-header {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .page-header h3 { margin: 0; font-size: 1.25rem; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; }
+        .page-header h3 i { color: #667eea; }
+        .page-header p { margin: 4px 0 0; color: #718096; font-size: .87rem; }
+
+        /* Toggle Switch for Today vs All */
+        .tab-toggle-wrap {
+            display: flex;
+            align-items: center;
+            background: #edf2f7;
+            border-radius: 40px;
+            padding: 4px;
+            gap: 2px;
+        }
+        .tab-toggle-btn {
+            border: none;
+            background: transparent;
+            border-radius: 36px;
+            padding: 6px 18px;
+            font-size: .83rem;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .2s, color .2s, box-shadow .2s;
+        }
+        .tab-toggle-btn.active {
+            background: #fff;
+            color: #667eea;
+            box-shadow: 0 1px 4px rgba(0,0,0,.12);
+        }
+        .tab-toggle-btn:hover:not(.active) { color: #4a5568; }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.05);
+            border-left: 4px solid;
+        }
+        .stat-card.pending   { border-color: #f6d860; }
+        .stat-card.approved  { border-color: #68d391; }
+        .stat-card.printed   { border-color: #7f9cf5; }
+        .stat-card.collected { border-color: #4fd1c5; }
+        .stat-card.rejected  { border-color: #fc8181; }
+        .stat-card .num { font-size: 1.7rem; font-weight: 800; color: #2d3748; }
+        .stat-card .lbl { font-size: .78rem; color: #718096; font-weight: 600; margin-top: 2px; }
+
+        .filters-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.05);
+        }
+        .filters-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+
+        .table-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+            overflow: hidden;
+        }
+        .table { margin-bottom: 0; font-size: 0.88rem; vertical-align: middle; }
+        .table th {
+            background: #f7f8fa;
+            color: #4a5568;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.74rem;
+            letter-spacing: .5px;
+            padding: 12px 16px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .table td { padding: 14px 16px; border-bottom: 1px solid #edf2f7; color: #2d3748; }
+
+        .cert-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.76rem;
+            font-weight: 700;
+        }
+        .cert-badge.bonafide { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+        .cert-badge.bank { background: #ccfbf1; color: #115e59; border: 1px solid #99f6e4; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 99px;
+            font-size: 0.76rem;
+            font-weight: 700;
+        }
+        .status-Pending   { background: #fef3c7; color: #92400e; }
+        .status-Approved  { background: #d1fae5; color: #065f46; }
+        .status-Printed   { background: #e0e7ff; color: #3730a3; }
+        .status-Collected { background: #d1fae5; color: #065f46; }
+        .status-Rejected  { background: #fee2e2; color: #991b1b; }
+        .status-Cancelled { background: #e2e8f0; color: #4a5568; }
+
+        /* Payment toggles styling */
+        .btn-pay-toggle {
+            padding: 4px 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity .15s, box-shadow .15s;
+        }
+        .btn-pay-yes { background: #d1fae5; color: #065f46; opacity: .45; }
+        .btn-pay-no  { background: #fee2e2; color: #991b1b; opacity: .45; }
+        .btn-pay-yes.pay-active { opacity: 1; box-shadow: 0 0 0 2px #065f46; }
+        .btn-pay-no.pay-active  { opacity: 1; box-shadow: 0 0 0 2px #991b1b; }
+        .btn-pay-toggle:hover   { opacity: .9; }
+
+        .action-btn-group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+        .doc-no { font-family: monospace; font-size: 0.82rem; font-weight: 600; color: #4a5568; }
+        .student-uid { font-family: monospace; font-size: 0.8rem; color: #718096; }
+
+        /* Settings Modal Styling */
+        .settings-modal-bg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .settings-modal-bg.show { display: flex; }
+        .settings-modal {
+            background: #fff;
+            border-radius: 14px;
+            padding: 28px;
+            width: 750px;
+            max-width: 95vw;
+            box-shadow: 0 10px 40px rgba(0,0,0,.2);
+        }
+        .settings-modal h5 { font-weight: 700; color: #667eea; margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h3><i class="fas fa-file-contract"></i> Certificate Requests Management</h3>
+            <p>Unified view for Bonafide Certificates and Bank Details Statements</p>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <!-- Today / All Toggle -->
+            <div class="tab-toggle-wrap">
+                <a href="?tab=today&cert_type=<%= filters.cert_type || 'All' %>&status=<%= filters.status || 'All' %>&payment_status=<%= filters.payment_status || 'All' %>&q=<%= filters.q || '' %>&academic_year=<%= filters.academic_year || '' %>" class="tab-toggle-btn <%= filters.tab === 'today' ? 'active' : '' %>">
+                    <i class="fas fa-calendar-day me-1"></i>Today
+                </a>
+                <a href="?tab=all&cert_type=<%= filters.cert_type || 'All' %>&status=<%= filters.status || 'All' %>&payment_status=<%= filters.payment_status || 'All' %>&q=<%= filters.q || '' %>&academic_year=<%= filters.academic_year || '' %>" class="tab-toggle-btn <%= (filters.tab === 'all' || !filters.tab) ? 'active' : '' %>">
+                    <i class="fas fa-list me-1"></i>All Requests
+                </a>
+            </div>
+
+            <% if (role === 'SuperID' || role === 'BoysHostelAdmin' || role === 'GirlsHostelAdmin') { %>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="openSettingsModal()">
+                    <i class="fas fa-university me-1"></i> Hostel Bank Details Settings
+                </button>
+            <% } %>
+
+            <a href="/daterange" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i> Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Flash Message -->
+    <% if (typeof message !== 'undefined' && message && message.length > 0) { %>
+        <div class="alert alert-info alert-dismissible fade show mb-3" role="alert">
+            <%= message %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <!-- Statistics Cards -->
+    <div class="stats-row">
+        <div class="stat-card pending">
+            <div class="num"><%= counts.pending || 0 %></div>
+            <div class="lbl"><i class="fas fa-clock me-1"></i> Pending Requests</div>
+        </div>
+        <div class="stat-card approved">
+            <div class="num"><%= counts.approved || 0 %></div>
+            <div class="lbl"><i class="fas fa-check-circle me-1"></i> Approved</div>
+        </div>
+        <div class="stat-card printed">
+            <div class="num"><%= counts.printed || 0 %></div>
+            <div class="lbl"><i class="fas fa-print me-1"></i> Printed</div>
+        </div>
+        <div class="stat-card collected">
+            <div class="num"><%= counts.collected || 0 %></div>
+            <div class="lbl"><i class="fas fa-box-open me-1"></i> Collected</div>
+        </div>
+    </div>
+
+    <!-- Filters Bar -->
+    <% if (role !== 'Hostelauthority') { %>
+    <div class="filters-card">
+        <form method="GET" action="<%= role === 'Hostelauthority' ? '/hostelauthority/certificate-requests' : '/admin/certificate-requests' %>" class="filters-row">
+            <input type="hidden" name="tab" value="<%= filters.tab || 'all' %>">
+
+            <div style="flex: 2; min-width: 200px;">
+                <label class="form-label text-muted small fw-bold mb-1">Search</label>
+                <input type="text" name="q" class="form-control form-control-sm" placeholder="Student Name, UID, Cert/Doc No..." value="<%= filters.q || '' %>">
+            </div>
+
+            <div style="flex: 1; min-width: 160px;">
+                <label class="form-label text-muted small fw-bold mb-1">Certificate Type</label>
+                <select name="cert_type" class="form-select form-select-sm">
+                    <option value="All" <%= (!filters.cert_type || filters.cert_type === 'All') ? 'selected' : '' %>>All Certificates</option>
+                    <option value="Bonafide" <%= filters.cert_type === 'Bonafide' ? 'selected' : '' %>>Bonafide Certificate</option>
+                    <option value="Bank Statement" <%= filters.cert_type === 'Bank Statement' ? 'selected' : '' %>>Bank Statement</option>
+                </select>
+            </div>
+
+            <div style="flex: 1; min-width: 140px;">
+                <label class="form-label text-muted small fw-bold mb-1">Status</label>
+                <select name="status" class="form-select form-select-sm">
+                    <option value="All" <%= (!filters.status || filters.status === 'All') ? 'selected' : '' %>>All Statuses</option>
+                    <option value="Pending" <%= filters.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                    <option value="Approved" <%= filters.status === 'Approved' ? 'selected' : '' %>>Approved</option>
+                    <option value="Printed" <%= filters.status === 'Printed' ? 'selected' : '' %>>Printed</option>
+                    <option value="Collected" <%= filters.status === 'Collected' ? 'selected' : '' %>>Collected</option>
+                    <option value="Rejected" <%= filters.status === 'Rejected' ? 'selected' : '' %>>Rejected</option>
+                </select>
+            </div>
+
+            <div style="flex: 1; min-width: 140px;">
+                <label class="form-label text-muted small fw-bold mb-1">Payment</label>
+                <select name="payment_status" class="form-select form-select-sm">
+                    <option value="All" <%= (!filters.payment_status || filters.payment_status === 'All') ? 'selected' : '' %>>All Payments</option>
+                    <option value="Paid" <%= filters.payment_status === 'Paid' ? 'selected' : '' %>>Paid / Accepted</option>
+                    <option value="Unpaid" <%= filters.payment_status === 'Unpaid' ? 'selected' : '' %>>Unpaid</option>
+                    <option value="Pending" <%= filters.payment_status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                </select>
+            </div>
+
+            <div style="flex: 1; min-width: 130px;">
+                <label class="form-label text-muted small fw-bold mb-1">Academic Year</label>
+                <input type="text" name="academic_year" class="form-control form-control-sm" placeholder="e.g. 2025-2026" value="<%= filters.academic_year || '' %>">
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search me-1"></i> Filter</button>
+                <a href="<%= role === 'Hostelauthority' ? '/hostelauthority/certificate-requests' : '/admin/certificate-requests' %>" class="btn btn-outline-secondary btn-sm" title="Clear Filters"><i class="fas fa-undo"></i></a>
+            </div>
+        </form>
+    </div>
+    <% } %>
+
+    <!-- Table Card -->
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th># / Date</th>
+                        <th>Student Details</th>
+                        <th>Certificate</th>
+                        <th>Academic Year & Purpose</th>
+                        <th>Cert / Doc No.</th>
+                        <% if (role !== 'Hostelauthority') { %>
+                        <th>Payment</th>
+                        <% } %>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (requests && requests.length > 0) { %>
+                        <% requests.forEach(function(req, index) { %>
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">#<%= pagination.totalCount - ((pagination.page - 1) * pagination.limit) - index %></div>
+                                    <div class="text-muted small"><%= new Date(req.request_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) %></div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold"><%= req.student_name %></div>
+                                    <div class="student-uid"><i class="fas fa-id-card me-1"></i><%= req.student_uid %></div>
+                                    <div class="text-muted small"><%= req.branch || '' %> <%= req.year ? '(' + req.year + ' Year)' : '' %></div>
+                                </td>
+                                <td>
+                                    <% if (req.cert_type === 'Bonafide') { %>
+                                        <span class="cert-badge bonafide"><i class="fas fa-certificate"></i> Bonafide Certificate</span>
+                                    <% } else { %>
+                                        <span class="cert-badge bank"><i class="fas fa-university"></i> Bank Statement</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark"><%= req.academic_year || 'N/A' %></div>
+                                    <div class="text-muted small text-truncate" style="max-width: 180px;" title="<%= req.purpose %>"><%= req.purpose || '-' %></div>
+                                </td>
+                                <td>
+                                    <% if (req.doc_no) { %>
+                                        <span class="doc-no"><%= req.doc_no %></span>
+                                    <% } else { %>
+                                        <span class="text-muted small">Not Issued</span>
+                                    <% } %>
+                                </td>
+                                <% if (role !== 'Hostelauthority') { %>
+                                <td>
+                                    <div class="pay-wrap" style="display:inline-flex;gap:4px;">
+                                        <% if ((req.payment_status || '').toLowerCase() === 'paid') { %>
+                                            <span style="display:inline-flex;align-items:center;gap:5px;background:#d1fae5;color:#065f46;font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:99px;"><i class="fas fa-check-circle"></i> Accepted</span>
+                                        <% } else { %>
+                                            <button class="btn-pay-toggle btn-pay-yes" data-id="<%= req.id %>" data-cert-type="<%= req.cert_type %>" data-type="yes" title="Payment Received" onclick="togglePayment(this)">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn-pay-toggle btn-pay-no <%= (req.payment_status || '').toLowerCase() === 'unpaid' ? 'pay-active' : '' %>" data-id="<%= req.id %>" data-cert-type="<%= req.cert_type %>" data-type="no" title="Payment Not Received" onclick="togglePayment(this)">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        <% } %>
+                                    </div>
+                                </td>
+                                <% } %>
+                                <td>
+                                    <span class="status-badge status-<%= req.status %>"><%= req.status %></span>
+                                    <% if (req.status === 'Rejected' && req.rejection_reason) { %>
+                                        <i class="fas fa-info-circle text-danger ms-1" title="Reason: <%= req.rejection_reason %>"></i>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <div class="action-btn-group justify-content-end">
+                                        <% if (req.cert_type === 'Bonafide') { %>
+                                            <!-- Bonafide Actions -->
+                                            <a href="/admin/bonafide/<%= req.id %>" class="btn btn-outline-primary btn-sm" title="View Details"><i class="fas fa-eye"></i></a>
+
+                                            <% if (req.status === 'Pending' && (role === 'SuperID' || role === 'BoysHostelAdmin' || role === 'GirlsHostelAdmin')) { %>
+                                                <form method="POST" action="/admin/bonafide/<%= req.id %>/approve" style="display:inline;">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <button type="submit" class="btn btn-success btn-sm" title="Approve"><i class="fas fa-check"></i> Approve</button>
+                                                </form>
+                                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModalBonafide<%= req.id %>" title="Reject"><i class="fas fa-times"></i></button>
+                                            <% } %>
+
+                                            <% if ((req.status === 'Approved' || req.status === 'Printed' || req.status === 'Collected') && (role === 'SuperID' || role === 'BoysHostelAdmin' || role === 'GirlsHostelAdmin')) { %>
+                                                <a href="/admin/bonafide/<%= req.id %>/print" target="_blank" class="btn btn-outline-dark btn-sm" title="Print Certificate"><i class="fas fa-print"></i></a>
+                                                <a href="/admin/bonafide/<%= req.id %>/docx" class="btn btn-outline-secondary btn-sm" title="Download Word DOCX"><i class="fas fa-file-word"></i></a>
+                                            <% } %>
+
+                                            <% if (req.status === 'Printed') { %>
+                                                <form method="POST" action="<%= role === 'Hostelauthority' ? '/hostelauthority/bonafide-details/' + req.id + '/collected' : '/admin/bonafide/' + req.id + '/collected' %>" style="display:inline;">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <button type="submit" class="btn btn-info btn-sm text-white" title="Mark as Collected"><i class="fas fa-hand-holding"></i> Collect</button>
+                                                </form>
+                                            <% } %>
+
+                                        <% } else { %>
+                                            <!-- Bank Statement Actions -->
+                                            <a href="/admin/bank-details/<%= req.id %>" class="btn btn-outline-primary btn-sm" title="View Details"><i class="fas fa-eye"></i></a>
+
+                                            <% if (req.status === 'Pending' && (role === 'SuperID' || role === 'BoysHostelAdmin' || role === 'GirlsHostelAdmin')) { %>
+                                                <form method="POST" action="/admin/bank-details/<%= req.id %>/approve" style="display:inline;">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <button type="submit" class="btn btn-success btn-sm" title="Approve"><i class="fas fa-check"></i> Approve</button>
+                                                </form>
+                                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModalBank<%= req.id %>" title="Reject"><i class="fas fa-times"></i></button>
+                                            <% } %>
+
+                                            <% if ((req.status === 'Approved' || req.status === 'Printed' || req.status === 'Collected') && (role === 'SuperID' || role === 'BoysHostelAdmin' || role === 'GirlsHostelAdmin')) { %>
+                                                <a href="/admin/bank-details/<%= req.id %>/print" target="_blank" class="btn btn-outline-dark btn-sm" title="Print Document"><i class="fas fa-print"></i></a>
+                                                <a href="/admin/bank-details/<%= req.id %>/docx" class="btn btn-outline-secondary btn-sm" title="Download Word DOCX"><i class="fas fa-file-word"></i></a>
+                                            <% } %>
+
+                                            <% if (req.status === 'Printed') { %>
+                                                <form method="POST" action="<%= role === 'Hostelauthority' ? '/hostelauthority/bank-details/' + req.id + '/collected' : '/admin/bank-details/' + req.id + '/collected' %>" style="display:inline;">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <button type="submit" class="btn btn-info btn-sm text-white" title="Mark as Collected"><i class="fas fa-hand-holding"></i> Collect</button>
+                                                </form>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+
+                                    <!-- Rejection Modals -->
+                                    <% if (req.cert_type === 'Bonafide' && req.status === 'Pending') { %>
+                                        <div class="modal fade" id="rejectModalBonafide<%= req.id %>" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form method="POST" action="/admin/bonafide/<%= req.id %>/reject">
+                                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Reject Bonafide Request #<%= req.id %></h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <label class="form-label fw-bold">Rejection Reason</label>
+                                                            <textarea name="rejection_reason" class="form-control" rows="3" required placeholder="Please provide reason for rejection..."></textarea>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-danger">Confirm Rejection</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% } else if (req.cert_type === 'Bank Statement' && req.status === 'Pending') { %>
+                                        <div class="modal fade" id="rejectModalBank<%= req.id %>" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form method="POST" action="/admin/bank-details/<%= req.id %>/reject">
+                                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Reject Bank Details Request #<%= req.id %></h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <label class="form-label fw-bold">Rejection Reason</label>
+                                                            <textarea name="rejection_reason" class="form-control" rows="3" required placeholder="Please provide reason for rejection..."></textarea>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-danger">Confirm Rejection</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% } %>
+
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="fas fa-folder-open fa-3x mb-3 text-secondary opacity-50 display-6 d-block"></i>
+                                <h5>No Certificate Requests Found</h5>
+                                <p class="small">Try adjusting search parameters or clearing filters.</p>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <% if (pagination && pagination.totalPages > 1) { %>
+            <div class="p-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <span class="text-muted small">Showing page <%= pagination.page %> of <%= pagination.totalPages %> (<%= pagination.totalCount %> total requests)</span>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item <%= pagination.page <= 1 ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= pagination.page - 1 %>&tab=<%= filters.tab || 'all' %>&cert_type=<%= filters.cert_type || 'All' %>&status=<%= filters.status || 'All' %>&payment_status=<%= filters.payment_status || 'All' %>&q=<%= filters.q || '' %>&academic_year=<%= filters.academic_year || '' %>">Previous</a>
+                        </li>
+                        <% for (let p = 1; p <= pagination.totalPages; p++) { %>
+                            <li class="page-item <%= pagination.page === p ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= p %>&tab=<%= filters.tab || 'all' %>&cert_type=<%= filters.cert_type || 'All' %>&status=<%= filters.status || 'All' %>&payment_status=<%= filters.payment_status || 'All' %>&q=<%= filters.q || '' %>&academic_year=<%= filters.academic_year || '' %>"><%= p %></a>
+                            </li>
+                        <% } %>
+                        <li class="page-item <%= pagination.page >= pagination.totalPages ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= pagination.page + 1 %>&tab=<%= filters.tab || 'all' %>&cert_type=<%= filters.cert_type || 'All' %>&status=<%= filters.status || 'All' %>&payment_status=<%= filters.payment_status || 'All' %>&q=<%= filters.q || '' %>&academic_year=<%= filters.academic_year || '' %>">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Hostel Bank Details Settings Modal -->
+    <div class="settings-modal-bg" id="settingsModalBg">
+        <div class="settings-modal">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="m-0"><i class="fas fa-university me-2"></i> Hostel Bank Details Settings</h5>
+                <button type="button" class="btn-close" onclick="closeSettingsModal()"></button>
+            </div>
+
+            <form method="POST" action="/admin/bank-settings/update" onsubmit="return handleSettingsSubmit()">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                <!-- Hidden Layout Settings (preserved for backend endpoint) -->
+                <input type="hidden" name="top_margin" value="<%= (typeof settings !== 'undefined' && settings.top_margin) ? settings.top_margin : '3.5' %>">
+                <input type="hidden" name="bottom_margin" value="<%= (typeof settings !== 'undefined' && settings.bottom_margin) ? settings.bottom_margin : '3.0' %>">
+                <input type="hidden" name="left_margin" value="<%= (typeof settings !== 'undefined' && settings.left_margin) ? settings.left_margin : '2.0' %>">
+                <input type="hidden" name="right_margin" value="<%= (typeof settings !== 'undefined' && settings.right_margin) ? settings.right_margin : '2.0' %>">
+                <input type="hidden" name="font_size" value="<%= (typeof settings !== 'undefined' && settings.font_size) ? settings.font_size : '18' %>">
+                <input type="hidden" name="line_height" value="<%= (typeof settings !== 'undefined' && settings.line_height) ? settings.line_height : '2.0' %>">
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label font-monospace" style="font-size:0.75rem;">BANK_NAME</label>
+                        <input type="text" name="bank_name" class="form-control form-control-sm" value="<%= (typeof settings !== 'undefined' && settings.bank_name) ? settings.bank_name : '' %>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-monospace" style="font-size:0.75rem;">ACCOUNT_HOLDER</label>
+                        <input type="text" name="account_holder" class="form-control form-control-sm" value="<%= (typeof settings !== 'undefined' && settings.account_holder) ? settings.account_holder : '' %>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-monospace" style="font-size:0.75rem;">BRANCH</label>
+                        <input type="text" name="branch" class="form-control form-control-sm" value="<%= (typeof settings !== 'undefined' && settings.branch) ? settings.branch : '' %>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-monospace" style="font-size:0.75rem;">ACCOUNT_NUMBER</label>
+                        <input type="text" name="account_number" class="form-control form-control-sm" value="<%= (typeof settings !== 'undefined' && settings.account_number) ? settings.account_number : '' %>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-monospace" style="font-size:0.75rem;">IFSC_CODE</label>
+                        <input type="text" name="ifsc" class="form-control form-control-sm" value="<%= (typeof settings !== 'undefined' && settings.ifsc) ? settings.ifsc : '' %>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-monospace" style="font-size:0.75rem;">UPI_NUMBER (OPTIONAL)</label>
+                        <input type="text" name="upi_number" class="form-control form-control-sm" value="<%= (typeof settings !== 'undefined' && settings.upi_number) ? settings.upi_number : '' %>">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-monospace" style="font-size:0.75rem;">CONTACT_NUMBER</label>
+                        <input type="text" name="contact_number" class="form-control form-control-sm" value="<%= (typeof settings !== 'undefined' && settings.contact_number) ? settings.contact_number : '' %>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-monospace" style="font-size:0.75rem;">EMAIL_ADDRESS</label>
+                        <input type="email" name="email" class="form-control form-control-sm" value="<%= (typeof settings !== 'undefined' && settings.email) ? settings.email : '' %>" required>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end mt-4">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="closeSettingsModal()">Close</button>
+                    <button type="submit" id="saveSettingsBtn" class="btn btn-primary btn-sm px-4">Save Configuration</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function openSettingsModal() {
+            document.getElementById('settingsModalBg').classList.add('show');
+        }
+        function closeSettingsModal() {
+            document.getElementById('settingsModalBg').classList.remove('show');
+        }
+        document.getElementById('settingsModalBg').addEventListener('click', function(e) {
+            if (e.target === this) closeSettingsModal();
+        });
+
+        function handleSettingsSubmit() {
+            const btn = document.getElementById('saveSettingsBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
+            }
+            return true;
+        }
+
+        function togglePayment(btn) {
+            const wrap = btn.closest('.pay-wrap');
+            const id = btn.getAttribute('data-id');
+            const certType = btn.getAttribute('data-cert-type');
+            const type = btn.getAttribute('data-type');
+            
+            let newStatus = '';
+            let endpoint = '';
+
+            if (certType === 'Bonafide') {
+                endpoint = '/admin/bonafide/' + id + '/payment';
+                if (type === 'yes') {
+                    if (!confirm('Confirm payment received for this student?')) return;
+                    newStatus = 'paid';
+                } else {
+                    newStatus = btn.classList.contains('pay-active') ? 'pending' : 'unpaid';
+                }
+            } else {
+                endpoint = '/admin/bank-details/' + id + '/payment';
+                if (type === 'yes') {
+                    if (!confirm('Confirm payment received for this student?')) return;
+                    newStatus = 'Paid';
+                } else {
+                    newStatus = btn.classList.contains('pay-active') ? 'Pending' : 'Unpaid';
+                }
+            }
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    _csrf: '<%= csrfToken %>',
+                    payment_status: newStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const isPaid = newStatus.toLowerCase() === 'paid';
+                    const isUnpaid = newStatus.toLowerCase() === 'unpaid';
+                    if (isPaid) {
+                        wrap.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px;background:#d1fae5;color:#065f46;font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:99px;"><i class="fas fa-check-circle"></i> Accepted</span>';
+                    } else if (isUnpaid) {
+                        wrap.innerHTML = `
+                            <button class="btn-pay-toggle btn-pay-no pay-active" data-id="${id}" data-cert-type="${certType}" data-type="no" title="Payment Not Received" onclick="togglePayment(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button class="btn-pay-toggle btn-pay-yes" data-id="${id}" data-cert-type="${certType}" data-type="yes" title="Payment Received" onclick="togglePayment(this)">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        `;
+                    } else {
+                        wrap.innerHTML = `
+                            <button class="btn-pay-toggle btn-pay-yes" data-id="${id}" data-cert-type="${certType}" data-type="yes" title="Payment Received" onclick="togglePayment(this)">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn-pay-toggle btn-pay-no" data-id="${id}" data-cert-type="${certType}" data-type="no" title="Payment Not Received" onclick="togglePayment(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                    }
+                } else {
+                    alert('Failed to update payment status: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                console.error('Error updating payment status:', err);
+                alert('Error updating payment status. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>

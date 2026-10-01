@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Student List</title>
+    <link rel="stylesheet" href="/stylesheets/hostelpanel.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+    
+    <style>
+        .table-success { background-color: #d1e7dd !important; }
+        #exceldiv { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid #dee2e6; }
+        .search-container { margin-bottom: 25px; }
+        .header-logo { max-width: 200px; margin-bottom: 20px; }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        function myFunction() {
+            var input, filter, rows, i, td, td1, txtValue;
+            input = document.getElementById("searchbar");
+            filter = input.value.toUpperCase();
+
+            rows = document.querySelectorAll("tr.student-row");
+
+            for (i = 0; i < rows.length; i++) {
+                td = rows[i].getElementsByTagName("td")[1]; // UID
+                td1 = rows[i].getElementsByTagName("td")[2]; // Name
+                if (td || td1) {
+                    txtValue = (td ? td.textContent : "") + " " + (td1 ? td1.textContent : "");
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function pageInit() {
+            const uploadBtn = document.getElementById('uploadBtn');
+            const fileInput = document.getElementById('fileInput');
+            if (uploadBtn && fileInput) {
+                uploadBtn.addEventListener('click', function(e) {
+                    if (fileInput.files.length === 0) {
+                        e.preventDefault();
+                        fileInput.click();
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+
+<body onload="pageInit()">
+    <div class="container mt-4">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-4 text-center text-md-start mb-3 mb-md-0">
+                <a href="/daterange" class="btn btn-outline-dark shadow-sm" style="font-weight: 500; border-radius: 8px; background-color: #fff;">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                </a>
+            </div>
+            <div class="col-12 col-md-4 text-center mb-3 mb-md-0">
+                <a href="/daterange"><img src="/images/logo.png" class="header-logo mb-0"/></a>
+            </div>
+            <div class="col-12 col-md-4"></div>
+        </div>
+        <% if(message && message.length > 0){ %>
+            <div class="alert alert-info shadow-sm mx-auto mt-3" style="max-width: 600px;">
+                <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i><%- message %></h6>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="container mt-5">
+        <div id="exceldiv" class="shadow-sm">
+            <h4 class="mb-3"><i class="fas fa-file-excel me-2 text-success"></i>Import Hostel Students</h4>
+            <form action="/import-excel" enctype="multipart/form-data" method="post">
+                <div class="input-group">
+                    <input type="file" name="import-excel" id="fileInput" class="form-control" accept=".xlsx, .xls" />
+                    <button type="submit" class="btn btn-dark" id="uploadBtn">Upload List</button>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        * Students will be categorized based on the Excel sheet (<b>Hostel</b> / <b>Day Scholar</b>).
+                        <a href="/blankcsv" class="ms-2 text-decoration-none"><i class="fas fa-download me-1"></i>Template</a>
+                    </small>
+                </div>
+            </form>
+        </div>
+
+        <div class="search-container">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                <input type="search" class="form-control border-start-0" placeholder="Search by Student Name or UID..." id="searchbar" onkeyup="myFunction()" />
+            </div>
+        </div>
+
+        <% const hostelRows = (typeof hostelStudents !== 'undefined' && Array.isArray(hostelStudents)) ? hostelStudents : ((typeof result !== 'undefined' && Array.isArray(result)) ? result : []); %>
+        <% const dayRows = (typeof dayScholarStudents !== 'undefined' && Array.isArray(dayScholarStudents)) ? dayScholarStudents : []; %>
+
+        <div class="table-responsive shadow-sm rounded mb-4">
+            <table class="table table-bordered table-hover bg-white mb-0" id="myTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 80px;" class="text-center">S.N</th>
+                        <th style="width: 150px;">UID</th>
+                        <th>NAME</th>
+                        <th>STATUS</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(hostelRows.length > 0) { %>
+                        <% for(var i=0; i < hostelRows.length; i++) { %>
+                            <tr class="table-success student-row">
+                                <td class="text-center"><%- i + 1 %></td>
+                                <td class="fw-bold">
+                                    <a href="/studentprofile/<%-hostelRows[i].uid%>?from=update" class="text-decoration-none">
+                                        <%-hostelRows[i].uid%>
+                                    </a>
+                                </td>
+                                <td><%- hostelRows[i].sname %></td>
+                                <td><span class="badge bg-success">Hostel Resident</span></td>
+
+                            </tr>
+                        <% } %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fas fa-users-slash fa-3x mb-3"></i><br>
+                                <h5>No Hostel Residents in Database</h5>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-bordered table-hover bg-white mb-0" id="myTableDay">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 80px;" class="text-center">S.N</th>
+                        <th style="width: 150px;">UID</th>
+                        <th>NAME</th>
+                        <th>STATUS</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(dayRows.length > 0) { %>
+                        <% for(var j=0; j < dayRows.length; j++) { %>
+                            <tr class="student-row">
+                                <td class="text-center"><%- j + 1 %></td>
+                                <td class="fw-bold">
+                                    <a href="/studentprofile/<%-dayRows[j].uid%>?from=update" class="text-decoration-none">
+                                        <%-dayRows[j].uid%>
+                                    </a>
+                                </td>
+                                <td><%- dayRows[j].sname %></td>
+                                <td><span class="badge bg-secondary">Day Scholar</span></td>
+
+                            </tr>
+                        <% } %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fas fa-users-slash fa-3x mb-3"></i><br>
+                                <h5>No College Residents (Day Scholars) in Database</h5>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

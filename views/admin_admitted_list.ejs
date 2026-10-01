@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admitted Students - Room Master List</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .block-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .block-header {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-left: 5px solid #764ba2;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+        .table-custom th {
+            background-color: #f1f3f5;
+            color: #495057;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        .table-custom td {
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4 px-4 pb-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="/admin/admission-applications" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Applications
+            </a>
+            <a href="/admin/admission-applications/export?filter=admitted" class="btn btn-success shadow-sm">
+                <i class="fas fa-file-excel"></i> Export to Excel
+            </a>
+        </div>
+
+        <div class="header-gradient d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h2 class="mb-0"><i class="fas fa-bed"></i> Admitted Students — Room Master List</h2>
+            <span class="badge bg-light text-dark fs-6 shadow-sm"><%= total %> Admitted</span>
+        </div>
+
+        <% if (message && message.length > 0) { %>
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <%= message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <% if(blockKeys.length === 0) { %>
+            <div class="alert alert-warning text-center">
+                No admitted students found in the system.
+            </div>
+        <% } %>
+
+        <% blockKeys.forEach(block => { %>
+            <div class="block-section">
+                <div class="block-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Block: <%= block %></h4>
+                    <span class="badge bg-primary rounded-pill"><%= grouped[block].length %> Students</span>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th>Room</th>
+                                <th>Type</th>
+                                <th>Bed</th>
+                                <th>Student Name</th>
+                                <th>Batch</th>
+                                <th>Contact Details</th>
+                                <th>Mess Type</th>
+                                <th>Block</th>
+                                <th>Religion</th>
+                                <th>Caste</th>
+                                <th>Submission Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% grouped[block].forEach(app => { %>
+                                <tr>
+                                    <td class="fw-bold"><%= app.allotted_room || '-' %></td>
+                                    <td>Triple Room</td>
+                                    <td><%= app.allotted_bed || '-' %></td>
+                                    <td class="fw-bold text-primary"><%= app.full_name %></td>
+                                    <td><%= app.branch %> - <%= app.admission_year %></td>
+                                    <td>
+                                        <div><i class="fas fa-mobile-alt text-muted"></i> <%= app.student_mobile %></div>
+                                        <div class="small text-muted"><i class="fas fa-phone-alt"></i> <%= app.parent_phone %> (<%= app.father_name %>)</div>
+                                    </td>
+                                    <td>
+                                        <% if(app.mess_preference === 'Veg') { %>
+                                            <span class="text-success fw-semibold"><i class="fas fa-leaf"></i> Vegetarian</span>
+                                        <% } else { %>
+                                            <span class="text-danger fw-semibold"><i class="fas fa-drumstick-bite"></i> Non-Vegetarian</span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= app.allotted_block || '-' %></td>
+                                    <td><%= app.religion || '-' %></td>
+                                    <td><%= app.caste_category || '-' %></td>
+                                    <td><%= new Date(app.submission_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

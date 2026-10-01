@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hostel Admission Form - <%= app.full_name %></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 11pt;
+      background: white;
+      color: #000;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 270mm; /* Allow for printer margins */
+      padding: 10mm 15mm 10mm 20mm; /* reduced padding */
+      position: relative;
+    }
+
+    /* Outer strip container — vertical bar on left side */
+    .left-strip {
+      position: absolute;
+      left: 4mm;           /* gap from left edge of page */
+      top: 6mm;            /* gap from top of page */
+      bottom: 6mm;         /* gap from bottom of page */
+      width: 10mm;         /* total strip width */
+      display: block;      /* Removing flexbox for reliable print */
+      overflow: hidden;
+      border-radius: 2px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* TOP section — dark blue, no text */
+    .strip-top-blue {
+      height: 25%;          /* Exact percentage height */
+      width: 100%;
+      background-color: #1a3a8f;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* MIDDLE section — grey, with "HOSTEL ADMISSION FORM" text rotated */
+    .strip-mid-grey {
+      height: 40%;          /* Reduced from 50% */
+      width: 100%;
+      background-color: #888888;
+      position: relative;
+      overflow: hidden;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .strip-mid-grey-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-90deg);
+      white-space: nowrap;
+      font-size: 6.5pt;
+      font-weight: bold;
+      color: #ffffff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* BOTTOM section — dark blue, with "TNPS" text rotated */
+    .strip-bot-blue {
+      height: 35%;          /* Increased to allow text more room */
+      width: 100%;
+      background-color: #1a3a8f;
+      position: relative;
+      overflow: hidden;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .strip-bot-blue-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-90deg);
+      white-space: nowrap;
+      font-size: 6pt;
+      font-weight: bold;
+      color: #ffffff;
+      letter-spacing: 2px;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #000;
+      padding-bottom: 2px;
+      margin-bottom: 4px;
+    }
+
+    .hostel-info h2 { font-size: 12pt; font-weight: bold; margin-bottom: 2px; }
+    .hostel-info p { font-size: 8.5pt; color: #333; }
+
+    .tnps-logo {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .photo-box {
+      float: right;
+      width: 30mm;
+      height: 38mm;
+      border: 1px solid #000;
+      margin-left: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+      /* Force Acrobat to treat this as a high-quality image region */
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .photo-box img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+      /* Prevent Adobe Acrobat from downsampling */
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      image-rendering: high-quality;
+      /* Set explicit physical dimensions to match the box */
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .photo-box-empty {
+      font-size: 7pt; padding: 4px;
+      display: flex; align-items: center;
+      justify-content: center; height: 100%;
+    }
+
+    .to-line { font-size: 9.5pt; margin-bottom: 2px; line-height: 1.2; }
+    .year-line { font-size: 9.5pt; margin-bottom: 4px; }
+
+    .field-label {
+      font-size: 8.5pt;
+      color: #333;
+      padding-bottom: 2px;
+      font-weight: normal;
+    }
+
+    .field-value {
+      border-bottom: 1px solid #555;
+      min-height: 18px;
+      font-size: 9.5pt;
+      font-weight: bold;
+      padding: 2px 4px 1px 4px;
+      text-transform: uppercase;
+      word-break: break-word;
+      white-space: normal;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 6mm;
+      padding-bottom: 4px; 
+      padding-top: 4px;
+      margin-bottom: 0px;
+      align-items: flex-end;
+    }
+
+    .field { flex: 1; min-width: 0; }
+
+    .religion-boxes { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+    .religion-box {
+      border: 1px solid #000;
+      padding: 2px 6px;
+      font-size: 9pt;
+      font-weight: bold;
+    }
+    .religion-box.selected { background: #000; color: white; }
+
+    .decl-section { margin-bottom: 2px; }
+    .decl-title {
+      text-align: center;
+      font-weight: bold;
+      font-size: 11pt;
+      margin-bottom: 2px;
+      text-decoration: underline;
+    }
+    .decl-text { font-size: 9.5pt; line-height: 1.25; margin-bottom: 2px; }
+
+    .sig-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 2px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 2px;
+    }
+    .sig-box { text-align: center; }
+    .sig-img {
+      width: 50mm; height: 12mm;
+      object-fit: contain;
+      background: transparent;
+    }
+    .sig-label { font-size: 7.5pt; margin-top: 2px; }
+    .date-label { font-size: 8pt; }
+
+    .office-box {
+      border: 1.5px solid #000;
+      padding: 4px 8px;
+      margin-top: 4px;
+    }
+    .office-title {
+      text-align: center;
+      font-weight: bold;
+      font-size: 13pt;
+      margin-bottom: 6px;
+    }
+    .office-grid {
+      display: table;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .office-grid td {
+      border: 1px solid #000;
+      padding: 4px 8px;
+      font-size: 10.5pt;
+    }
+    .hostel-manager {
+      text-align: right;
+      font-weight: bold;
+      font-size: 10.5pt;
+      margin-top: 4px;
+    }
+
+    .dotted-border-top {
+      border-top: 2px dotted #999;
+      padding-top: 2px;
+      margin-top: 2px;
+    }
+    @page {
+      size: A4 portrait;
+    }
+    @media print {
+      body { margin: 0; }
+      .page { 
+        margin: 0; 
+        padding: 10mm 15mm 10mm 20mm; 
+        min-height: 270mm; /* Allow for printer margins */
+      }
+      /* page-break removed: all content fits on single page */
+      /* Anti-ragging page always starts on a new sheet */
+      .anti-ragging-page {
+        page-break-before: always;
+        break-before: page;
+      }
+      .no-print { display: none !important; }
+      .left-strip {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .strip-top-blue, .strip-mid-grey, .strip-bot-blue {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .religion-box.selected {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .photo-box img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+        image-rendering: high-quality;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+
+    /* Anti-ragging page second-page styles (also applied in screen view for preview) */
+    .anti-ragging-page {
+      page-break-before: always;
+      break-before: page;
+    }
+    .ar-page-heading {
+      text-align: center;
+      font-weight: bold;
+      font-size: 15pt;
+      text-decoration: underline;
+      margin-top: 20px;
+      margin-bottom: 15px;
+      letter-spacing: 0.5px;
+    }
+    .ar-sub-heading {
+      text-align: center;
+      font-size: 10pt;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .ar-opening {
+      font-size: 11.5pt;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .ar-affirm {
+      font-size: 11.5pt;
+      margin-bottom: 6px;
+    }
+    .ar-clauses {
+      font-size: 11.5pt;
+      line-height: 1.6;
+      padding-left: 25px;
+      margin-bottom: 10px;
+      text-align: justify;
+    }
+    .ar-clauses li {
+      margin-bottom: 8px;
+    }
+    .ar-sub-clauses {
+      margin-top: 5px;
+      margin-bottom: 4px;
+      padding-left: 25px;
+      list-style-type: lower-alpha;
+    }
+    .ar-sub-clauses li {
+      margin-bottom: 5px;
+    }
+    .ar-declared {
+      font-size: 11.5pt;
+      margin-top: 15px;
+      margin-bottom: 20px;
+    }
+    .ar-sig-row {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      margin-top: 25px;
+    }
+    .ar-sig-box {
+      text-align: center;
+      min-width: 70mm;
+    }
+    .ar-sig-img {
+      width: 55mm; height: 12mm;
+      object-fit: contain;
+      background: transparent;
+      display: block;
+      margin: 0 auto 3px auto;
+    }
+    .ar-sig-empty {
+      width: 55mm;
+      height: 12mm;
+      border: 1px dashed #aaa;
+      background: #fafafa;
+      display: block;
+      margin: 0 auto 3px auto;
+    }
+    .ar-sig-label {
+      font-size: 10pt;
+      margin-top: 3px;
+      margin-bottom: 2px;
+    }
+    .ar-sig-name {
+      font-size: 10.5pt;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+    .ar-sig-mobile {
+      font-size: 10pt;
+      color: #333;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="no-print" style="padding:15px; background:#f0f0f0; display:flex; gap:10px; align-items:center;">
+  <button onclick="window.print()"
+    style="background:linear-gradient(135deg,#667eea,#764ba2); color:white;border:none;padding:10px 24px;border-radius:8px; font-size:14px;cursor:pointer;font-weight:600;">
+    <i class="fas fa-print" style="margin-right:6px;"></i> Print / Save as PDF
+  </button>
+  <button onclick="window.close()"
+    style="background:#6c757d;color:white;border:none; padding:10px 18px;border-radius:8px;font-size:14px;cursor:pointer;">
+    <i class="fas fa-times" style="margin-right:4px;"></i> Close
+  </button>
+  <span style="color:#666;font-size:12px;">
+    Tip: In print dialog, ensure paper size is A4 and margins are set to default.
+  </span>
+</div>
+
+<div class="page">
+  <div class="left-strip">
+    <div class="strip-top-blue"></div>
+    <div class="strip-mid-grey">
+      <span class="strip-mid-grey-text">HOSTEL ADMISSION FORM</span>
+    </div>
+    <div class="strip-bot-blue">
+      <span class="strip-bot-blue-text">TNPS</span>
+    </div>
+  </div>
+
+  <div class="header-row">
+    <div class="hostel-info">
+      <h2>The Nagpur Pallottine Society Boys Hostel</h2>
+      <p>Gavasi Manapur, Wardha Road, Nagpur-441108.</p>
+    </div>
+    <div class="tnps-logo" style="height: 55px; overflow: hidden; display: flex; align-items: center; justify-content: flex-end;">
+      <img src="/images/hostellogo.jpeg" 
+           alt="TNPS Logo"
+           style="height: 100px; width: auto; display: block;">
+    </div>
+  </div>
+
+  <div class="photo-box">
+    <% if (app.student_photo_path) { %>
+      <img 
+        src="<%= app.student_photo_path %>"
+        style="max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; display:block; margin: 0 auto; image-rendering:-webkit-optimize-contrast; image-rendering:crisp-edges; image-rendering:high-quality;"
+        alt="Student Photo">
+    <% } else { %>
+      <div class="photo-box-empty">
+        PHOTOGRAPH<br>Paste your Passport<br>Size Colour<br>Photograph<br>Do not pin or staple
+      </div>
+    <% } %>
+  </div>
+
+  <div class="to-line">
+    To,<br>
+    The Hostel Manager,
+  </div>
+  
+  <%
+    const admYear = parseInt(app.admission_year) || new Date().getFullYear();
+    const startYY = String(admYear).slice(-2);
+    const endYY = String(admYear + 1).slice(-2);
+  %>
+  <p class="year-line">
+    Application Form for Admission to Hostel for the year 
+    <strong>2026</strong> - <strong>2027</strong>
+  </p>
+
+  <div style="margin-top: 2px;">
+    <!-- Field 1 — Name -->
+    <div class="field-row">
+      <div class="field">
+        <div class="field-label">1. Name in full (Block Letters)</div>
+        <div class="field-value"><%= app.full_name || '' %></div>
+      </div>
+    </div>
+
+    <!-- Fields 2 & 3 side by side -->
+    <div class="field-row">
+      <div class="field">
+        <div class="field-label">2. Father's Name</div>
+        <div class="field-value"><%= app.father_name || '' %></div>
+      </div>
+      <div class="field">
+        <div class="field-label">3. Occupation</div>
+        <div class="field-value"><%= app.father_occupation || '' %></div>
+      </div>
+    </div>
+
+    <!-- Fields 4 & 5 -->
+    <div class="field-row">
+      <div class="field">
+        <div class="field-label">4. Mother's Name</div>
+        <div class="field-value"><%= app.mother_name || '' %></div>
+      </div>
+      <div class="field">
+        <div class="field-label">5. Occupation</div>
+        <div class="field-value"><%= app.mother_occupation || '' %></div>
+      </div>
+    </div>
+
+    <!-- Field 6: Address — full width, allow wrap -->
+    <div class="field-row">
+      <div class="field" style="flex:1">
+        <div class="field-label">6. Permanent / Postal Address of Father</div>
+        <div class="field-value" style="min-height:30px; line-height:1.4"><%= app.permanent_address || '' %></div>
+      </div>
+    </div>
+
+    <!-- Fields 7 & 8 -->
+    <div class="field-row">
+      <div class="field">
+        <div class="field-label">7. Phone No. of parent </div>
+        <div class="field-value"><%= app.parent_phone || '' %></div>
+      </div>
+      <div class="field">
+        <div class="field-label">8. Student Mobile Number</div>
+        <div class="field-value"><%= app.student_mobile || '' %></div>
+      </div>
+    </div>
+
+    <!-- Fields 9 & 10: Email and Year -->
+    <div class="field-row">
+      <div class="field">
+        <div class="field-label">9. Student Personal Email</div>
+        <div class="field-value"><%= app.student_email || '' %></div>
+      </div>
+      <div class="field">
+        <div class="field-label">10. The class to which admission has been obtained — Year</div>
+        <div class="field-value"><%= app.admission_year || '' %></div>
+      </div>
+    </div>
+
+    <!-- Fields 11 & 12: Branch and Date of Birth -->
+    <div class="field-row" style="align-items:flex-start;">
+      <div class="field">
+        <div class="field-label">11. Branch</div>
+        <div class="field-value"><%= app.branch || '' %></div>
+      </div>
+      <div class="field">
+        <div class="field-label">12. Date of Birth</div>
+        <div style="display:flex; gap:6px; margin-top:2px;">
+          <%
+            let dobDate='', dobMonth='', dobYear='';
+            if(app.dob){
+              // Use Intl.DateTimeFormat with IST timezone to avoid UTC offset shifting the date
+              // (production server runs in UTC; without timezone, 2008-06-25 midnight UTC
+              //  becomes 2008-06-24 18:30 IST, causing the date to appear one day earlier)
+              const istParts = new Intl.DateTimeFormat('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                day:   '2-digit',
+                month: '2-digit',
+                year:  'numeric'
+              }).formatToParts(new Date(app.dob));
+              const istMap = {};
+              istParts.forEach(p => { istMap[p.type] = p.value; });
+              dobDate  = istMap.day;
+              dobMonth = istMap.month;
+              dobYear  = istMap.year;
+            }
+          %>
+          <div style="text-align:center;">
+            <div class="field-value" style="width:14mm; text-align:center;"><%= dobDate %></div>
+            <div style="font-size:7pt; text-align:center; margin-top:2px;">DATE</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="field-value" style="width:14mm; text-align:center;"><%= dobMonth %></div>
+            <div style="font-size:7pt; text-align:center; margin-top:2px;">MONTH</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="field-value" style="width:22mm; text-align:center;"><%= dobYear %></div>
+            <div style="font-size:7pt; text-align:center; margin-top:2px;">YEAR</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fields 13 & 14: Religion and Caste category -->
+    <div class="field-row">
+      <div class="field">
+        <div class="field-label">13. Religion</div>
+        <div class="field-value" style="margin-top:2px;"><%= app.religion || '' %></div>
+      </div>
+      <div class="field">
+        <div class="field-label">14. Caste Category (SC/ST/OBC/VJNT/etc)</div>
+        <div class="field-value" style="max-width:80mm;"><%= app.caste_category || '' %></div>
+      </div>
+    </div>
+  </div>
+  <div class="dotted-border-top"></div>
+
+  <div class="decl-section">
+    <div class="decl-title">DECLARATION - 1</div>
+    <div class="decl-text">
+      <ol style="margin:0; padding-left:18px; line-height:1.4;">
+        <li>I have received and read the Hostel rule book, and I will abide by it.</li>
+        <li>I undertake to promote harmony and well being of the country and shall not perform any public or private ceremonies in the Hostel which might cause friction and harmony.</li>
+        <li>I will pay the fine if any, incurred on me due to my behaviour in the hostel and incase of grievous reason I shall leave the Hostel of my own account.</li>
+        <li>I will not engage in any kind of Ragging activity.</li>
+      </ol>
+    </div>
+
+  </div>
+
+  <div class="decl-section">
+    <div class="decl-title">DECLARATION - 2</div>
+    <div class="decl-text">
+      I hereby declare that, I have read and understood the rule book especially <strong>Point VIII : Fee &amp; Refund,</strong> and I fully agree to it.
+    </div>
+
+  </div>
+
+  <div class="decl-section">
+    <div class="decl-title">UNDERTAKING</div>
+    <div class="decl-text">
+      I hereby state that I have decided to stay in the hostel of my own accord, after having already learned the hostel rules and regulations. I assure that I will conduct myself in such a way as to promote harmony and wellbeing in the hostel. I am also well aware that continuation in the Hostel will depend upon my academic performance, general behaviour and attendance in the Hostel and College.
+    </div>
+    <div class="sig-row">
+      <div class="sig-box">
+        <div class="date-label">Date: <strong><%= app.submission_date ? new Date(app.submission_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : '' %></strong></div>
+      </div>
+      <div class="sig-box">
+        <% if (app.parent_signature_path) { %>
+          <img src="<%= app.parent_signature_path %>" class="sig-img" alt="Parent Signature">
+        <% } else { %>
+          <div class="sig-img" style="border:1px dashed #aaa; background:#fafafa;"></div>
+        <% } %>
+        <div class="sig-label">(Signature of Parent)</div>
+      </div>
+      <div class="sig-box">
+        <% if (app.decl1_signature_path) { %>
+          <img src="<%= app.decl1_signature_path %>" class="sig-img" alt="Student Signature">
+        <% } else { %>
+          <div class="sig-img" style="border:1px dashed #aaa; background:#fafafa;"></div>
+        <% } %>
+        <div class="sig-label">(Signature of Applicant)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="office-box">
+    <div class="office-title">FOR OFFICE USE ONLY</div>
+    <table class="office-grid">
+      <tr>
+        <td colspan="2"><strong>Admitted / Not Admitted:</strong> 
+          <%= app.status === 'Admitted' ? 'ADMITTED' : (app.status || '') %>
+        </td>
+        <td><strong>Hostel ID:</strong> <%= app.student_uid || '' %></td>
+      </tr>
+      <tr>
+        <td><strong>Block:</strong> <%= app.allotted_block || '' %></td>
+        <td><strong>Room:</strong> <%= app.allotted_room || '' %></td>
+        <td><strong>Bed:</strong> <%= app.allotted_bed || '' %></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <strong>Mess Preference:</strong> 
+          <%= app.mess_preference || 'Not Selected' %> <%- (app.mess_preference) ? '&#10003;' : '' %>
+        </td>
+        <td>
+          <strong>Payment mode:</strong> 
+          <%= app.payment_mode || 'Not Selected' %>
+        </td>
+      </tr>
+    </table>
+
+    <p style="font-size:10.5pt; margin-top:8px;">
+      <strong>Date of Admission:</strong> 
+      <%= app.reviewed_at ? new Date(app.reviewed_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : '' %>
+    </p>
+
+    <!-- Signature of Hostel Manager -->
+    <div style="text-align:right; margin-top:4px;">
+      <div style="display:inline-block; text-align:center; min-width:60mm;">
+        <img 
+          src="/images/fr-roby-sign.png" 
+          alt="Fr. Roby PA SAC Signature"
+          style="width:45mm; height:auto; max-height:20mm; object-fit:contain; display:block; margin:0 auto 2px auto;
+                 -webkit-print-color-adjust:exact; print-color-adjust:exact;"
+        >
+        <div style="font-size:11pt; font-weight:bold; text-align:center; margin-bottom:1px;">Fr. Roby PA SAC</div>
+        <div class="hostel-manager" style="font-weight:bold; text-align:center; margin-top:2px;">Hostel Manager</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END PAGE 1 -->
+
+<!-- ============================================================
+     PAGE 2 — Anti-Ragging Affidavit (always starts on a new printed sheet)
+     All data sourced from the `app` object already passed by the route.
+     No app.js / route / query changes needed:
+       app.full_name, app.father_name, app.branch, app.submission_date,
+       app.decl1_signature_path, app.parent_signature_path,
+       app.student_mobile, app.parent_phone  — all present in SELECT *.
+     ============================================================ -->
+<%
+  /* ---- EJS helper: ordinal suffix ---- */
+  function ordinalSuffixEJS(d) {
+    var j = d % 10, k = d % 100;
+    if (j === 1 && k !== 11) return 'st';
+    if (j === 2 && k !== 12) return 'nd';
+    if (j === 3 && k !== 13) return 'rd';
+    return 'th';
+  }
+
+  /* ---- Strip trailing parenthetical abbreviation from branch ---- */
+  var arBranchRaw  = (app.branch || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+
+  /* ---- Derive session year from submission_date (fallback to now) ---- */
+  var arDateSrc     = app.submission_date ? new Date(app.submission_date) : new Date();
+
+  /* ---- Derive declared day / month / year (always in IST to avoid UTC-offset issues on production) ---- */
+  var arIstParts = new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: 'numeric', month: 'numeric', year: 'numeric'
+  }).formatToParts(arDateSrc);
+  var arIstMap = {};
+  arIstParts.forEach(function(p){ arIstMap[p.type] = p.value; });
+  var arDay   = parseInt(arIstMap.day, 10);
+  var arMonth = ['January','February','March','April','May','June',
+                 'July','August','September','October','November','December'][parseInt(arIstMap.month, 10) - 1];
+  var arYear  = parseInt(arIstMap.year, 10);
+  var arSessionStart = arYear;
+  var arSessionEnd   = arSessionStart + 1;
+%>
+
+<div class="page anti-ragging-page">
+
+  <div class="ar-page-heading">AFFIDAVIT BY THE HOSTEL STUDENT</div>
+
+  <p class="ar-opening">
+    I, <strong><%= app.full_name || '' %></strong>, S/o Mr./Ms./Mrs. <strong><%= app.father_name || '' %></strong>,
+  </p>
+
+  <ol class="ar-clauses">
+    <!-- Clause 1: branch (abbrev stripped) and academic session derived from submission_date -->
+    <li>having been admitted to TNPS Boys Hostel in <strong><%= arBranchRaw || '______' %></strong> for the academic session <strong><%= arSessionStart %> - <%= arSessionEnd %></strong> and seeking admission in the Hostel, having been aware of the UGC Regulations on Curbing the Menace of Ragging in Higher Educational Institutions, 2009, carefully read and fully understood the provisions contained in the said Regulations.</li>
+    <li>I have, in particular, perused clause 3 of the Regulations and am aware as to what constitutes ragging.</li>
+    <li>I have also, in particular, perused clause 7 and clause 9.1 of the Regulations and am fully aware of the penal and administrative action that is liable to be taken against me in case I am found guilty of or abetting ragging, actively or passively, or being part of a conspiracy to promote ragging.</li>
+    <li>I hereby solemnly aver and undertake that.
+      <ol type="a" class="ar-sub-clauses">
+        <li>I will not indulge in any behavior or act that may be constituted as ragging under the provisions of the Regulations.</li>
+        <li>I will not participate or abet or propagate through any act of commission or omission that may Violate provisions of the Regulations, without prejudice to any other criminal action that may be taken against me under any penal law or any law for the time being in force.</li>
+      </ol>
+    </li>
+    <li>I hereby affirm that, if found guilty of ragging, I am liable for punishment according to the provisions of the Regulations, without prejudice to any other criminal action that may be taken against me under any penal law or any law for the time being in force.</li>
+    <li>I hereby declare that I have not been expelled or debarred from admission in any institution in the country on account of being found guilty of, abetting or being part of a conspiracy to promote, ragging; and further affirm that, in case the declaration is found to be untrue, I am aware that my admission is liable to be cancelled. -</li>
+  </ol>
+
+  <p class="ar-declared">
+    Declared this <strong><%= arDay %><%= ordinalSuffixEJS(arDay) %></strong> Day of
+    <strong><%= arMonth %></strong> Month of
+    <strong><%= arYear %></strong> Year.
+  </p>
+
+  <div class="ar-sig-row">
+
+    <!-- Parent / Guardian signature block -->
+    <div class="ar-sig-box">
+      <% if (app.parent_signature_path) { %>
+        <img src="<%= app.parent_signature_path %>" class="ar-sig-img" alt="Parent Signature">
+      <% } else { %>
+        <div class="ar-sig-empty"></div>
+      <% } %>
+      <div class="ar-sig-label">Signature of Parent</div>
+      <div class="ar-sig-name">Name : <%= app.father_name || '' %></div>
+      <div class="ar-sig-mobile">Mobile No : <%= app.parent_phone || '' %></div>
+    </div>
+
+    <!-- Student / Deponent signature block -->
+    <div class="ar-sig-box">
+      <% if (app.decl1_signature_path) { %>
+        <img src="<%= app.decl1_signature_path %>" class="ar-sig-img" alt="Student Signature">
+      <% } else { %>
+        <div class="ar-sig-empty"></div>
+      <% } %>
+      <div class="ar-sig-label">Signature of Deponent</div>
+      <div class="ar-sig-name">Name : <%= app.full_name || '' %></div>
+      <div class="ar-sig-mobile">Mobile No : <%= app.student_mobile || '' %></div>
+    </div>
+
+  </div><!-- /.ar-sig-row -->
+
+</div>
+<!-- END PAGE 2 (Anti-Ragging Affidavit) -->
+
+<script>
+  window.onload = function() {
+    setTimeout(function() { window.print(); }, 800);
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+
+
+ 
+
+#searchbar {
+   
+    float: center;
+    font-size: 15px;
+  }
+
+
+  body {
+    background-color: #edfffb;
+    
+  }
+
+  .demo-date-filtering-popup .mbsc-ios.mbsc-datepicker-inline {
+    border: none;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.demo-date-filtering-popup .mbsc-textfield-wrapper-box {
+    margin-top: 0;
+    margin-right: 0;
+}
+
+.demo-date-filtering-dates {
+    display: flex;
+    flex-direction: column;
+}
+
+.demo-date-filtering-inputs {
+    flex: 1;
+}
+
+.demo-date-filtering-desktop-buttons.mbsc-button-group-justified,
+.demo-date-filtering-desktop-buttons.mbsc-button-group-justified button {
+    margin-bottom: 0;
+}
+
+@media (max-width: 575px) {
+    .demo-date-filtering-desktop-buttons {
+        display: none;
+    }
+    .demo-date-filtering-popup .mbsc-textfield-wrapper-box {
+        margin-left: 0;
+    }
+}
+
+ul {
+    list-style-type: none;
+  justify-content: center;
+    overflow: hidden;
+    margin: 0;
+    padding: 000;
+    
+  }
+  
+  li {
+    float: left;
+  }
+  
+  li a {
+    display: block;
+    color: #666;
+    text-align: center;
+    color: #636363;
+    padding: 14px 16px;
+    text-decoration: none;
+  
+  }
+  
+  li a:hover:not(.active) {
+    background-color: #dddddd62;
+  }
+  
+  li a.active {
+    color: white;
+    background-color: #04AA6D;
+  }
+
+  
+  * {
+    box-sizing: border-box;
+  }
+  .select {
+    position: relative;
+    min-width: 200px;
+  }
+  .select svg {
+    position: absolute;
+    right: 12px;
+    top: calc(50% - 3px);
+    width: 10px;
+    height: 6px;
+    stroke-width: 2px;
+    stroke: #9098a9;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+  .select select {
+    padding: 7px 40px 7px 12px;
+    width: 100%;
+    border: 1px solid #e8eaed;
+    border-radius: 5px;
+    background: #fff;
+    box-shadow: 0 1px 3px -2px #9098a9;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 18px;
+    transition: all 150ms ease;
+  }
+  .select select:required:invalid {
+    color: #5a667f;
+  }
+  .select select option {
+    color: #223254;
+  }
+  .select select option[value=""][disabled] {
+    display: none;
+  }
+  .select select:focus {
+    outline: none;
+    border-color: #07f;
+    box-shadow: 0 0 0 2px rgba(0,119,255,0.2);
+  }
+  .select select:hover + svg {
+    stroke: #07f;
+  }
+  .sprites {
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    user-select: none;
+  }
+  
+  .radio-inputs {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 0.5rem;
+    background-color: rgb(255, 255, 255);
+    box-sizing: border-box;
+    box-shadow: 0 0 0px 1px rgb(17, 17, 17);
+    padding: 0.10rem;
+    width: 22%;
+    font-size: 18px;
+    
+  }
+  
+  .radio-inputs .radio {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+  
+  .radio-inputs .radio input {
+    display: none;
+  }
+  
+  .radio-inputs .radio .name {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    border: none;
+    padding: .5rem 0;
+    color: rgb(54, 54, 54);
+    transition: all .15s ease-in-out;
+  }
+  
+  .radio-inputs .radio input:checked + .name {
+    background-color: rgba(170, 170, 170, 0.719);
+    font-weight: 900;
+  }
+  .form-control-borderless {
+    border: none;
+}
+
+.form-control-borderless:hover, .form-control-borderless:active, .form-control-borderless:focus {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}

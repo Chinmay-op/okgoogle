@@ -1,0 +1,193 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User</title>
+    <link rel="stylesheet" href="/stylesheets/adduser.css">
+    <link rel="icon" href="/images/4174.png">
+<script>
+   function myfunction(){
+        if("<%=role%>"=="SuperID")
+{
+    document.getElementById("0").hidden=false
+    document.getElementById("1").hidden=false
+    document.getElementById("2").hidden=false
+    
+}
+else if("<%=role%>"=="BoysHostelAdmin")
+{
+    document.getElementById("0").hidden=true
+    document.getElementById("1").hidden=true
+    document.getElementById("2").hidden=true
+    var boysOption = document.getElementById("Boys");
+    if (boysOption) {
+      boysOption.selected = true;
+    }
+}
+    
+else if("<%=role%>"=="GirlsHostelAdmin")
+{
+    document.getElementById("0").hidden=true
+    document.getElementById("1").hidden=true
+    document.getElementById("2").hidden=true
+    var boysOption = document.getElementById("Boys");
+    if (boysOption) {
+      boysOption.hidden = true;
+      boysOption.disabled = true;
+    }
+    var girlsOption = document.getElementById("Girls");
+    if (girlsOption) {
+      girlsOption.selected = true;
+    }
+}
+
+    }
+
+   function handleCategoryChange() {
+      var categorySelect = document.getElementById("dropdown");
+      var selectedCategory = categorySelect ? categorySelect.value : "";
+      var hostelSelect = document.getElementById("hostelDropdown");
+      var hostelLabel = document.getElementById("hostelLabel");
+
+      if (!hostelSelect || !hostelLabel) {
+        return;
+      }
+
+      // Reset options
+      hostelSelect.innerHTML = "";
+
+      if (selectedCategory === "HOD") {
+        hostelLabel.innerHTML = "Branch:";
+        var defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.text = "Choose Branch";
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        hostelSelect.appendChild(defaultOption);
+
+        // Use only branch names as stored in studentdetails (from API); exclude "COMPUTER SCIENCE & ENGINEERING" so only COMPUTER ENGINEERING is shown
+        fetch("/api/branches", { credentials: "same-origin" })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            var raw = (data && data.branches) ? data.branches : [];
+            var exclude = function (name) {
+              var n = (name || "").trim().toUpperCase().replace(/\s+/g, " ");
+              return n === "COMPUTER SCIENCE AND ENGINEERING" || n === "COMPUTER SCIENCE & ENGINEERING";
+            };
+            var branches = raw.filter(function (b) { return !exclude(b); });
+            for (var i = 0; i < branches.length; i++) {
+              var opt = document.createElement("option");
+              opt.value = branches[i];
+              opt.text = branches[i];
+              hostelSelect.appendChild(opt);
+            }
+            if (branches.length === 0) {
+              var msg = document.createElement("option");
+              msg.value = "";
+              msg.text = "No branches in DB – add students first";
+              msg.disabled = true;
+              hostelSelect.appendChild(msg);
+            }
+          })
+          .catch(function () {
+            var msg = document.createElement("option");
+            msg.value = "";
+            msg.text = "Could not load branches – try again";
+            msg.disabled = true;
+            hostelSelect.appendChild(msg);
+          });
+      } else if (selectedCategory === "HODFirstYear") {
+        hostelLabel.innerHTML = "First Year Group:";
+        var fyOption = document.createElement("option");
+        fyOption.value = "FIRST_YEAR";
+        fyOption.text = "First Year (All Branches)";
+        fyOption.selected = true;
+        hostelSelect.appendChild(fyOption);
+      } else if (selectedCategory === "CollegeLateAdmin" || selectedCategory === "CollegeLateComerAdmin") {
+        hostelLabel.innerHTML = "Scope:";
+        var allOpt = document.createElement("option");
+        allOpt.value = "ALL";
+        allOpt.text = "All Branches";
+        allOpt.selected = true;
+        hostelSelect.appendChild(allOpt);
+      } else {
+        hostelLabel.innerHTML = "Hostel:";
+        var boys = document.createElement("option");
+        boys.value = "Boys";
+        boys.id = "Boys";
+        boys.text = "Boys";
+        hostelSelect.appendChild(boys);
+
+        var girls = document.createElement("option");
+        girls.value = "Girls";
+        girls.id = "Girls";
+        girls.text = "Girls";
+        hostelSelect.appendChild(girls);
+      }
+   }
+
+</script>
+</head>
+
+<body onload="handleCategoryChange(); myfunction()">
+    <center><a href="/daterange"><img src="/images/logo.png"/></a><br>
+        <h1 id='title'>Add User <%=role%></h1></center>
+
+    <% if (message && message.length > 0) { %>
+        <center><p style="color: red;"><%= message %></p></center>
+    <% } %>
+
+    <div class="container">
+        <div class="container1">
+        <form id='survey-form' action="/adduser" method="post">
+            <div class='form-input'>
+                <label id='name-label'>UID:</label>
+                <input type='text' id='UID' name="uid" placeholder='Enter UID' class='form-input-size' required />
+            </div>
+            <div class='form-input'>
+                <label id='name-label'>Name:</label>
+                <input type='text' id='Name' placeholder='Enter Name' name="name" class='form-input-size' required />
+            </div>
+            <div class='form-input'>
+                <p> Category:</p>
+                <select id='dropdown' class='form-input-size' name="category" required onchange="handleCategoryChange()">
+                    <option  value="" >Choose Category</option>
+                    <option value='SuperID' id="0" >SuperID</option>
+                    <option value='BoysHostelAdmin' id="1" >BoysHostelAdmin</option>
+                    <option value='GirlsHostelAdmin' id="2" >GirlsHostelAdmin</option>
+                    <option value='Gateauthority'>Gate Authority</option>
+                    <option value='Hostelauthority'>Hostel Authority</option>
+                    <option value='KitchenAdmin'>KitchenAdmin</option>
+                    <option value='Technician'>Technician</option>
+                    <option value='HOD'>HOD</option>
+                    <option value='HODFirstYear'>HODFirstYear</option>
+                    <option value='CollegeLateAdmin'>College Admin (All Branches)</option>
+                    <option value='CollegeLateComerAdmin'>College Late Comer Admin</option>
+                </select>
+            </div>
+
+            <div class='form-input'>
+                <p id="hostelLabel">Hostel:</p>
+                <select id='hostelDropdown' class='form-input-size' name="hostel" required>
+                </select>
+            </div>
+ 
+            <div class='form-input'>
+                <label id='name-label'>Password:</label>
+                <input type='password' id='password' name="password" placeholder='Enter Password' class='form-input-size' required />
+            </div>
+           
+ 
+           
+ 
+            <div class='form-input'>
+                <button type='submit' id='submit'>Submit</button>
+            </div>
+        </form>
+    </div>
+    </div>
+</body>
+
+</html>

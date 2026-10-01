@@ -1,0 +1,97 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/stylesheets/adduser.css">
+    <link rel="icon" href="/images/4174.png">
+<script>
+   function myfunction(){
+        if("<%=role%>"=="SuperID")
+{
+    document.getElementById("0").hidden=false
+    document.getElementById("1").hidden=false
+    document.getElementById("2").hidden=false
+    
+}
+else if("<%=role%>"=="BoysHostelAdmin")
+{
+    document.getElementById("0").hidden=true
+    document.getElementById("1").hidden=true
+    document.getElementById("2").hidden=true
+    document.getElementById("Girls").hidden=true
+    document.getElementById("Girls").disabled=true
+}
+    
+else if("<%=role%>"=="GirlsHostelAdmin")
+{
+    document.getElementById("0").hidden=true
+    document.getElementById("1").hidden=true
+    document.getElementById("2").hidden=true
+    document.getElementById("Boys").hidden=true
+    document.getElementById("Boys").disabled=true
+}
+
+    }
+
+</script>
+</head>
+
+<body onload="myfunction()">
+    <center><a href="/updateuser"><img src="/images/logo.png"/></a><br>
+        <h1 id='title'>Update User <%=role%></h1></center>
+    
+    <div class="container">
+        <div class="container1">
+        <form id='survey-form' action="/saveuser/<%= result[0].adminid %>" method="post">
+            <div class='form-input'>
+                <label id='name-label'>UID:</label>
+                <input type='text' id='UID' name="uid" placeholder='Enter UID' value="<%= result[0].uid %>" class='form-input-size'  required />
+            </div>
+            <div class='form-input'>
+                <label id='name-label'>Name:</label>
+                <input type='text' id='Name' placeholder='Enter Name' name="name" value="<%= result[0].name %>" class='form-input-size' required />
+            </div>
+            <div class='form-input'>
+                <p> Category:</p>
+                <select id='dropdown' class='form-input-size' name="category" required>
+                    
+                    <option value="<%= result[0].category %>" selected hidden><%= result[0].category %></option>
+                    <option value='SuperID' id="0" >SuperID</option>
+                    <option value='BoysHostelAdmin' id="1" >BoysHostelAdmin</option>
+                    <option value='GirlsHostelAdmin' id="2" >GirlsHostelAdmin</option>
+                    <option value='Gateauthority'>Gate Authority</option>
+                    <option value='Hostelauthority'>Hostel Authority</option>
+                </select>
+            </div>
+
+            <div class='form-input'>
+                <p>Hostel:</p>
+                <select id='dropdown' class='form-input-size' name="hostel" required>
+                    
+                    <option value="<%= result[0].Hostel %>" selected hidden><%= result[0].Hostel %></option>
+                    <option value='Boys' id="Boys" >Boys</option>
+                    <option value='Girls' id="Girls" >Girls</option>
+                    <option value='All' id="All" >All</option>
+                </select>
+            </div>
+ 
+            <div class='form-input'>
+                <label id='name-label'>Password:</label>
+                <input type='password' id='password' name="password" placeholder='Enter Password' class='form-input-size' required />
+            </div>
+           
+ 
+           
+ 
+            <div class='form-input'>
+                <button type='submit' id='submit'>Submit</button>
+            </div>
+        </form>
+    </div>
+    </div>
+</body>
+
+</html>

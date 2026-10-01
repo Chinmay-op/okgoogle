@@ -1,0 +1,247 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todays Log</title>
+    <link rel="stylesheet" href="/stylesheets/hostelpanel.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="icon" href="/images/4174.png">
+
+
+    <script>
+        function myFunction() {
+            var input, filter, table, tr, td, i;
+            input = document.getElementById("searchbar");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("myTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[3]; // for column one
+                td1 = tr[i].getElementsByTagName("td")[2]; //for column two
+
+                /* ADD columns here that you want you to filter to be used on */
+                if (td) {
+                    if ((td.innerHTML.toUpperCase().indexOf(filter) > -1) || (td1.innerHTML.toUpperCase().indexOf(filter) > -1)) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function passfilter(value) {
+            var input, filter, table, tr, td, i, txtValue;
+
+            filter = value.toUpperCase();
+            console.log(filter);
+            table = document.getElementById("myTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function dateFormat(input_D) {
+            if (!input_D || input_D === '0') return '';
+
+            var format_D = 'dd-MM-yyyy';
+            var parts = String(input_D).trim().split(/\s+/);
+            var date = new Date(input_D);
+
+            if (isNaN(date.getTime())) {
+                return input_D;
+            }
+
+            var day = date.getDate();
+            var month = date.getMonth() + 1;
+            var year = date.getFullYear();
+
+            format_D = format_D.replace("MM", month.toString().padStart(2, "0"));
+
+            if (format_D.indexOf("yyyy") > -1) {
+                format_D = format_D.replace("yyyy", year.toString());
+            } else if (format_D.indexOf("yy") > -1) {
+                format_D = format_D.replace("yy", year.toString().substr(2, 2));
+            }
+
+            format_D = format_D.replace("dd", day.toString().padStart(2, "0"));
+
+            var timePart = (parts.length > 1) ? parts[1] : '';
+            return timePart ? (format_D + " " + timePart) : format_D;
+        }
+
+        window.onload = function () {
+            var approvalDates = document.getElementsByClassName("approvalDate");
+            for (var i = 0; i < approvalDates.length; i++) {
+                if (approvalDates[i].innerHTML == 0) {
+                    approvalDates[i].innerHTML = "";
+                } else {
+                    approvalDates[i].innerHTML = dateFormat(approvalDates[i].innerHTML);
+                }
+            }
+        };
+
+
+        function myFunction2() {
+            var x = document.getElementById("myDIV");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+
+        // Show basic student details and late logs summary for selected UID
+        function showStudentLateDetails(uid, name, dept, year) {
+            var table = document.getElementById("myTable");
+            if (!table) return;
+
+            var trs = table.getElementsByTagName("tr");
+            var dates = [];
+
+            for (var i = 0; i < trs.length; i++) {
+                var cells = trs[i].getElementsByTagName("td");
+                if (!cells || cells.length < 7) continue; // skip header/invalid rows
+
+                // Column 2 contains UID (after hidden passtype and S.N)
+                var uidCell = cells[2];
+                var dateCell = trs[i].querySelector('.approvalDate');
+
+                if (uidCell && uidCell.textContent.trim() === uid && dateCell) {
+                    var d = dateCell.textContent.trim();
+                    if (d) {
+                        dates.push(d);
+                    }
+                }
+            }
+
+            var panel = document.getElementById("studentLateDetails");
+            if (!panel) return;
+
+            var html = '';
+            html += '<strong>UID:</strong> ' + uid + '<br>';
+            html += '<strong>Name:</strong> ' + name + '<br>';
+            html += '<strong>Department:</strong> ' + dept + '<br>';
+            html += '<strong>Year:</strong> ' + year + '<br>';
+            html += '<strong>Total late entries:</strong> ' + dates.length + '<br>';
+
+            if (dates.length > 0) {
+                html += '<strong>Late dates/times:</strong>';
+                html += '<div class="table-responsive mt-2"><table class="table table-sm table-bordered mb-0">';
+                html += '<thead><tr><th style="width:50px;">#</th><th>Date / Time</th></tr></thead><tbody>';
+                for (var j = 0; j < dates.length; j++) {
+                    html += '<tr><td>' + (j + 1) + '</td><td>' + dates[j] + '</td></tr>';
+                }
+                html += '</tbody></table></div>';
+            }
+
+            panel.innerHTML = html;
+            panel.style.display = 'block';
+        }
+    </script>
+
+
+</head>
+
+<body>
+   
+        <br>
+        <div id="myDIV">
+        <div class="container">
+       
+            <div class="row justify-content-center">
+                <div>
+                    <form action="/daterangeC" align="right" method="post">
+                        <div>
+                            <div align="center">
+                                <label class="form-label">Date From</label>
+                                <input type="date" name="datefrom">
+
+                                <label class="form-label">Date To</label>
+                                <input type="date" name="dateto">
+                                <button class="btn btn-primary"><span>Go</span></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div><input type="search" class="form-control rounded" placeholder="Search" aria-label="Search"
+                        aria-describedby="search-addon" id="searchbar" onkeyup="myFunction()" />
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container py-5">
+        <button class="btn btn-warning mb-3" onclick="myFunction2()"><span class="approvalDate"> <%- datetime %></span></button>
+                <div class="row">
+                    <div class="col-lg-8 col-md-7 col-12 table-responsive">
+                        <table class="table table-bordered table-hover" id="myTable">
+                            <thead class="thead-dark">
+                            
+                            <tr>
+                                    
+                                    <th scope="col">S.N</th>
+                                    <th scope="col">UID</th>
+                                    <th scope="col">NAME</th>
+                                    <th scope="col">Department</th>
+                                    <th scope="col">Year</th>                            
+                                    <th scope="col">Date/Time</th>                            
+                                    <th scope="col">Authority</th>
+                                    
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if(result.length> 0) { %>
+
+                                    <% for(var i=0;i<result.length;i++){ %>
+
+                                        <tr>
+                                            <td hidden><%-result[i].passtype %></td>
+                                            <td><%- i + 1 %></td>
+                                            <td>
+                                                <a href="javascript:void(0)" onclick="showStudentLateDetails('<%-result[i].uid%>','<%-result[i].sname%>','<%-result[i].dept%>','<%-result[i].year%>')">
+                                                    <%-result[i].uid%>
+                                                </a>
+                                            </td>
+                                            <td><%- result[i].sname%></td>
+                                            <td><%- result[i].dept%></td>
+                                            <td><%- result[i].year%></td>  
+                                            <td class="approvalDate"><%-result[i].indatetime %></td>
+                                            <td><%-result[i].Guardname %></td>
+                                        </tr>
+
+                                        <% } %>
+
+                                            <% }else{ %>
+                                                <tr class="warning no-result">
+                                                    <td colspan="10"> <i class="fa fa-warning"></i>
+                                                        <center>Data Not found</center>
+                                                    </td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-4 col-md-5 col-12">
+                        <div id="studentLateDetails" class="alert alert-info" style="display:none;"></div>
+                    </div>
+                </div>
+    </div>
+
+
+</body>
+
+</html>

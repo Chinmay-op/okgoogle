@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= request.student_name %></title>
+    <%
+    // Self-healing sanitization: If database contains pixel values (e.g. 145, 70) instead of cm, default them safely.
+    const topMargin = (parseFloat(settings.top_margin) > 10 || !settings.top_margin) ? 3.5 : parseFloat(settings.top_margin);
+    const bottomMargin = (parseFloat(settings.bottom_margin) > 10 || !settings.bottom_margin) ? 3.0 : parseFloat(settings.bottom_margin);
+    const leftMargin = (parseFloat(settings.left_margin) > 10 || !settings.left_margin) ? 2.0 : parseFloat(settings.left_margin);
+    const rightMargin = (parseFloat(settings.right_margin) > 10 || !settings.right_margin) ? 2.0 : parseFloat(settings.right_margin);
+    const fontSize = (parseInt(settings.font_size) > 40 || !settings.font_size) ? 18 : parseInt(settings.font_size);
+    const lineHeight = (parseFloat(settings.line_height) > 5 || !settings.line_height) ? 2.0 : parseFloat(settings.line_height);
+
+    // Title Case helper
+    const toTitleCase = (str) => str ? str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase()) : '';
+    %>
+    <style>
+        /* Common page reset */
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: "Times New Roman", serif;
+            background: #fff;
+            color: #000;
+        }
+
+        /* Common content styles */
+        .date-row {
+            text-align: right;
+            font-size: var(--font-size, 18px);
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .certificate-title {
+            text-align: center;
+            text-decoration: underline;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .certificate-body {
+            font-size: var(--font-size, 18px);
+            line-height: 1.5;
+            text-align: justify;
+        }
+
+        .certificate-body p {
+            margin-bottom: 0.5em;
+            margin-top: 0;
+            text-indent: 1.5cm;
+        }
+
+        .signature-section {
+            margin-top: 40px;
+            font-size: var(--font-size, 18px);
+            line-height: 1.5;
+        }
+
+        .certificate-note {
+            font-size: 15px;
+            line-height: 1.5;
+            text-align: justify;
+            font-weight: bold;
+            /* Positioned above pre-printed footer on physical paper */
+            position: fixed;
+            bottom: 4.8cm;
+            left: var(--left-margin, 2.0cm);
+            right: var(--right-margin, 2.0cm);
+        }
+
+        @media screen {
+            .certificate-note {
+                position: static;
+                margin-top: auto;
+            }
+        }
+
+        .purpose-note {
+            margin-top: 10px;
+            font-size: 17px;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        /* Screen Preview Mode */
+        @media screen {
+            body {
+                background: #edf2f7;
+                padding: 40px 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                min-height: 100vh;
+            }
+            .certificate-container {
+                background: #fff;
+                width: 21cm;
+                height: 28.5cm;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                box-sizing: border-box;
+                padding-top: calc(var(--top-margin, 3.5cm) + 1.2cm);
+                padding-bottom: var(--bottom-margin, 3.0cm);
+                padding-left: var(--left-margin, 2.0cm);
+                padding-right: var(--right-margin, 2.0cm);
+                display: flex;
+                flex-direction: column;
+            }
+            .manual-print-btn {
+                margin-bottom: 20px;
+                background: #3182ce;
+                color: #fff;
+                border: none;
+                padding: 10px 25px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-family: sans-serif;
+                font-weight: bold;
+                font-size: 1rem;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                z-index: 100;
+            }
+        }
+
+        /* Print Mode */
+        @media print {
+            @page {
+                size: 21cm 28.5cm;
+                margin: 0;
+            }
+            html, body {
+                width: 21cm;
+                height: 28.5cm;
+                background: #fff;
+            }
+            .manual-print-btn {
+                display: none !important;
+            }
+            .certificate-container {
+                display: flex !important;
+                flex-direction: column;
+                box-sizing: border-box;
+                padding-top: calc(var(--top-margin, 3.5cm) + 1.2cm);
+                padding-bottom: var(--bottom-margin, 3.0cm);
+                padding-left: var(--left-margin, 2.0cm);
+                padding-right: var(--right-margin, 2.0cm);
+                width: 21cm;
+                height: 28.5cm;
+            }
+        }
+    </style>
+</head>
+<body style="--top-margin: <%= topMargin %>cm; --bottom-margin: <%= bottomMargin %>cm; --left-margin: <%= leftMargin %>cm; --right-margin: <%= rightMargin %>cm; --font-size: <%= fontSize %>px; --line-height: <%= lineHeight %>;">
+
+<!-- Manual Print Button for Screen Mode -->
+<button class="manual-print-btn" onclick="window.print()">Print</button>
+
+<div class="certificate-container">
+    <!-- Date & Certificate No Section -->
+    <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; font-weight: bold; font-size: var(--font-size, 18px); margin-bottom: 50px; border-collapse: collapse;">
+        <tr>
+            <td style="text-align: left; padding: 0;">No: <%= request.certificate_no %></td>
+            <td style="text-align: right; padding: 0;">DATE: <%= new Date().toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' }) %></td>
+        </tr>
+    </table>
+
+    <!-- Heading -->
+    <h3 class="certificate-title">
+        TO WHOMSOEVER IT MAY CONCERN
+    </h3>
+
+    <!-- Body -->
+    <div class="certificate-body">
+        <p>
+            This is to certify that <strong>MR. <%= request.student_name %></strong> is a bonafide student of St. Vincent Pallotti College of Engineering and Technology, Gavsi Manapur, Wardha Road, Nagpur, India, in the faculty of <strong><%= toTitleCase(request.branch) %></strong>. He has been admitted to the hostel for the academic year <strong><%= request.academic_year %></strong>. During his stay here, the annual hostel fee would be <strong>Rs <%= request.hostel_fee ? parseInt(request.hostel_fee) : '' %>/-</strong> towards his Boarding and Mess. Please note that the hostel fee is subject to change annually as per the management's assessment. The patron bank is requested to cross-check with the hostel authorities about the residential status.
+        </p>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            Yours truthfully
+            <br><br><br><br><br>
+
+            <strong>Fr. Roby P.A. SAC</strong><br>
+            Manager<br>
+            TNPS Boys Hostel
+        </div>
+    </div>
+
+    <!-- Footer Text (Pushed to bottom of container cleanly via flex-flow margin-top: auto) -->
+    <div class="certificate-note">
+        • This Bonafide certificate is valid only with the signature of the Hostel Authority, and to be used only for submission for the Bank loan, Income Tax, Passport and Scholarship purposes only.
+    </div>
+</div>
+
+<script>
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            window.print();
+        }, 500);
+    });
+    window.addEventListener('afterprint', () => {
+        fetch('/admin/bonafide/<%= request.id %>/printed', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': '<%= csrfToken %>'
+            }
+        }).catch(err => {});
+    });
+</script>
+
+</body>
+</html>

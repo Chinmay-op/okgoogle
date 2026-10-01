@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Admission - TNPS</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #edfffb; 
+            font-family: 'Poppins', sans-serif; 
+            color: #333; 
+        }
+        .header-gradient { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 40px 20px; 
+            border-radius: 0 0 25px 25px; 
+            text-align: center; 
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            margin-bottom: 40px;
+        }
+        .header-logo {
+            max-height: 140px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
+        
+        .option-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px 30px;
+            height: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid transparent;
+        }
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        .icon-large {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: -webkit-linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .icon-green {
+            background: -webkit-linear-gradient(135deg, #20c997 0%, #198754 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .card-title { 
+            font-weight: 700; 
+            color: #4a4a6a; 
+            margin-bottom: 15px; 
+            font-size: 1.5rem;
+        }
+        .card-desc { 
+            color: #6c757d; 
+            font-size: 1rem; 
+            margin-bottom: 30px; 
+            flex-grow: 1; 
+        }
+        
+        .btn-gradient { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            border: none; 
+            font-weight: 600; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            transition: all 0.3s ease; 
+        }
+        .btn-gradient:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); 
+            color: white; 
+        }
+        
+        .btn-gradient-green { 
+            background: linear-gradient(135deg, #20c997 0%, #198754 100%); 
+            color: white; 
+            border: none; 
+            font-weight: 600; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            transition: all 0.3s ease; 
+        }
+        .btn-gradient-green:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(32, 201, 151, 0.4); 
+            color: white; 
+        }
+        
+        .login-banner {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-left: 5px solid #764ba2;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-gradient { padding: 30px 15px; }
+            .header-logo { max-height: 100px; }
+            .header-gradient h1 { font-size: 1.5rem; }
+            .header-gradient p { font-size: 0.9rem; }
+            .login-banner { flex-direction: column; text-align: center; }
+            .option-card { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-gradient">
+    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-center gap-4">
+        <img src="/images/hostellogo.png" alt="TNPS Hostel Logo" class="header-logo">
+        <div class="text-center text-md-start">
+            <h1 class="fw-bold mb-1">The Nagpur Pallottine Society Boys Hostel</h1>
+            <p class="mb-0 text-white-50">St. Vincent Pallotti College of Engineering & Technology, Nagpur</p>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="max-width: 1000px;">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold" style="color: #4a4a6a;">Hostel Admission Portal</h2>
+        <p class="text-muted">Select an option below to proceed</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <!-- CARD 1: New Application -->
+        <div class="col-md-6 col-lg-5">
+            <div class="option-card">
+                <div class="text-center">
+                    <i class="fas fa-file-signature icon-large"></i>
+                </div>
+                <h3 class="card-title">New Application</h3>
+                <p class="card-desc">First time applying? Fill out the hostel admission application form to apply for a room.</p>
+                <a href="/student/admission-form" class="btn btn-gradient btn-lg w-100 mt-auto">
+                    Apply Now <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- CARD 2: Check Status -->
+        <div class="col-md-6 col-lg-5">
+            <div class="option-card">
+                <div class="text-center">
+                    <i class="fas fa-search-location icon-large icon-green"></i>
+                </div>
+                <h3 class="card-title">Check My Status</h3>
+                <p class="card-desc">Already submitted your application? Enter your Application ID and mobile number to check your current status.</p>
+                <a href="/check-admission-status" class="btn btn-gradient-green btn-lg w-100 mt-auto">
+                    Check Status <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-banner">
+        <div>
+            <h5 class="fw-bold mb-1" style="color: #4a4a6a;"><i class="fas fa-user-check me-2 text-primary"></i>Already Admitted?</h5>
+            <p class="text-muted mb-0" style="font-size: 0.95rem;">Login to the portal using your Student UID and registered mobile number as password.</p>
+        </div>
+        <a href="/student/login" class="btn btn-outline-primary fw-bold px-4 py-2" style="border-radius: 8px;">
+            Go to Login <i class="fas fa-sign-in-alt ms-1"></i>
+        </a>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="container">
+        &copy; TNPS Boys Hostel | For assistance contact the hostel office
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

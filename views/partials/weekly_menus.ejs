@@ -1,0 +1,265 @@
+
+<style>
+    .wireframe-container {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+        margin-bottom: 40px;
+        overflow: hidden;
+    }
+    .wireframe-header {
+        background: #f8f9fa;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 15px 20px;
+        font-size: 1.15rem;
+        font-weight: bold;
+        color: #1f2937;
+    }
+    .wireframe-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    .wireframe-col {
+        border-right: 1px solid #e5e7eb;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .wireframe-col:last-child {
+        border-right: none;
+    }
+    .col-header {
+        padding: 12px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: center;
+        background: #fcfcfc;
+    }
+    .pill-breakfast { background-color: #fd7e14; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; display: inline-block; font-size: 0.9rem;}
+    .pill-lunch { background-color: #20c997; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; display: inline-block; font-size: 0.9rem;}
+    .pill-dinner { background-color: #6f42c1; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; display: inline-block; font-size: 0.9rem;}
+    
+    .col-content {
+        padding: 15px;
+        flex-grow: 1;
+    }
+
+    .wf-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .wf-table th { background: #f3f4f6; color: #4b5563; padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb; font-weight: 600; }
+    .wf-table td { padding: 10px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+    
+    .action-btn-neutral {
+        color: #6b7280;
+        background: transparent;
+        border: none;
+        padding: 0.25rem 0.4rem;
+        transition: color 0.2s;
+    }
+    .action-btn-neutral:hover { color: #1f2937; }
+    
+    @media (max-width: 768px) {
+        .wireframe-grid { grid-template-columns: 1fr; }
+        .wireframe-col { border-right: none; border-bottom: 1px solid #e5e7eb; }
+        .wireframe-col:last-child { border-bottom: none; }
+    }
+</style>
+
+<!-- SECTION 1: Weekly Default Mess Menu (READ ONLY) -->
+<div class="wireframe-container">
+    <div class="wireframe-header">
+        Weekly Default Mess Menu
+    </div>
+    <div class="wireframe-grid">
+        <% 
+        var meals = [
+            { id: 'breakfast', label: 'Breakfast', pillClass: 'pill-breakfast' },
+            { id: 'lunch', label: 'Lunch', pillClass: 'pill-lunch' },
+            { id: 'dinner', label: 'Dinner', pillClass: 'pill-dinner' }
+        ];
+        meals.forEach(function(meal) { 
+            var mItems = (typeof weeklyMenu !== 'undefined' ? weeklyMenu : []).filter(m => m.meal_type === meal.id);
+        %>
+        <div class="wireframe-col">
+            <div class="col-header">
+                <div class="<%= meal.pillClass %>"><%= meal.label %></div>
+            </div>
+            <div class="col-content">
+                <table class="wf-table">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Food</th>
+                            <% if (meal.id === 'breakfast') { %>
+                            <th>Drink</th>
+                            <% } %>
+                            <% if (typeof role !== 'undefined' && ['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+                                <th>Actions</th>
+                            <% } %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% 
+                        var dayOrder = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+                        dayOrder.forEach(function(d) {
+                            var item = mItems.find(m => m.weekday === d);
+                        %>
+                        <tr>
+                            <td class="fw-bold"><%= d %></td>
+                            <td>
+                                <% if (item && item.food_name) { %>
+                                    <%= item.food_name %>
+                                <% } else { %>
+                                    <span class="text-muted italic">None</span>
+                                <% } %>
+                            </td>
+                            <% if (meal.id === 'breakfast') { %>
+                            <td><%= item && item.drink ? item.drink : '-' %></td>
+                            <% } %>
+                            <% if (typeof role !== 'undefined' && ['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+                                <td>
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <button class="action-btn-neutral btn-edit-single" data-meal-id="<%= meal.id %>" data-day="<%= d %>" data-food="<%= item ? item.food_name : '' %>" data-drink="<%= item ? item.drink : '' %>">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form action="/admin/mess/delete-single" method="POST" class="m-0 p-0" onsubmit="return confirm('Clear menu for <%= d %>?');">
+                                            <input type="hidden" name="meal_type" value="<%= meal.id %>">
+                                            <input type="hidden" name="weekday" value="<%= d %>">
+                                            <button type="submit" class="action-btn-neutral" style="color: #dc3545;"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            <% } %>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                <% if (typeof role !== 'undefined' && ['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+                    <button class="btn btn-outline-dark w-100 mt-3" onclick="editFullWeek('<%= meal.id %>')">
+                        <i class="fas fa-edit"></i> Edit Full <%= meal.label %> Week
+                    </button>
+                <% } %>
+            </div>
+        </div>
+        <% }); %>
+    </div>
+</div>
+
+<!-- SECTION 2: Weekly Optional Mess Menu -->
+<div class="wireframe-container" style="border-top: 4px solid #198754;">
+    <div class="wireframe-header" style="background: #f8f9fa;">
+        Weekly Optional Mess Menu
+    </div>
+    <div class="wireframe-grid">
+        <% 
+        meals.forEach(function(meal) { 
+            var mItemsOpt = (typeof weeklyOptionalMenu !== 'undefined' ? weeklyOptionalMenu : []).filter(m => m.meal_type === meal.id);
+        %>
+        <div class="wireframe-col">
+            <div class="col-header">
+                <div class="<%= meal.pillClass %>"><%= meal.label %></div>
+            </div>
+            <div class="col-content">
+                <table class="wf-table">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Food</th>
+                            <% if (meal.id === 'breakfast') { %>
+                            <th>Drink</th>
+                            <% } %>
+                            <% if (typeof role !== 'undefined' && ['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+                                <th>Actions</th>
+                            <% } %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% 
+                        dayOrder.forEach(function(d) {
+                            var vegItem = mItemsOpt.find(m => m.weekday === d && m.food_type === 'Veg');
+                            var nonvegItem = mItemsOpt.find(m => m.weekday === d && m.food_type === 'Non-Veg');
+                            
+                            var showVeg = typeof student === 'undefined' || student.mess_type === 'Veg' || !student.mess_type || meal.id === 'breakfast';
+                            var showNonVeg = typeof student === 'undefined' || student.mess_type === 'Non-Veg';
+                        %>
+                        <tr>
+                            <td class="fw-bold"><%= d %></td>
+                            <td>
+                                <% if (showVeg && vegItem && vegItem.food_name) { %>
+                                    <div><% if (meal.id !== 'breakfast') { %><span class="badge bg-success" style="font-size:0.7rem;">Veg</span> <% } %><%= vegItem.food_name %></div>
+                                <% } %>
+                                <% if (showNonVeg && nonvegItem && nonvegItem.food_name) { %>
+                                    <div class="<%= (showVeg && vegItem && vegItem.food_name) ? 'mt-1' : '' %>"><% if (meal.id !== 'breakfast') { %><span class="badge bg-danger" style="font-size:0.7rem;">Non-Veg</span> <% } %><%= nonvegItem.food_name %></div>
+                                <% } %>
+                                <% if ((!showVeg || !vegItem || !vegItem.food_name) && (!showNonVeg || !nonvegItem || !nonvegItem.food_name)) { %>
+                                    <span class="text-muted italic">None</span>
+                                <% } %>
+                            </td>
+                            <% if (meal.id === 'breakfast') { %>
+                            <td>
+                                <% if (showVeg && vegItem && vegItem.drink) { %>
+                                    <div><%= vegItem.drink %></div>
+                                <% } %>
+                                <% if (showNonVeg && nonvegItem && nonvegItem.drink) { %>
+                                    <div class="<%= (showVeg && vegItem && vegItem.drink) ? 'mt-1' : '' %>"><%= nonvegItem.drink %></div>
+                                <% } %>
+                                <% if ((!showVeg || !vegItem || !vegItem.drink) && (!showNonVeg || !nonvegItem || !nonvegItem.drink)) { %>
+                                    -
+                                <% } %>
+                            </td>
+                            <% } %>
+                            <% if (typeof role !== 'undefined' && ['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+                                <td>
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <button class="action-btn-neutral btn-edit-single-optional" data-meal-id="<%= meal.id %>" data-day="<%= d %>" data-vfood="<%= vegItem ? vegItem.food_name : '' %>" data-vdrink="<%= vegItem ? vegItem.drink : '' %>" data-nvfood="<%= nonvegItem ? nonvegItem.food_name : '' %>" data-nvdrink="<%= nonvegItem ? nonvegItem.drink : '' %>">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form action="/admin/mess/delete-optional-single" method="POST" class="m-0 p-0" onsubmit="return confirm('Clear optional menu for <%= d %>?');">
+                                            <input type="hidden" name="meal_type" value="<%= meal.id %>">
+                                            <input type="hidden" name="weekday" value="<%= d %>">
+                                            <button type="submit" class="action-btn-neutral" style="color: #dc3545;"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            <% } %>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                <% if (typeof role !== 'undefined' && ['SuperID', 'Hostelauthority', 'BoysHostelAdmin', 'GirlsHostelAdmin'].includes(role)) { %>
+                    <button class="btn btn-outline-dark w-100 mt-3" onclick="editFullOptionalWeek('<%= meal.id %>')">
+                        <i class="fas fa-edit"></i> Edit Full <%= meal.label %> Week
+                    </button>
+                <% } %>
+            </div>
+        </div>
+        <% }); %>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.btn-edit-single').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var mealId = this.getAttribute('data-meal-id');
+                var day = this.getAttribute('data-day');
+                var food = this.getAttribute('data-food');
+                var drink = this.getAttribute('data-drink');
+                if (typeof editSingleDay === 'function') {
+                    editSingleDay(mealId, day, food, drink);
+                }
+            });
+        });
+        document.querySelectorAll('.btn-edit-single-optional').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var mealId = this.getAttribute('data-meal-id');
+                var day = this.getAttribute('data-day');
+                var vfood = this.getAttribute('data-vfood');
+                var vdrink = this.getAttribute('data-vdrink');
+                var nvfood = this.getAttribute('data-nvfood');
+                var nvdrink = this.getAttribute('data-nvdrink');
+                if (typeof editSingleOptionalDay === 'function') {
+                    editSingleOptionalDay(mealId, day, vfood, vdrink, nvfood, nvdrink);
+                }
+            });
+        });
+    });
+</script>

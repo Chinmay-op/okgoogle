@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Details Request - Admin Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f0f2f5; padding: 24px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .detail-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.07);
+            padding: 28px;
+            margin-bottom: 20px;
+            max-width: 860px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .detail-card h4 {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #2d3748;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .detail-card h4 i { color: #667eea; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .info-item label {
+            font-size: .73rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: #a0aec0;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .info-item .val {
+            font-size: .95rem;
+            font-weight: 600;
+            color: #2d3748;
+            background: #f7f8fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 9px 14px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: .8rem;
+            font-weight: 700;
+        }
+        .status-Pending    { background: #fef3c7; color: #92400e; }
+        .status-Approved   { background: #d1fae5; color: #065f46; }
+        .status-Rejected   { background: #fee2e2; color: #991b1b; }
+        .status-Printed    { background: #e0e7ff; color: #3730a3; }
+        .status-Collected  { background: #ccfbf1; color: #065f46; }
+        .status-Cancelled  { background: #cbd5e0; color: #4a5568; }
+
+        .timeline { list-style: none; padding: 0; margin: 0; }
+        .timeline li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: .88rem;
+            color: #4a5568;
+        }
+        .timeline li:last-child { border-bottom: none; }
+        .timeline-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: .8rem;
+        }
+        .dot-done   { background: #d1fae5; color: #065f46; }
+        .dot-pending { background: #fef3c7; color: #92400e; }
+        .dot-skip   { background: #f7f8fa; color: #cbd5e0; }
+        
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .cert-no-display {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #667eea;
+            background: #f0f0ff;
+            border: 1px solid #c3c8f5;
+            border-radius: 8px;
+            padding: 8px 16px;
+            display: inline-block;
+        }
+        .verification-link {
+            font-size: .8rem;
+            color: #667eea;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+<div style="max-width:860px;margin:0 auto 16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div>
+            <h3 style="margin:0;font-weight:700;font-size:1.2rem;color:#2d3748;">
+                <i class="fas fa-university me-2" style="color:#667eea;"></i>Request Detail
+            </h3>
+            <p style="color:#718096;font-size:.85rem;margin:4px 0 0;">Bank Details Request #<%= request.id %></p>
+        </div>
+        <a href="/admin/bank-requests" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Back to List
+        </a>
+    </div>
+</div>
+
+<% if (message && message.length > 0) { %>
+<div class="alert alert-info alert-dismissible fade show" style="max-width:860px;margin:0 auto 16px;" role="alert">
+    <%- message %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<% } %>
+
+<!-- Document Number + Status -->
+<div class="detail-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:20px;">
+        <div>
+            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;color:#a0aec0;margin-bottom:6px;">Document Number</div>
+            <% if (request.document_no) { %>
+            <span class="cert-no-display"><%= request.document_no %></span>
+            <% } else { %>
+            <span style="color:#a0aec0;font-style:italic;">Not yet assigned</span>
+            <% } %>
+        </div>
+        <div style="text-align:right;">
+            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;color:#a0aec0;margin-bottom:6px;">Current Status</div>
+            <span class="status-badge status-<%= request.status %>"><%= request.status %></span>
+        </div>
+    </div>
+
+    <% if (request.verification_token) { %>
+    <div style="background:#f7fafc; border:1px solid #edf2f7; border-radius:8px; padding:12px; margin-bottom:20px;">
+        <div style="font-size:.73rem;font-weight:700;color:#718096;margin-bottom:4px;text-transform:uppercase;">Public Verification URL</div>
+        <a href="/verify/bank/<%= request.verification_token %>" class="verification-link" target="_blank">
+            <%= domain %>/verify/bank/<%= request.verification_token %>
+        </a>
+    </div>
+    <% } %>
+</div>
+
+<!-- Student Details Card -->
+<div class="detail-card">
+    <h4><i class="fas fa-user-graduate"></i>Student Information</h4>
+    <div class="info-grid">
+        <div class="info-item">
+            <label>Student Name</label>
+            <div class="val"><%= request.student_name %></div>
+        </div>
+        <div class="info-item">
+            <label>Father's Name</label>
+            <div class="val"><%= request.father_name || 'N/A' %></div>
+        </div>
+        <div class="info-item">
+            <label>Enrollment / UID</label>
+            <div class="val"><%= request.enrollment_no %></div>
+        </div>
+        <div class="info-item">
+            <label>Branch / Department</label>
+            <div class="val"><%= request.branch %></div>
+        </div>
+        <div class="info-item">
+            <label>Current Study Year</label>
+            <div class="val"><%= request.year %> Yr</div>
+        </div>
+        <div class="info-item">
+            <label>Academic Year</label>
+            <div class="val"><%= request.academic_year %></div>
+        </div>
+    </div>
+</div>
+
+<!-- Fee breakdown snapshot -->
+<div class="detail-card">
+    <h4><i class="fas fa-rupee-sign"></i>Fee Snapshot (Approved Values)</h4>
+    <div class="info-grid">
+        <div class="info-item">
+            <label>Boarding / Room Fee</label>
+            <div class="val">₹<%= (request.boarding_fee || 0).toLocaleString('en-IN') %></div>
+        </div>
+        <div class="info-item">
+            <label>Mess / Boarding Fee</label>
+            <div class="val">₹<%= (request.mess_fee || 0).toLocaleString('en-IN') %></div>
+        </div>
+        <div class="info-item">
+            <label>Total Hostel Fee</label>
+            <div class="val" style="font-weight:700;color:#2c5282;">₹<%= (request.total_fee || 0).toLocaleString('en-IN') %></div>
+        </div>
+    </div>
+</div>
+
+<!-- Request Parameters & Remarks -->
+<div class="detail-card">
+    <h4><i class="fas fa-file-alt"></i>Request Details & Remarks</h4>
+    <div class="info-grid" style="grid-template-columns:1fr;">
+        <div class="info-item">
+            <label>Selected Purpose</label>
+            <div class="val"><%= request.purpose %> <%= request.purpose_desc ? '— ' + request.purpose_desc : '' %></div>
+        </div>
+        <% if (request.admin_remark) { %>
+        <div class="info-item">
+            <label>Admin remark / Notes</label>
+            <div class="val" style="background:#fffaf0;border-color:#fbd38d;"><%= request.admin_remark %></div>
+        </div>
+        <% } %>
+        <% if (request.status === 'Rejected' && request.rejection_reason) { %>
+        <div class="info-item">
+            <label style="color:#e53e3e;">Rejection Reason</label>
+            <div class="val" style="background:#fff5f5;border-color:#feb2b2;color:#c53030;"><%= request.rejection_reason %></div>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Audit Trail Logs -->
+<div class="detail-card">
+    <h4><i class="fas fa-history"></i>Audit Trail</h4>
+    <% if (auditLogs && auditLogs.length > 0) { %>
+    <ul class="timeline">
+        <% auditLogs.forEach(function(log) { %>
+        <li>
+            <div class="timeline-dot dot-done">
+                <i class="fas fa-check"></i>
+            </div>
+            <div style="flex-grow:1;">
+                <div style="font-weight:600;"><%= log.action %></div>
+                <div style="font-size:0.75rem;color:#718096;">
+                    Performed by <strong><%= log.performed_by %></strong> (<%= log.performed_role %>)
+                    <% if (log.remarks) { %> — <span style="font-style:italic;"><%= log.remarks %></span> <% } %>
+                </div>
+            </div>
+            <div style="font-size:0.75rem;color:#a0aec0;white-space:nowrap;">
+                <%= log.created_at ? new Date(log.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '' %>
+            </div>
+        </li>
+        <% }) %>
+    </ul>
+    <% } else { %>
+    <p style="color:#a0aec0;font-size:0.85rem;font-style:italic;">No audit logs recorded.</p>
+    <% } %>
+</div>
+
+<!-- Action Form Controls -->
+<div class="detail-card">
+    <h4><i class="fas fa-tasks"></i>Action Center</h4>
+    <div class="action-bar">
+        <% if (request.status === 'Pending') { %>
+        <form method="POST" action="/admin/bank-details/<%= request.id %>/approve" style="display:inline;" onsubmit="return handleApproveSubmit(this);">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" id="approveBtn" class="btn btn-success btn-sm">
+                <i class="fas fa-check me-1"></i>Approve Request
+            </button>
+        </form>
+        <button type="button" class="btn btn-danger btn-sm" onclick="document.getElementById('rejectSection').style.display='block';">
+            <i class="fas fa-times me-1"></i>Reject Request
+        </button>
+        <% } %>
+
+        <% if (request.status === 'Approved' || request.status === 'Printed' || request.status === 'Collected') { %>
+        <a href="/admin/bank-details/<%= request.id %>/print" class="btn btn-primary btn-sm" target="_blank">
+            <i class="fas fa-print me-1"></i>Print Certificate
+        </a>
+        <button id="saveDocBtn" data-id="<%= request.id %>" data-name="<%= request.student_name.split(' ').join('_') %>" class="btn btn-secondary btn-sm">
+            <i class="fas fa-file-word me-1"></i>Save as Word (.doc)
+        </button>
+        <% } %>
+
+        <% if (request.status === 'Approved') { %>
+        <form method="POST" action="/admin/bank-details/<%= request.id %>/printed-manual" style="display:inline;" onsubmit="return handleManualPrintSubmit(this);">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" id="manualPrintBtn" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-check-double me-1"></i>Mark as Printed (Manual)
+            </button>
+        </form>
+        <% } %>
+
+        <% if (request.status === 'Printed') { %>
+        <form method="POST" action="/admin/bank-details/<%= request.id %>/collected" onsubmit="return handleCollectedSubmit(this);">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" id="collectedBtn" class="btn btn-teal btn-sm" style="background:#4fd1c5;color:#fff;">
+                <i class="fas fa-hand-holding me-1"></i>Mark as Collected
+            </button>
+        </form>
+        <% } %>
+    </div>
+
+    <!-- Reject details form -->
+    <div id="rejectSection" style="display:none;margin-top:18px;">
+        <form method="POST" action="/admin/bank-details/<%= request.id %>/reject" onsubmit="return handleRejectSubmit(this);">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <label style="font-weight:700;font-size:.88rem;color:#c53030;display:block;margin-bottom:6px;">
+                <i class="fas fa-exclamation-triangle me-1"></i>Rejection Reason (required)
+            </label>
+            <textarea name="rejection_reason" class="form-control" rows="3" placeholder="Enter reason..." required></textarea>
+            <div style="margin-top:10px;display:flex;gap:8px;">
+                <button type="submit" id="rejectBtn" class="btn btn-danger btn-sm">Confirm Rejection</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('rejectSection').style.display='none';">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function handleApproveSubmit(form) {
+        if (!confirm('Approve this request?')) return false;
+        const btn = document.getElementById('approveBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Approving...';
+        }
+        return true;
+    }
+    function handleRejectSubmit(form) {
+        const btn = document.getElementById('rejectBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Rejecting...';
+        }
+        return true;
+    }
+    function handleManualPrintSubmit(form) {
+        if (!confirm('Mark as Printed?')) return false;
+        const btn = document.getElementById('manualPrintBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Updating...';
+        }
+        return true;
+    }
+    function handleCollectedSubmit(form) {
+        if (!confirm('Mark as Collected by student?')) return false;
+        const btn = document.getElementById('collectedBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Updating...';
+        }
+        return true;
+    }
+
+    async function saveAsWordDoc(requestId, studentName) {
+        const filename = studentName + '_bank_certificate.doc';
+        try {
+            const response = await fetch('/admin/bank-details/' + requestId + '/docx');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const blob = await response.blob();
+
+            if (window.showSaveFilePicker) {
+                const options = {
+                    suggestedName: filename,
+                    types: [{
+                        description: 'Word Document (.doc)',
+                        accept: {
+                            'application/msword': ['.doc']
+                        }
+                    }]
+                };
+                const handle = await window.showSaveFilePicker(options);
+                const writable = await handle.createWritable();
+                await writable.write(blob);
+                await writable.close();
+            } else {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.error('Error saving file:', err);
+                alert('Failed to save file. Downloading normally...');
+                window.location.href = '/admin/bank-details/' + requestId + '/docx';
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('saveDocBtn');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                const name = btn.getAttribute('data-name');
+                saveAsWordDoc(id, name);
+            });
+        }
+    });
+</script>
+</body>
+</html>

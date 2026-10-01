@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mess Management - Super Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 30px;
+            padding-bottom: 40px;
+            color: #1a1a2e;
+        }
+
+        .premium-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f2f5;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .page-title {
+            margin: 0;
+            font-weight: 700;
+            color: #1a1a2e;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-title-icon {
+            width: 42px; height: 42px;
+            background: #e8f0fe;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: #1976d2; font-size: 1.2rem;
+        }
+        .page-subtitle {
+            margin: 4px 0 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding-left: 54px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            font-weight: 600;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .back-btn:hover {
+            background-color: #f8f9fa;
+            border-color: #c1c9d0;
+            color: #212529;
+            transform: translateY(-1px);
+        }
+        
+        .action-btn-neutral {
+            color: #6b7280;
+            background: transparent;
+            border: none;
+            padding: 0.25rem 0.4rem;
+            transition: color 0.2s;
+        }
+        .action-btn-neutral:hover { color: #1f2937; }
+    </style>
+</head>
+<body>
+    <div class="premium-container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">
+                    <div class="page-title-icon"><i class="fas fa-utensils"></i></div>
+                    Mess Management
+                </h1>
+                <p class="page-subtitle"><%= role === 'BoysHostelAdmin' ? 'Admin Dashboard' : 'Super Admin Dashboard' %> - Add-Ons</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="/daterange" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+        </div>
+        
+        <% if(message && message.length > 0){ %>
+            <div class="alert alert-info"><%- message %></div>
+        <% } %>
+        
+        
+        <h3 class="fs-4 fw-bold mb-4 mt-5 border-bottom pb-2 text-dark">Special Food Add-Ons</h3>
+
+        <%- include('partials/special_food') %>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script id="weeklyOptionalMenuDataStr" type="application/json">
+        <%- JSON.stringify(typeof weeklyOptionalMenu !== 'undefined' ? weeklyOptionalMenu : []) %>
+    </script>
+    <script>
+        if (window.history.replaceState) {
+            const url = new URL(window.location);
+            if (url.searchParams.has('error') || url.searchParams.has('success')) {
+                url.searchParams.delete('error');
+                url.searchParams.delete('success');
+                window.history.replaceState(null, '', url.href);
+            }
+        }
+    </script>
+<%- include('partials/mess_modals') %>
+</body>
+</html>
+

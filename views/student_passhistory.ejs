@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pass History - Student Portal</title>
+    <link rel="stylesheet" href="/stylesheets/studentportal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <button class="sidebar-close" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="logo">
+            <img src="/images/4174.png" alt="Logo">
+            <h2>Gate Pass</h2>
+        </div>
+        
+        <ul class="nav-links">
+            <li>
+                <a href="/student/dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/roombooking">
+                    <i class="fas fa-bed"></i>
+                    <span>Room Booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/profile">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/attendance">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Attendance</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/passhistory" class="active">
+                    <i class="fas fa-history"></i>
+                    <span>Pass History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/requestpass">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Request Pass</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleave">
+                    <i class="fas fa-notes-medical"></i>
+                    <span>Request Sick Leave</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/sickleaverequests">
+                    <i class="fas fa-list-alt"></i>
+                    <span>My Sick Leave Requests</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/mess" id="nav_student_breakfast_link">
+                    <i class="fas fa-utensils"></i>
+                    <span>Mess Selection</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/notifications">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bonafide">
+                    <i class="fas fa-certificate"></i>
+                    <span>Bonafide Certificate</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/bank-details">
+                    <i class="fas fa-university"></i>
+                    <span>Hostel Bank Details</span>
+                </a>
+            </li>
+            <li>
+                <a href="/student/complain">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Complain Box</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="user-info">
+            <div class="user-detail">
+                <img src="<%= student.path || '/images/default-avatar.png' %>" alt="Profile">
+                <div class="stu-name">
+                    <div class="name"><%= student.sname %></div>
+                    <div class="role"><%= student.uid %></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="page-title">
+                <h1>Pass History</h1>
+                <p>View all your gate pass records</p>
+            </div>
+            
+            <div class="user-actions">
+                <a href="/student/notifications" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                </a>
+                <a href="/student/logout" class="logout-btn" style="text-decoration: none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+        
+        <% if(message && message.length > 0){ %>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <%- message %>
+            </div>
+        <% } %>
+        
+        <!-- Statistics Cards -->
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Total Passes</h3>
+                    <div class="icon blue">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                </div>
+                <div class="card-value"><%= stats.totalPasses || 0 %></div>
+                <div class="card-label">All time passes</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>City Passes</h3>
+                    <div class="icon orange">
+                        <i class="fas fa-city"></i>
+                    </div>
+                </div>
+                <div class="card-value"><%= stats.cityPasses || 0 %></div>
+                <div class="card-label">Total city passes</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Home Passes</h3>
+                    <div class="icon green">
+                        <i class="fas fa-home"></i>
+                    </div>
+                </div>
+                <div class="card-value"><%= stats.homePasses || 0 %></div>
+                <div class="card-label">Total home passes</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>This Month</h3>
+                    <div class="icon purple">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+                <div class="card-value"><%= stats.monthPasses || 0 %></div>
+                <div class="card-label">Passes this month</div>
+            </div>
+        </div>
+        
+        <!-- Active Pass (if any) -->
+        <% if(activePass) { %>
+            <div class="content-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; ">
+                <div class="section-header" style="border-color: rgba(255,255,255,0.2);">
+                    <h2 style="color: #fff;"><i class="fas fa-exclamation-circle"></i> Active Pass</h2>
+                    <span class="status-badge" style="background: rgba(255,255,255,0.2); color: #fff;">
+                        <%= activePass.passtype %>
+                    </span>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div>
+                        <label style="opacity: 0.7; font-size: 12px;">Approval Date</label>
+                        <p style="font-size: 16px; font-weight: 500;"><%= activePass.approvaldt ? new Date(activePass.approvaldt + 'Z').toLocaleString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }) : 'N/A' %></p>
+                    </div>
+                    <div>
+                        <label style="opacity: 0.7; font-size: 12px;">Gate Out</label>
+                        <p style="font-size: 16px; font-weight: 500;"><%= activePass.outdatetime ? getDateTimeInUserTimeZone(new Date(activePass.outdatetime)) : 'Not yet' %></p>
+                    </div>
+                    <div>
+                        <label style="opacity: 0.7; font-size: 12px;">Hostel In</label>
+                        <p style="font-size: 16px; font-weight: 500;"><%= activePass.hostelintime ? new Date(activePass.hostelintime + 'Z').toLocaleString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }) : 'Pending' %></p>
+                    </div>
+                    <div>
+                        <label style="opacity: 0.7; font-size: 12px;">Approved By</label>
+                        <p style="font-size: 16px; font-weight: 500;"><%= activePass.hosteloutauth || 'N/A' %></p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+        
+        <!-- Date Filter -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-filter"></i> Filter Passes</h2>
+            </div>
+            
+            <form action="/student/passhistory" method="GET" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>From Date</label>
+                    <input type="date" name="fromDate" value="<%= fromDate || '' %>">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>To Date</label>
+                    <input type="date" name="toDate" value="<%= toDate || '' %>">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Pass Type</label>
+                    <select name="passType">
+                        <option value="">All Types</option>
+                        <option value="City Pass" <%= passType === 'City Pass' ? 'selected' : '' %>>City Pass</option>
+                        <option value="Home Pass" <%= passType === 'Home Pass' ? 'selected' : '' %>>Home Pass</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-search"></i> Filter
+                </button>
+                <a href="/student/passhistory" class="btn-submit" style="background: #888; text-decoration: none;">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            </form>
+        </div>
+        
+        <!-- Pass History Table -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-list"></i> Pass Records</h2>
+            </div>
+            
+            <% if(passes && passes.length > 0) { %>
+                <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Pass Type</th>
+                            <th>Approval Date</th>
+                            <th>Gate Out</th>
+                            <th>Gate In</th>
+                            <th>Hostel In</th>
+                            <th>Duration</th>
+                            <th>Approved By</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% passes.forEach(function(pass, index) { %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td>
+                                    <span class="status-badge <%= pass.passtype === 'City Pass' ? 'pending' : 'active' %>">
+                                        <i class="fas <%= pass.passtype === 'City Pass' ? 'fa-city' : 'fa-home' %>"></i>
+                                        <%= pass.passtype || 'N/A' %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <% if(pass.approvaldt){ %>
+                                        <span class="dt-format" data-date="<%= pass.approvaldt %>"></span>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if(pass.outdatetime){ %>
+                                        <span class="dt-format" data-date="<%= pass.outdatetime %>"></span>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if(pass.indatetime){ %>
+                                        <span class="dt-format" data-date="<%= pass.indatetime %>"></span>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if(pass.hostelintime){ %>
+                                        <span class="dt-format" data-date="<%= pass.hostelintime %>"></span>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td><%= pass.Duration || pass.Durationh || 'N/A' %></td>
+                                <td><%= pass.hosteloutauth || 'N/A' %></td>
+                                <td>
+                                    <% if(pass.status === 'ACTIVE') { %>
+                                        <span class="status-badge pending">Active</span>
+                                    <% } else if(pass.hostelintime) { %>
+                                        <span class="status-badge active">Complete</span>
+                                    <% } else if(pass.indatetime) { %>
+                                        <span class="status-badge" style="background: rgba(102, 126, 234, 0.15); color: #667eea;">Gate In</span>
+                                    <% } else if(pass.outdatetime) { %>
+                                        <span class="status-badge pending">Outside</span>
+                                    <% } else { %>
+                                        <span class="status-badge">Pending</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>No Pass Records</h3>
+                    <p>You haven't used any gate passes yet</p>
+                    <a href="/student/requestpass" class="btn-submit" style="display: inline-block; margin-top: 15px; text-decoration: none;">
+                        <i class="fas fa-plus"></i> Request a Pass
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+    
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+            document.body.style.overflow = document.querySelector('.sidebar').classList.contains('active') ? 'hidden' : '';
+        }
+    </script>
+    <script>
+        // Format all elements with class 'dt-format'; support date-only via data-date-only
+        // IMPORTANT: Treats all dates as LOCAL TIME (not UTC) to match user's timezone
+        (function(){
+        function formatDateString(s) {
+            try {
+                if (!s) return s;
+
+                s = String(s).trim();
+                const dateObj = new Date(s);
+
+                if (isNaN(dateObj.getTime())) {
+                    console.warn('Invalid date:', s);
+                    return s;
+                }
+
+                const opts = {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                    timeZone: 'Asia/Kolkata'
+                };
+                return dateObj.toLocaleString('en-IN', opts);
+            } catch (e) {
+                console.error('Date formatting error:', e, 'for string:', s);
+                return s;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            var els = document.querySelectorAll('.dt-format');
+            els.forEach(function(el){
+                var s = el.getAttribute('data-date');
+                if (!s) return;
+                el.textContent = formatDateString(s);
+            });
+        });
+        })();
+    </script>
+</body>
+</html>

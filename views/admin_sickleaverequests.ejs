@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sick Leave Requests - Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      box-sizing: border-box;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: background-image 0.5s ease-in-out;
+    }
+
+    .container-main {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px
+    }
+
+    .card-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px
+    }
+
+    .req-card {
+      padding: 14px;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+      background: #fff;
+
+
+    }
+
+    .req-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-main shadow-sm">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div>
+        <h3><i class="fas fa-notes-medical me-2"></i>Sick Leave Requests</h3>
+        <p class="text-muted">Approve or reject student submitted sick leave requests.</p>
+      </div>
+      <div>
+        <a href="/admin/sickleave/create" class="btn btn-primary btn-sm me-2">
+          <i class="fas fa-plus-circle"></i> Create Back Entry
+        </a>
+        <a href="/sickleavelogs" class="btn btn-outline-primary btn-sm me-2">
+          <i class="fas fa-list"></i> View Logs
+        </a>
+        <a href="/daterange" class="btn btn-outline-secondary btn-sm">
+          <i class="fas fa-arrow-left"></i> Back
+        </a>
+      </div>
+    </div>
+
+    <% if(message && message.length>0){ %>
+      <div class="alert alert-info"><%- message %></div>
+      <% } %>
+
+        <% if(requests && requests.length>0){ %>
+          <% requests.forEach(function(r){ %>
+            <div class="req-card shadow-sm">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                  <strong>
+                    <%= r.sname %>
+                  </strong> • <small class="text-muted">UID: <%= r.uid %></small> • <small class="text-primary font-weight-bold">Room: <%= r.room_no || 'N/A' %></small>
+                  <div class="text-muted" style="font-size:13px">
+                    <%= r.illness %> • <span class="dt-format" data-date="<%= r.created_at %>"></span>
+                  </div>
+                </div>
+                <div>
+                  <span
+                    class="badge bg-<%= r.status==='pending' ? 'warning' : (r.status==='approved' ? 'success' : 'danger') %>">
+                    <%= r.status %>
+                  </span>
+                </div>
+              </div>
+              <% if(r.details){ %>
+                <div style="margin-top:8px"><strong>Details:</strong>
+                  <%= r.details %>
+                </div>
+                <% } %>
+
+                  <% if(r.status==='pending' ){ %>
+                    <div class="req-actions">
+                      <a href="/admin/sickleaverequest/edit/<%= r.requestid %>" class="btn btn-info btn-sm">
+                        <i class="fas fa-edit"></i> Edit
+                      </a>
+                      <form action="/admin/sickleaverequest/approve/<%= r.requestid %>" method="post"
+                        style="display:inline;">
+                        <button class="btn btn-success btn-sm" onclick="return confirm('Approve sick leave?')"><i
+                            class="fas fa-check"></i> Approve</button>
+                      </form>
+                      <form action="/admin/sickleaverequest/reject/<%= r.requestid %>" method="post"
+                        style="display:inline;">
+                        <input name="reason" placeholder="Rejection reason" class="form-control form-control-sm"
+                          style="width:240px;display:inline-block;margin-right:6px">
+                        <button class="btn btn-danger btn-sm" onclick="return confirm('Reject sick leave?')"><i
+                            class="fas fa-times"></i> Reject</button>
+                      </form>
+                    </div>
+                    <% } else { %>
+                      <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+                        <div style="font-size:13px;color:#666">Handled by: <%= r.approved_by || '-' %> at <span
+                              class="dt-format" data-date="<%= r.approved_at || '-' %>"></span>
+                        </div>
+                        <a href="/admin/sickleaverequest/edit/<%= r.requestid %>" class="btn btn-info btn-sm">
+                          <i class="fas fa-edit"></i> Edit
+                        </a>
+                      </div>
+                      <% } %>
+            </div>
+            <% }); %>
+              <% } else { %>
+                <div class="alert alert-secondary">No requests found.</div>
+                <% } %>
+  </div>
+  <script>
+    (function () {
+      function fmtIST(s) {
+        try {
+          if (!s || s === '-') return s;
+          s = String(s).trim();
+          var mysqlLike = /^(\d{4})-(\d{2})-(\d{2})[\sT](\d{2}):(\d{2})(?::(\d{2}))?/;
+          var m = s.match(mysqlLike);
+          var d;
+          if (m) {
+            d = new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10), parseInt(m[4], 10), parseInt(m[5], 10), parseInt(m[6] || '0', 10));
+          } else {
+            var normalized = s.replace(' ', 'T');
+            if (!normalized.includes('Z') && !normalized.match(/[+-]\d{2}:\d{2}$/)) {
+              var f = normalized.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+              if (f) {
+                d = new Date(parseInt(f[1], 10), parseInt(f[2], 10) - 1, parseInt(f[3], 10), parseInt(f[4], 10), parseInt(f[5], 10), parseInt(f[6] || '0', 10));
+              } else {
+                d = new Date(s);
+              }
+            } else {
+              d = new Date(s);
+            }
+          }
+          if (isNaN(d.getTime())) return s;
+          return d.toLocaleString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+        } catch (e) { return s; }
+      }
+      document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.dt-format').forEach(function (el) {
+          var s = el.getAttribute('data-date');
+          if (!s) return;
+          el.textContent = fmtIST(s);
+        });
+      });
+    })();
+  </script>
+
+  <script>
+    const backgroundImages = [
+      '/loginimages/1.jpg',
+      '/loginimages/2.jpg',
+      '/loginimages/3.jpg',
+      '/loginimages/4.jpg',
+      '/loginimages/5.jpg',
+      '/loginimages/6.jpg',
+      '/loginimages/7.jpg'
+
+    ];
+
+    let currentImageIndex = 0;
+
+    function changeBackground() {
+      document.body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
+      currentImageIndex = (currentImageIndex + 1) % backgroundImages.length;
+    }
+
+    // Set initial background
+    changeBackground();
+
+    // Change background every 5 seconds
+    setInterval(changeBackground, 20000);
+  </script>
+
+  <script>
+    (function () {
+      function saveFilter(val) {
+        try { localStorage.setItem('outstudents_pass_filter', String(val || '')); } catch (e) { }
+      }
+      function applySaved() {
+        try {
+          var saved = localStorage.getItem('outstudents_pass_filter');
+          var radios = document.querySelectorAll('input[type="radio"][name="radio"]');
+          if (saved !== null && radios && radios.length) {
+            // Set the radio button UI
+            var matched = null;
+            for (var j = 0; j < radios.length; j++) {
+              if ((radios[j].value || '') === saved) { matched = radios[j]; break; }
+            }
+            if (matched) matched.checked = true;
+            // Apply the filter to table rows
+            if (typeof passfilter === 'function') passfilter(saved);
+          }
+        } catch (e) { }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        // 1) Restore and apply previously chosen radio filter
+        applySaved();
+
+        // 2) Persist whenever radio changes
+        var radios = document.querySelectorAll('input[type="radio"][name="radio"]');
+        for (var r = 0; r < radios.length; r++) {
+          radios[r].addEventListener('change', function (ev) {
+            saveFilter((ev.target || {}).value || '');
+          });
+        }
+
+        // 3) Before any action link navigation, snapshot current filter
+        var table = document.getElementById('myTable');
+        if (table) {
+          var links = table.querySelectorAll(
+            'a[href^="/instudents/"], a[href^="/restrictstu/"], a[href^="/Unrestrictstu/"]'
+          );
+          for (var k = 0; k < links.length; k++) {
+            links[k].addEventListener('click', function () {
+              var current = (document.querySelector('input[type="radio"][name="radio"]:checked') || {}).value || '';
+              saveFilter(current);
+            });
+          }
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>

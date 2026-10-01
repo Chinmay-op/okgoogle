@@ -1,0 +1,8 @@
+node_modules/
+.env
+backup_views/
+
+uploads/
+uploads/admissions/
+uploads/complaints/
+iisnode-temp/

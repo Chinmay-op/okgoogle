@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile - Admin View</title>
+    <link rel="stylesheet" href="/stylesheets/studentportal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Admin profile page specific styles */
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .admin-header {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .admin-header img {
+            height: 60px;
+        }
+        
+        .admin-header h1 {
+            color: #fff;
+            font-size: 24px;
+            margin: 0;
+        }
+        
+        .profile-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+        
+        .profile-card-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 30px;
+            text-align: center;
+            color: #fff;
+        }
+        
+        .profile-card-header img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.3);
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+        
+        .profile-card-header h2 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+        }
+        
+        .profile-card-header .uid {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+        }
+        
+        .profile-card-body {
+            padding: 25px;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+        }
+        
+        .form-section h3 {
+            font-size: 16px;
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #333;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #667eea;
+            outline: none;
+            background: #fff;
+        }
+        
+        .form-group input:disabled,
+        .form-group select:disabled {
+            background: #f0f0f0;
+            cursor: not-allowed;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #fff;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: #fff;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .status-indicator.restricted {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+        
+        .status-indicator.active {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+        
+        .status-indicator.parents-permission {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+        
+        .status-indicator.fee-pending {
+            background: rgba(253, 126, 20, 0.15);
+            color: #fd7e14;
+        }
+        
+        .status-indicator.unrestrict {
+            background: rgba(40, 167, 69, 0.15);
+            color: #28a745;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-5px);
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 18px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.98);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
+            font-weight: 600;
+        }
+        
+        .alert-danger {
+            background: rgba(254, 242, 242, 0.98);
+            color: #b91c1c;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+        }
+        
+        .alert-info {
+            background: rgba(239, 246, 255, 0.98);
+            color: #1d4ed8;
+            border: 1px solid rgba(59, 130, 246, 0.35);
+        }
+
+        .alert i {
+            color: inherit;
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 15px;
+            }
+            
+            .admin-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .admin-header h1 {
+                font-size: 20px;
+            }
+            
+            .profile-card-header img {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .ctn{
+
+                display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+        }
+
+        /* Pass Count Table Styles */
+        .pass-count-table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .pass-count-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .pass-count-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .pass-count-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .month-cell {
+            font-weight: 500;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .count-cell {
+            position: relative;
+        }
+
+        .pass-count-clickable {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: inline-block;
+            min-width: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+        }
+
+        .pass-count-clickable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);
+        }
+
+        .pass-count-zero {
+            color: #999;
+            font-weight: 500;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .modal-title {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .dates-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .dates-list li {
+            background: #f8f9fa;
+            margin: 8px 0;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Admin Header -->
+        <div class="admin-header" style="display: flex; justify-content: center; align-items: center;">
+            <a href="/daterange"><img src="/images/logo.png" alt="Logo"></a>
+            <!-- <h1>Student Profile Management</h1> -->
+        </div>
+        
+        <!-- Alert Message -->
+        <% if(message && message.length > 0){ %>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <%- message %>
+            </div>
+        <% } %>
+        
+        <!-- Back Link -->
+        <% 
+        let backLabel = 'Back to Dashboard';
+        if (typeof backUrl !== 'undefined' && backUrl) {
+            if (backUrl.includes('studentsupdatehostel')) {
+                backLabel = 'Back to Hostel Student';
+            } else if (backUrl.includes('studentsupdate')) {
+                backLabel = 'Back to Student List';
+            }
+        }
+        %>
+        <a href="<%= backUrl || '/studentsupdate' %>" class="back-link">
+            <i class="fas fa-arrow-left"></i> <%= backLabel %>
+        </a>
+        
+        <% if (result && result[0]) { %>
+        <form action="/updatestudent/<%= result[0].uid%>" method="post">
+            <div class="profile-card">
+                <!-- Profile Header -->
+                <div class="profile-card-header">
+                    <% if (result && result[0] && result[0].path) { %>
+                        <img src="<%= result[0].path%>" alt="Profile Photo">
+                    <% } else { %>
+                        <img src="/images/blank_profile.webp" alt="Default Avatar">
+                    <% } %>
+                    <h2><%= result[0].sname %></h2>
+                    <div class="ctn">
+                         <span class="uid" style="margin-top: 1rem;"><i class="fas fa-id-badge"></i> <%= result[0].uid %></span>
+                    <div style="margin-top: 15px;">
+                        <% 
+                        let headerStatus = (result && result[0] && result[0].restriction_status) || 'active';
+                        let statusClass = 'active';
+                        let statusIcon = 'fa-check-circle';
+                        let statusText = 'Active';
+                        
+                        if (headerStatus && headerStatus.toLowerCase) {
+                            const status = headerStatus.toLowerCase();
+                            if (status === 'restrict') {
+                                statusClass = 'restricted';
+                                statusIcon = 'fa-ban';
+                                statusText = 'Restricted';
+                            } else if (status === 'unrestrict') {
+                                statusClass = 'unrestrict';
+                                statusIcon = 'fa-check-circle';
+                                statusText = 'Unrestricted';
+                            } else if (status === 'parents permission') {
+                                statusClass = 'parents-permission';
+                                statusIcon = 'fa-user-shield';
+                                statusText = 'Parents Permission';
+                            } else if (status === 'fee pending') {
+                                statusClass = 'fee-pending';
+                                statusIcon = 'fa-exclamation-triangle';
+                                statusText = 'Fee Pending';
+                            }
+                        }
+                        %>
+                        <span class="status-indicator <%= statusClass %>">
+                            <i class="fas <%= statusIcon %>"></i>
+                            <%= statusText %>
+                        </span>
+                    </div>
+                    </div>
+                   
+                </div>
+                </form>
+                <% } else { %>
+                    <p>No student data available.</p>
+                <% } %>
+                <!-- Profile Body -->
+                <div class="profile-card-body">
+                    <!-- Academic Information -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-graduation-cap"></i> Academic Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Student UID</label>
+                                <input type="text" placeholder="UID" name="new_uid" id="new_uid" disabled value="<%= result[0].uid %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Hostel ID</label>
+                                <input type="text" placeholder="Hostel ID" name="hostel_id" id="hostel_id" disabled value="<%= result[0].hostel_id || 'N/A' %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Department</label>
+                                 <select id="dropdownlist2" required name="Department" disabled>
+                                     <optgroup label="B.Tech.">
+                                       <option value="COMPUTER ENGINEERING" <%= (result && result[0] && result[0].dept === 'COMPUTER ENGINEERING') ? 'selected' : '' %>>Computer Science &amp; Engineering (CSE)</option>
+                                       <option value="ELECTRICAL ENGINEERING" <%= (result && result[0] && result[0].dept === 'ELECTRICAL ENGINEERING') ? 'selected' : '' %>>Electrical Engineering</option>
+                                       <option value="INFORMATION TECHNOLOGY" <%= (result && result[0] && result[0].dept === 'INFORMATION TECHNOLOGY') ? 'selected' : '' %>>Information Technology (IT)</option>
+                                       <option value="ELECTRONICS & TELECOMMUNICATION ENGINEERING" <%= (result && result[0] && result[0].dept === 'ELECTRONICS & TELECOMMUNICATION ENGINEERING') ? 'selected' : '' %>>Electronics &amp; Telecommunication Engineering (ETC)</option>
+                                       <option value="MECHANICAL ENGINEERING" <%= (result && result[0] && result[0].dept === 'MECHANICAL ENGINEERING') ? 'selected' : '' %>>Mechanical Engineering</option>
+                                       <option value="CIVIL ENGINEERING" <%= (result && result[0] && result[0].dept === 'CIVIL ENGINEERING') ? 'selected' : '' %>>Civil Engineering</option>
+                                       <option value="ARTIFICIAL INTELLIGENCE" <%= (result && result[0] && result[0].dept === 'ARTIFICIAL INTELLIGENCE') ? 'selected' : '' %>>Artificial Intelligence (AI)</option>
+                                       <option value="COMPUTER SCIENCE & ENGINEERING (DATA SCIENCE)" <%= (result && result[0] && result[0].dept === 'COMPUTER SCIENCE & ENGINEERING (DATA SCIENCE)') ? 'selected' : '' %>>Computer Science &amp; Engineering (Data Science)</option>
+                                       <option value="COMPUTER SCIENCE & ENGINEERING (CYBER SECURITY)" <%= (result && result[0] && result[0].dept === 'COMPUTER SCIENCE & ENGINEERING (CYBER SECURITY)') ? 'selected' : '' %>>Computer Science &amp; Engineering (Cyber Security)</option>
+                                       <option value="INDUSTRIAL IOT" <%= (result && result[0] && result[0].dept === 'INDUSTRIAL IOT') ? 'selected' : '' %>>Industrial IoT (IIoT)</option>
+                                       <option value="COMPUTER SCIENCE AND BUSINESS SYSTEMS" <%= (result && result[0] && result[0].dept === 'COMPUTER SCIENCE AND BUSINESS SYSTEMS') ? 'selected' : '' %>>Computer Science and Business Systems (CSBS)</option>
+                                       <option value="ROBOTICS & ARTIFICIAL INTELLIGENCE" <%= (result && result[0] && result[0].dept === 'ROBOTICS & ARTIFICIAL INTELLIGENCE') ? 'selected' : '' %>>Robotics &amp; Artificial Intelligence (RAI)</option>
+                                       <option value="MECHANICAL CAD-CAM" <%= (result && result[0] && result[0].dept === 'MECHANICAL CAD-CAM') ? 'selected' : '' %>>Mechanical CAD-CAM</option>
+                                     </optgroup>
+                                     <optgroup label="B.Voc.">
+                                       <option value="B.VOC. IN CYBER SECURITY" <%= (result && result[0] && result[0].dept === 'B.VOC. IN CYBER SECURITY') ? 'selected' : '' %>>B.Voc. in Cyber Security</option>
+                                       <option value="B.VOC. IN SOFTWARE DEVELOPMENT" <%= (result && result[0] && result[0].dept === 'B.VOC. IN SOFTWARE DEVELOPMENT') ? 'selected' : '' %>>B.Voc. in Software Development</option>
+                                       <option value="B.VOC. IN VIRTUAL REALITY & AUGMENTED REALITY" <%= (result && result[0] && result[0].dept === 'B.VOC. IN VIRTUAL REALITY & AUGMENTED REALITY') ? 'selected' : '' %>>B.Voc. in Virtual Reality &amp; Augmented Reality</option>
+                                       <option value="B VOCATIONAL" <%= (result && result[0] && result[0].dept === 'B VOCATIONAL') ? 'selected' : '' %>>B Vocational</option>
+                                     </optgroup>
+                                     <optgroup label="Other Programs">
+                                       <option value="BCA" <%= (result && result[0] && result[0].dept === 'BCA') ? 'selected' : '' %>>BCA</option>
+                                       <option value="BBA" <%= (result && result[0] && result[0].dept === 'BBA') ? 'selected' : '' %>>BBA</option>
+                                       <option value="MCA" <%= (result && result[0] && result[0].dept === 'MCA') ? 'selected' : '' %>>MCA</option>
+                                       <option value="MBA" <%= (result && result[0] && result[0].dept === 'MBA') ? 'selected' : '' %>>MBA</option>
+                                       <option value="M.TECH" <%= (result && result[0] && result[0].dept === 'M.TECH') ? 'selected' : '' %>>M.Tech</option>
+                                       <option value="M.TECH CSE" <%= (result && result[0] && result[0].dept === 'M.TECH CSE') ? 'selected' : '' %>>M.Tech CSE</option>
+                                       <option value="M.TECH CADCAM" <%= (result && result[0] && result[0].dept === 'M.TECH CADCAM') ? 'selected' : '' %>>M.Tech CAD-CAM</option>
+                                     </optgroup>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Academic Year</label>
+                                <input id="academicyear" name="academicyear" type="number" placeholder="YYYY" 
+                                       min="2020" max="2030" disabled value="<%= (result && result[0]) ? (result[0].academicyear || result[0].year || '') : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Year</label>
+                                <select id="dropdownlist3" required name="year" disabled>
+                                    <option value="<%= result[0].year %>" selected hidden><%= result[0].year %></option>
+                                    <option value="1st">1st</option>
+                                    <option value="2nd">2nd</option>
+                                    <option value="3rd">3rd</option>
+                                    <option value="4th">4th</option>
+                                    <option value="NA">Not Applicable</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="dropdownlist4" required name="category" disabled>
+                                    <option value="<%= result[0].category %>" selected hidden><%= result[0].category %></option>
+                                    <option value="Hostel">Hostel</option>
+                                    <option value="Day Scholar">Day Scholar</option>
+                                    <option value="PassOut">PassOut</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-user"></i> Personal Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <select id="dropdownlist5" required name="gender" disabled>
+                                    <option value="<%= result[0].gender %>" selected hidden><%= result[0].gender %></option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Date of Birth</label>
+                                <input type="date" id="dob" disabled name="dob" value="<%= (result && result[0]) ? (result[0].dob || '') : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input type="text" placeholder="Address" name="address" id="address" disabled 
+                                       value="<%= result[0].address%>">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-phone"></i> Contact Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Mobile Number</label>
+                                <input type="tel" placeholder="Mobile" name="mobile" id="mobile" 
+                                       pattern="[0-9]{10}" disabled value="<%=result[0].mobileno %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Email ID</label>
+                                <input type="email" placeholder="Email Id" name="email" id="email" disabled 
+                                       value="<%= result[0].email %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Parent's Name</label>
+                                <input type="text" placeholder="Parent's Name" name="ParentsName" id="ParentsName" 
+                                       disabled value="<%= (result && result[0]) ? (result[0].parentname || '') : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Parent's Number</label>
+                                <input type="text" placeholder="Parent's Number" name="ParentsNumber" id="ParentsNumber" 
+                                       disabled value="<%= result[0].parentnumber %>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Login Security -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-key"></i> Login Security</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>New Login Password</label>
+                                <input type="password" id="new_password" name="new_password" disabled
+                                       placeholder="Leave blank to keep current password" autocomplete="new-password">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Status -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-shield-alt"></i> Account Status</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Restriction Status</label>
+                                <select id="dropdownlist6" required name="Block" disabled>
+                                    <option value="<%= result[0].status %>" selected hidden><%= result[0].status %></option>
+                                    <option value="Active">Active</option>
+                                    <option value="Restrict">Restrict</option>
+                                    <option value="Unrestrict">Unrestrict</option>
+                                    <option value="Parents Permission">Parents Permission</option>
+                                    <option value="Fee Pending">Fee Pending</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hostel Details -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-building"></i> Hostel Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Block No</label>
+                                <input type="text" id="block" name="block" disabled value="<%= (result && result[0]) ? (result[0].block || result[0].other2 || '') : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Room No</label>
+                                <input type="text" id="room_no" name="room_no" disabled value="<%= (result && result[0]) ? (result[0].room_no || '') : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Bed No</label>
+                                <input type="text" id="bed_no" name="bed_no" disabled value="<%= (result && result[0]) ? (result[0].bed_no || result[0].other3 || '') : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Mess Type</label>
+                                <select id="mess_type" name="mess_type" disabled>
+                                    <% 
+                                    let currentMess = (result && result[0]) ? (result[0].mess_type || result[0].other1 || '') : ''; 
+                                    %>
+                                    <% if(currentMess) { %>
+                                        <option value="<%= currentMess %>" selected hidden><%= currentMess %></option>
+                                    <% } %>
+                                    <option value="Veg">Veg</option>
+                                    <option value="Non-Veg">Non-Veg</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <% if (typeof tallyFee !== 'undefined' && tallyFee) { %>
+                    <!-- Hostel Fee Details -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-file-invoice-dollar"></i> Hostel Fee Details
+                            <span style="font-size: 12px; background-color: #e9ecef; color: #495057; font-weight: 600; margin-left: 12px; padding: 4px 10px; border-radius: 12px; border: 1px solid #ced4da; vertical-align: middle;">
+                                <i class="far fa-calendar-alt"></i> As on <%= tallyFee.as_on_date || 'N/A' %>
+                            </span>
+                        </h3>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="font-size: 15px; font-weight: 600; color: #495057; margin-bottom: 15px;">
+                                <i class="fas fa-arrow-circle-right text-danger me-1"></i> Receivables (Amount Due)
+                            </h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Arrear Fee</label>
+                                    <input type="text" disabled value="₹ <%= parseFloat(tallyFee.recv_arrear_fee || 0).toLocaleString('en-IN') %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Current Year Fee</label>
+                                    <input type="text" disabled value="₹ <%= parseFloat(tallyFee.recv_current_year || 0).toLocaleString('en-IN') %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Extra Stay</label>
+                                    <input type="text" disabled value="₹ <%= parseFloat(tallyFee.recv_extra_stay || 0).toLocaleString('en-IN') %>">
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="font-size: 15px; font-weight: 600; color: #495057; margin-bottom: 15px;">
+                                <i class="fas fa-check-circle text-success me-1"></i> Received (Amount Paid)
+                            </h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Arrear Fee</label>
+                                    <input type="text" disabled value="₹ <%= parseFloat(tallyFee.recd_arrear_fee || 0).toLocaleString('en-IN') %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Current Year Fee</label>
+                                    <input type="text" disabled value="₹ <%= parseFloat(tallyFee.recd_current_year || 0).toLocaleString('en-IN') %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Extra</label>
+                                    <input type="text" disabled value="₹ <%= parseFloat(tallyFee.recd_extra || 0).toLocaleString('en-IN') %>">
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="form-grid">
+                            <div class="form-group <%= parseFloat(tallyFee.balance || 0) > 0 ? 'fee-balance-due' : 'fee-balance-clear' %>" style="border-radius: 8px; padding: 15px; background: rgba(255,255,255,0.5);">
+                                <label class="balance-label">Outstanding Balance</label>
+                                <input type="text" disabled class="balance-input" style="font-size: 18px; border: none; background: transparent; padding: 0;" value="₹ <%= parseFloat(tallyFee.balance || 0).toLocaleString('en-IN') %>">
+                            </div>
+                        </div>
+
+                        <% if (parseFloat(tallyFee.balance || 0) > 0) { %>
+                        <div style="margin-top: 15px; padding: 12px 15px; background: #ffebee; border: 1px solid #ffcdd2; color: #c62828; border-radius: 6px; font-size: 14px;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Student has an outstanding hostel fee balance of <strong>₹ <%= parseFloat(tallyFee.balance).toLocaleString('en-IN') %></strong>.
+                        </div>
+                        <% } %>
+                    </div>
+                    <% } else { %>
+                    <!-- Empty State for Hostel Fee Details -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-file-invoice-dollar"></i> Hostel Fee Details</h3>
+                        <div style="padding: 30px 0; text-align: center; color: #6c757d;">
+                            <i class="fas fa-receipt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                            <p>Fee details not yet available.</p>
+                        </div>
+                    </div>
+                    <% } %>
+
+                    <!-- Pass Count Summary -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-clipboard-list"></i> Pass Count Summary (Current Year)</h3>
+                        <div class="pass-count-table-container">
+                            <table class="pass-count-table">
+                                <thead>
+                                    <tr>
+                                        <th>Month</th>
+                                        <th>City Pass</th>
+                                        <th>Hostel Pass</th>
+                                        <th>Sick Leave</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% 
+                                    var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                                    monthNames.forEach(function(month) { 
+                                        var cityPassData = (monthlyPassData && monthlyPassData[month] && monthlyPassData[month]['City Pass']) ? monthlyPassData[month]['City Pass'] : { count: 0, dates: [] };
+                                        var homePassData = (monthlyPassData && monthlyPassData[month] && monthlyPassData[month]['Home Pass']) ? monthlyPassData[month]['Home Pass'] : { count: 0, dates: [] };
+                                        var sickLeaveData = (monthlyPassData && monthlyPassData[month] && monthlyPassData[month]['Sick Leave']) ? monthlyPassData[month]['Sick Leave'] : { count: 0, dates: [] };
+                                    %>
+                                    <tr>
+                                        <td class="month-cell"><%= month %></td>
+                                        <td class="count-cell">
+                                            <% if (cityPassData.count > 0) { %>
+                                                <span class="pass-count-clickable" 
+                                                      data-pass-type="City Pass"
+                                                      data-month="<%= month %>"
+                                                      data-dates="<%= encodeURIComponent(JSON.stringify(cityPassData.dates)) %>"
+                                                      onclick="handlePassCountClick(this)">
+                                                    <%= cityPassData.count %>
+                                                </span>
+                                            <% } else { %>
+                                                <span class="pass-count-zero">0</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="count-cell">
+                                            <% if (homePassData.count > 0) { %>
+                                                <span class="pass-count-clickable" 
+                                                      data-pass-type="Home Pass"
+                                                      data-month="<%= month %>"
+                                                      data-dates="<%= encodeURIComponent(JSON.stringify(homePassData.dates)) %>"
+                                                      onclick="handlePassCountClick(this)">
+                                                    <%= homePassData.count %>
+                                                </span>
+                                            <% } else { %>
+                                                <span class="pass-count-zero">0</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="count-cell">
+                                            <% if (sickLeaveData.count > 0) { %>
+                                                <span class="pass-count-clickable" 
+                                                      data-pass-type="Sick Leave"
+                                                      data-month="<%= month %>"
+                                                      data-dates="<%= encodeURIComponent(JSON.stringify(sickLeaveData.dates)) %>"
+                                                      onclick="handlePassCountClick(this)">
+                                                    <%= sickLeaveData.count %>
+                                                </span>
+                                            <% } else { %>
+                                                <span class="pass-count-zero">0</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="btn-group">
+                        <button type="button" id="update" class="btn btn-primary" onclick="enableEdit()">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button type="button" id="cancel" class="btn btn-danger" onclick="cancelEdit()" hidden>
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" id="submit" class="btn btn-success" hidden>
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal for showing pass dates -->
+    <div id="passDateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Pass Dates</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalBody">
+                <ul class="dates-list" id="datesList">
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function enableEdit() {
+            document.getElementById('new_uid').disabled = false;
+            document.getElementById('dropdownlist2').disabled = false;
+            document.getElementById('academicyear').disabled = false;
+            document.getElementById('dropdownlist3').disabled = false;
+            document.getElementById('dropdownlist4').disabled = false;
+            document.getElementById('dropdownlist5').disabled = false;
+            document.getElementById('dropdownlist6').disabled = false;
+            document.getElementById('mobile').disabled = false;
+            document.getElementById('email').disabled = false;
+            document.getElementById('new_password').disabled = false;
+            document.getElementById('dob').disabled = false;
+            document.getElementById('address').disabled = false;
+            document.getElementById('ParentsName').disabled = false;
+            document.getElementById('ParentsNumber').disabled = false;
+            document.getElementById('block').disabled = false;
+            document.getElementById('room_no').disabled = false;
+            document.getElementById('bed_no').disabled = false;
+            document.getElementById('mess_type').disabled = false;
+            
+            document.getElementById('update').hidden = true;
+            document.getElementById('cancel').hidden = false;
+            document.getElementById('submit').hidden = false;
+        }
+
+        function cancelEdit() {
+            document.getElementById('new_uid').disabled = true;
+            document.getElementById('dropdownlist2').disabled = true;
+            document.getElementById('academicyear').disabled = true;
+            document.getElementById('dropdownlist3').disabled = true;
+            document.getElementById('dropdownlist4').disabled = true;
+            document.getElementById('dropdownlist5').disabled = true;
+            document.getElementById('dropdownlist6').disabled = true;
+            document.getElementById('mobile').disabled = true;
+            document.getElementById('email').disabled = true;
+            document.getElementById('new_password').disabled = true;
+            document.getElementById('new_password').value = '';
+            document.getElementById('dob').disabled = true;
+            document.getElementById('address').disabled = true;
+            document.getElementById('ParentsName').disabled = true;
+            document.getElementById('ParentsNumber').disabled = true;
+            document.getElementById('block').disabled = true;
+            document.getElementById('room_no').disabled = true;
+            document.getElementById('bed_no').disabled = true;
+            document.getElementById('mess_type').disabled = true;
+            
+            document.getElementById('update').hidden = false;
+            document.getElementById('cancel').hidden = true;
+            document.getElementById('submit').hidden = true;
+        }
+
+        // Pass dates modal functions
+        function handlePassCountClick(element) {
+            const passType = element.getAttribute('data-pass-type');
+            const month = element.getAttribute('data-month');
+            let dates = [];
+            try {
+                dates = JSON.parse(decodeURIComponent(element.getAttribute('data-dates') || '[]'));
+            } catch (e) {
+                dates = [];
+            }
+            showPassDates(passType, month, dates);
+        }
+
+        function showPassDates(passType, month, dates) {
+            const modal = document.getElementById('passDateModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const datesList = document.getElementById('datesList');
+            
+            modalTitle.textContent = `${passType} - ${month}`;
+            
+            // Clear previous dates
+            datesList.innerHTML = '';
+            
+            // Add dates to the list
+            if (dates && dates.length > 0) {
+                dates.forEach(function(date) {
+                    const li = document.createElement('li');
+                    li.textContent = formatDate(date);
+                    datesList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'No dates available';
+                li.style.color = '#999';
+                datesList.appendChild(li);
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('passDateModal').style.display = 'none';
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const options = { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('passDateModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

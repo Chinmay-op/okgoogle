@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonafide Requests - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f0f2f5; padding: 24px; }
+        .page-header {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .page-header h3 { margin: 0; font-size: 1.2rem; font-weight: 700; color: #2d3748; }
+        .page-header p  { margin: 4px 0 0; color: #718096; font-size: .87rem; }
+
+        /* ── Toggle Switch ── */
+        .tab-toggle-wrap {
+            display: flex;
+            align-items: center;
+            background: #edf2f7;
+            border-radius: 40px;
+            padding: 4px;
+            gap: 2px;
+        }
+        .tab-toggle-btn {
+            border: none;
+            background: transparent;
+            border-radius: 36px;
+            padding: 6px 22px;
+            font-size: .83rem;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .2s, color .2s, box-shadow .2s;
+        }
+        .tab-toggle-btn.active {
+            background: #fff;
+            color: #667eea;
+            box-shadow: 0 1px 4px rgba(0,0,0,.12);
+        }
+        .tab-toggle-btn:hover:not(.active) { color: #4a5568; }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.05);
+            border-left: 4px solid;
+        }
+        .stat-card.pending   { border-color: #f6d860; }
+        .stat-card.approved  { border-color: #68d391; }
+        .stat-card.printed   { border-color: #7f9cf5; }
+        .stat-card.collected { border-color: #4fd1c5; }
+        .stat-card.rejected  { border-color: #fc8181; }
+        .stat-card .num { font-size: 1.7rem; font-weight: 800; color: #2d3748; }
+        .stat-card .lbl { font-size: .78rem; color: #718096; font-weight: 600; margin-top: 2px; }
+        .filters-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.05);
+        }
+        .filters-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+        .filters-row input, .filters-row select {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: .87rem;
+            outline: none;
+        }
+        .filters-row input:focus, .filters-row select:focus { border-color: #667eea; }
+        .filters-row .filter-group { display: flex; flex-direction: column; gap: 4px; }
+        .filters-row .filter-group label { font-size: .74rem; font-weight: 700; color: #a0aec0; text-transform: uppercase; letter-spacing: .4px; }
+        .table-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+            overflow: hidden;
+        }
+        table.req-table { width: 100%; border-collapse: collapse; font-size: .87rem; }
+        table.req-table th {
+            background: #f7f8fa;
+            color: #718096;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: .72rem;
+            letter-spacing: .5px;
+            padding: 12px 16px;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: left;
+        }
+        table.req-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #4a5568;
+            vertical-align: middle;
+        }
+        table.req-table tr:hover td { background: #fafbff; }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 99px;
+            font-size: .74rem;
+            font-weight: 700;
+        }
+        .status-Pending    { background: #fef3c7; color: #92400e; }
+        .status-Approved   { background: #d1fae5; color: #065f46; }
+        .status-Rejected   { background: #fee2e2; color: #991b1b; }
+        .status-Printed    { background: #e0e7ff; color: #3730a3; }
+        .status-Collected  { background: #ccfbf1; color: #065f46; }
+        .btn-action { border: none; padding: 5px 12px; border-radius: 6px; font-size: .78rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-view    { background: #ebf8ff; color: #2b6cb0; }
+        .btn-approve { background: #d1fae5; color: #065f46; }
+        .btn-reject  { background: #fee2e2; color: #991b1b; }
+        .btn-print   { background: #e0e7ff; color: #3730a3; }
+        .btn-collect { background: #ccfbf1; color: #065f46; }
+        .btn-action:hover { opacity: .8; }
+        /* Payment toggle buttons */
+        .btn-pay-yes { background: #d1fae5; color: #065f46; opacity: .45; transition: opacity .15s, box-shadow .15s; }
+        .btn-pay-no  { background: #fee2e2; color: #991b1b; opacity: .45; transition: opacity .15s, box-shadow .15s; }
+        .btn-pay-yes.pay-active { opacity: 1; box-shadow: 0 0 0 2px #065f46; }
+        .btn-pay-no.pay-active  { opacity: 1; box-shadow: 0 0 0 2px #991b1b; }
+        .cert-no { font-family: monospace; font-size: .8rem; color: #667eea; }
+        .empty-state { text-align: center; padding: 50px; color: #a0aec0; }
+        .empty-state i { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+        .reject-modal-bg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .reject-modal-bg.show { display: flex; }
+        .reject-modal {
+            background: #fff;
+            border-radius: 14px;
+            padding: 28px;
+            width: 420px;
+            max-width: 95vw;
+            box-shadow: 0 10px 40px rgba(0,0,0,.2);
+        }
+        .reject-modal h5 { font-weight: 700; margin-bottom: 16px; color: #c53030; }
+        .reject-modal textarea {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: .9rem;
+            resize: vertical;
+            min-height: 90px;
+        }
+        .reject-modal .modal-btns { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-header">
+    <div>
+        <h3><i class="fas fa-certificate me-2" style="color:#667eea;"></i>Bonafide Certificate Requests</h3>
+        <p>Manage, approve, reject and print hostel bonafide certificates.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+        <!-- Today / All Toggle -->
+        <div class="tab-toggle-wrap">
+            <a href="?tab=today&q=<%= filters?.q %>&status=<%= filters?.status %>&academic_year=<%= filters?.academic_year %>" class="tab-toggle-btn <%= filters?.tab === 'today' ? 'active' : '' %>" id="btn-today">
+                <i class="fas fa-calendar-day me-1"></i>Today
+            </a>
+            <a href="?tab=all&q=<%= filters?.q %>&status=<%= filters?.status %>&academic_year=<%= filters?.academic_year %>" class="tab-toggle-btn <%= filters?.tab === 'all' ? 'active' : '' %>" id="btn-all">
+                <i class="fas fa-list me-1"></i>All Requests
+            </a>
+        </div>
+        <a href="/daterange" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<% if (message && message.length > 0) { %>
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+    <%- message %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<% } %>
+
+<!-- Stats Row -->
+<div class="stats-row">
+    <div class="stat-card pending">
+        <div class="num"><%= stats?.pending || 0 %></div>
+        <div class="lbl"><i class="fas fa-clock me-1"></i>Pending</div>
+    </div>
+    <div class="stat-card approved">
+        <div class="num"><%= stats?.approved || 0 %></div>
+        <div class="lbl"><i class="fas fa-check me-1"></i>Approved</div>
+    </div>
+    <div class="stat-card printed">
+        <div class="num"><%= stats?.printed || 0 %></div>
+        <div class="lbl"><i class="fas fa-print me-1"></i>Printed</div>
+    </div>
+    <div class="stat-card collected">
+        <div class="num"><%= stats?.collected || 0 %></div>
+        <div class="lbl"><i class="fas fa-box-check me-1"></i>Collected</div>
+    </div>
+    <div class="stat-card rejected">
+        <div class="num"><%= stats?.rejected || 0 %></div>
+        <div class="lbl"><i class="fas fa-times me-1"></i>Rejected</div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filters-card">
+    <form method="GET" action="/admin/bonafide-requests">
+        <input type="hidden" name="tab" value="<%= filters?.tab %>">
+        <div class="filters-row">
+            <div class="filter-group">
+                <label>Search Name / UID</label>
+                <input type="text" name="q" value="<%= filters?.q || '' %>" placeholder="Search..." style="min-width:200px;">
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select name="status">
+                    <option value="">All Status</option>
+                    <% ['Pending','Approved','Rejected','Printed','Collected'].forEach(function(s) { %>
+                    <option value="<%= s %>" <%= filters?.status === s ? 'selected' : '' %>><%= s %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Academic Year</label>
+                <input type="text" name="academic_year" value="<%= filters?.academic_year || '' %>" placeholder="e.g. 2025-26" style="width:130px;">
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm" style="height:38px;padding:0 16px;">
+                <i class="fas fa-search"></i> Filter
+            </button>
+            <a href="/admin/bonafide-requests?tab=<%= filters?.tab %>" class="btn btn-outline-secondary btn-sm" style="height:38px;padding:0 14px;display:flex;align-items:center;">
+                <i class="fas fa-redo"></i>&nbsp;Clear
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Table -->
+<div class="table-card">
+    <% if (requests && requests.length > 0) { %>
+    <div style="overflow-x:auto;">
+        <table class="req-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Certificate No.</th>
+                    <th>Student</th>
+                    <th>UID</th>
+                    <th>Branch</th>
+                    <th>Hostel Fee</th>
+                    <th>Academic Year</th>
+                    <th>Request Date</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% requests.forEach(function(r, i) { %>
+                <tr>
+                    <td style="color:#a0aec0;"><%= ((pagination?.page - 1) * 20) + i + 1 %></td>
+                    <td class="cert-no"><%= r?.certificate_no || '—' %></td>
+                    <td style="font-weight:600;"><%= r?.student_name %></td>
+                    <td style="font-size:.82rem;color:#667eea;font-family:monospace;"><%= r?.student_uid %></td>
+                    <td><%= r?.branch || '—' %></td>
+                    <td><%= r?.hostel_fee ? 'Rs. ' + Number(r.hostel_fee).toLocaleString('en-IN') + '/-' : '—' %></td>
+                    <td><%= r?.academic_year || '—' %></td>
+                    <td><%= r?.request_date ? new Date(r.request_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : '—' %></td>
+                    <td><span class="status-badge status-<%= r?.status %>"><%= r?.status %></span></td>
+                    <td>
+                        <div class="pay-wrap" style="display:flex;gap:6px;">
+                            <% if (r?.payment_status === 'paid') { %>
+                                <span style="display:inline-flex;align-items:center;gap:5px;background:#d1fae5;color:#065f46;font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:99px;"><i class="fas fa-check-circle"></i> Accepted</span>
+                            <% } else { %>
+                                <button class="btn-action btn-pay-yes" data-id="<%= r?.id %>" data-type="yes" title="Payment Received" onclick="togglePayment(this)" style="padding:5px 10px;">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn-action btn-pay-no <%= r?.payment_status === 'unpaid' ? 'pay-active' : '' %>" data-id="<%= r?.id %>" data-type="no" title="Payment Not Received" onclick="togglePayment(this)" style="padding:5px 10px;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            <% } %>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            <a href="/admin/bonafide/<%= r?.id %>" class="btn-action btn-view" title="View Detail">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <% if (r?.status === 'Pending') { %>
+                            <form method="POST" action="/admin/bonafide/<%= r?.id %>/approve" style="display:inline;" data-id="<%= r?.id %>" onsubmit="return handleListApprove(this);">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <button type="submit" id="approveBtn-<%= r?.id %>" class="btn-action btn-approve" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                            <button class="btn-action btn-reject" title="Reject" data-id="<%= r?.id %>" onclick="openRejectModal(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <% } %>
+                            <% if (r?.status === 'Approved') { %>
+                            <a href="/admin/bonafide/<%= r?.id %>/print" class="btn-action btn-print" target="_blank" title="Print Certificate">
+                                <i class="fas fa-print"></i>
+                            </a>
+                            <% } %>
+                            <% if (r?.status === 'Printed') { %>
+                            <form method="POST" action="/admin/bonafide/<%= r?.id %>/collected" style="display:inline;" data-id="<%= r?.id %>" onsubmit="return handleListCollect(this);">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <button type="submit" id="collectBtn-<%= r?.id %>" class="btn-action btn-collect" title="Mark Collected">
+                                    <i class="fas fa-hand-holding"></i>
+                                </button>
+                            </form>
+                            <% } %>
+                        </div>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination controls -->
+    <% if (pagination && pagination.totalPages > 1) { %>
+    <div class="d-flex justify-content-between align-items-center p-3 border-top flex-wrap gap-2">
+        <div style="font-size: 0.85rem; color: #718096;">
+            Showing page <strong><%= pagination?.page %></strong> of <strong><%= pagination?.totalPages %></strong> (Total <%= pagination?.total %> requests)
+        </div>
+        <nav>
+            <ul class="pagination pagination-sm m-0">
+                <li class="page-item <%= pagination?.page <= 1 ? 'disabled' : '' %>">
+                    <a class="page-link" href="?page=<%= pagination?.page - 1 %>&q=<%= filters?.q %>&status=<%= filters?.status %>&academic_year=<%= filters?.academic_year %>&tab=<%= filters?.tab %>">Previous</a>
+                </li>
+                <% for (let p = 1; p <= pagination?.totalPages; p++) { %>
+                <li class="page-item <%= pagination?.page === p ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= p %>&q=<%= filters?.q %>&status=<%= filters?.status %>&academic_year=<%= filters?.academic_year %>&tab=<%= filters?.tab %>"><%= p %></a>
+                </li>
+                <% } %>
+                <li class="page-item <%= pagination?.page >= pagination?.totalPages ? 'disabled' : '' %>">
+                    <a class="page-link" href="?page=<%= pagination?.page + 1 %>&q=<%= filters?.q %>&status=<%= filters?.status %>&academic_year=<%= filters?.academic_year %>&tab=<%= filters?.tab %>">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <% } %>
+
+    <% } else { %>
+    <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <p>No Bonafide Requests Found.</p>
+    </div>
+    <% } %>
+</div>
+
+<!-- Reject Modal -->
+<div class="reject-modal-bg" id="rejectModalBg">
+    <div class="reject-modal">
+        <h5><i class="fas fa-times-circle me-2"></i>Reject Request</h5>
+        <p style="color:#718096;font-size:.88rem;margin-bottom:12px;">Please enter a reason for rejection. This will be shown to the student.</p>
+        <form method="POST" id="rejectForm" action="" onsubmit="return handleListReject(this);">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <textarea name="rejection_reason" placeholder="Enter rejection reason..." required></textarea>
+            <div class="modal-btns">
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="closeRejectModal()">Cancel</button>
+                <button type="submit" id="modalRejectBtn" class="btn btn-danger btn-sm">Reject Request</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function openRejectModal(btn) {
+        const id = btn.getAttribute('data-id');
+        document.getElementById('rejectForm').action = '/admin/bonafide/' + id + '/reject';
+        document.getElementById('rejectModalBg').classList.add('show');
+    }
+    function closeRejectModal() {
+        document.getElementById('rejectModalBg').classList.remove('show');
+    }
+    document.getElementById('rejectModalBg').addEventListener('click', function(e) {
+        if (e.target === this) closeRejectModal();
+    });
+ 
+    function handleListApprove(form) {
+        if (!confirm('Approve this request?')) return false;
+        const id = form.getAttribute('data-id');
+        const btn = document.getElementById('approveBtn-' + id);
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        }
+        return true;
+    }
+    function handleListCollect(form) {
+        if (!confirm('Mark as Collected?')) return false;
+        const id = form.getAttribute('data-id');
+        const btn = document.getElementById('collectBtn-' + id);
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        }
+        return true;
+    }
+    function handleListReject(form) {
+        const btn = document.getElementById('modalRejectBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Rejecting...';
+        }
+        return true;
+    }
+    function togglePayment(btn) {
+        const wrap = btn.closest('.pay-wrap');
+        const id = btn.getAttribute('data-id');
+        const type = btn.getAttribute('data-type');
+        
+        let newStatus = 'pending';
+        if (type === 'yes') {
+            if (!confirm('Confirm payment received for this student?')) return;
+            newStatus = 'paid';
+        } else {
+            if (btn.classList.contains('pay-active')) {
+                newStatus = 'pending';
+            } else {
+                newStatus = 'unpaid';
+            }
+        }
+
+        // Send AJAX request to server
+        fetch('/admin/bonafide/' + id + '/payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                _csrf: '<%= csrfToken %>',
+                payment_status: newStatus
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (newStatus === 'paid') {
+                    wrap.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px;background:#d1fae5;color:#065f46;font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:99px;"><i class="fas fa-check-circle"></i> Accepted</span>';
+                } else if (newStatus === 'unpaid') {
+                    // Update buttons in wrap to show "No" is active
+                    wrap.innerHTML = `
+                        <button class="btn-action btn-pay-yes" data-id="${id}" data-type="yes" title="Payment Received" onclick="togglePayment(this)" style="padding:5px 10px;">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn-action btn-pay-no pay-active" data-id="${id}" data-type="no" title="Payment Not Received" onclick="togglePayment(this)" style="padding:5px 10px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                } else {
+                    // Reset both buttons in wrap
+                    wrap.innerHTML = `
+                        <button class="btn-action btn-pay-yes" data-id="${id}" data-type="yes" title="Payment Received" onclick="togglePayment(this)" style="padding:5px 10px;">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn-action btn-pay-no" data-id="${id}" data-type="no" title="Payment Not Received" onclick="togglePayment(this)" style="padding:5px 10px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                }
+            } else {
+                alert('Failed to update payment status: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(err => {
+            console.error('Error updating payment status:', err);
+            alert('Error updating payment status. Please try again.');
+        });
+    }
+</script>
+</body>
+</html>

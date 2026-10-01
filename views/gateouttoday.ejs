@@ -1,0 +1,231 @@
+﻿<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gate Out</title>
+    <link rel="stylesheet" href="/stylesheets/hostelpanel.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="icon" href="/images/4174.png">
+    
+   
+    <script>
+function myFunction() {
+var input, filter, table, tr, td, i;
+  input = document.getElementById("searchbar");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[3]; // for column one
+     td1 = tr[i].getElementsByTagName("td")[2]; // for column two
+/* ADD columns here that you want you to filter to be used on */
+    if (td) {
+      if ( (td.innerHTML.toUpperCase().indexOf(filter) > -1) || (td1.innerHTML.toUpperCase().indexOf(filter) > -1) )  {            
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+} 
+
+function dateFormat(input_D) {
+    // input date parsed
+    format_D= 'dd-MM-yyyy';
+    const Time = input_D.split(" ",3);  
+    const date = new Date(input_D);
+
+    //extracting parts of date string
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear(); 
+    
+
+    //to replace month
+    format_D = format_D.replace("MM", month.toString().padStart(2,"0"));        
+
+    //to replace year
+    if (format_D.indexOf("yyyy") > -1) {
+        format_D = format_D.replace("yyyy", year.toString());
+    } else if (format_D.indexOf("yy") > -1) {
+        format_D = format_D.replace("yy", year.toString().substr(2,2));
+    }
+
+    //to replace day
+    format_D = format_D.replace("dd", day.toString().padStart(2,"0"));
+
+    return format_D +" "+ Time[2];
+   
+    
+}
+
+window.onload = function() {
+  var approvalDates = document.getElementsByClassName("approvalDate");
+  for (var i = 0; i < approvalDates.length; i++) {
+    if(approvalDates[i].innerHTML==0)
+    {
+      approvalDates[i].innerHTML="";
+    }
+    else{
+    approvalDates[i].innerHTML = dateFormat(approvalDates[i].innerHTML);
+  }
+  }
+};
+
+function passfilter(value)
+  {
+    var input, filter, table, tr, td, i, txtValue;
+ 
+  filter = value.toUpperCase();
+  console.log(filter);
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }       
+  }
+  }
+
+    </script>
+  
+
+ </head>
+<body >
+  
+    <div><center>
+      
+      <% if(message.length>0){ %>
+        <div class="alert-danger">
+          <h5>
+        <%- message %>
+          </h5> 
+        </div>
+        <% } %>
+        <a href="/homepage"><img src="/images/logo.png"/></a><br><br><div class="radio-inputs" align="center">
+        
+            <label class="radio">
+              <input type="radio" name="radio" onclick="passfilter(this.value)" id="radio" value="Home Pass">
+              <span class="name">Home Pass</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="radio"  onclick="passfilter(this.value)" id="radio" value="City Pass">
+              <span class="name">City Pass</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="radio"  checked="checked" onclick="passfilter(this.value)" id="radio" value="">
+              <span class="name">All Pass</span>
+            </label>
+         
+        </div><br><button class="btn btn-primary" onclick="history.back()">Go Back</button></center>
+    </div><br>
+    <div class="container table-responsive py-5"> 
+      <table class="table table-bordered table-hover" id="myTable">
+        <thead class="thead-dark">
+         
+          <tr>
+            <th scope="col" hidden>passtype</th>
+            <th scope="col">S.N</th>
+            <th scope="col">UID</th>
+            <th scope="col">NAME</th>
+            <th scope="col">GATE Out</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if(result.length > 0) { %>
+  
+            <% for(var i=0;i<result.length;i++){ %>
+    
+                <tr>
+                  <td hidden><%- result[i].passtype%></td>
+                  <td scope="row"><%- i + 1 %></td>
+                  <td><%-result[i].uid%></a></td>
+                  <td><%- result[i].sname%></td>
+                    <td class="approvalDate">
+    <% if(result[i].outdatetime){ %>
+      <span class="dt-format" data-date="<%= result[i].outdatetime %>"></span>
+    <% } else { %>
+      -
+    <% } %>
+  </td>
+                    
+                    
+                    
+                </tr>
+  
+                <%  } %>
+  
+        <% }else{ %>
+            <tr class="warning no-result"> <td colspan="10"> <i class="fa fa-warning"></i><center>Data Not found</center></td> </tr>
+          <% } %>
+        </tbody>
+      </table>
+      </div>
+  
+  
+          
+<script>
+// Local-time-safe formatter for .dt-format elements (treat MySQL DATETIME as local wall time)
+(function(){
+  function formatDateString(s, dateOnly) {
+    try {
+      if (!s) return s;
+      s = String(s).trim();
+      var mysqlLike = /^(\d{4})-(\d{2})-(\d{2})[\sT](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?(?:\s*[Z+-]|$)/;
+      var m = s.match(mysqlLike);
+      var d;
+      if (m) {
+        d = new Date(
+          parseInt(m[1],10),
+          parseInt(m[2],10)-1,
+          parseInt(m[3],10),
+          parseInt(m[4],10),
+          parseInt(m[5],10),
+          parseInt(m[6]||'0',10)
+        );
+      } else {
+        var normalized = s.replace(' ', 'T');
+        if (!normalized.includes('Z') && !normalized.match(/[+-]\d{2}:\d{2}$/)) {
+          var f = normalized.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+          if (f) {
+            d = new Date(
+              parseInt(f[1],10),
+              parseInt(f[2],10)-1,
+              parseInt(f[3],10),
+              parseInt(f[4],10),
+              parseInt(f[5],10),
+              parseInt(f[6]||'0',10)
+            );
+          } else {
+            d = new Date(s);
+          }
+        } else {
+          d = new Date(s);
+        }
+      }
+      if (isNaN(d.getTime())) return s;
+      if (dateOnly) {
+        return d.toLocaleDateString('en-IN', { year:'numeric', month:'short', day:'numeric' });
+      }
+      return d.toLocaleString('en-IN', { month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
+    } catch(e){ return s; }
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.dt-format').forEach(function(el){
+      var s = el.getAttribute('data-date');
+      if (!s) return;
+      var dateOnly = el.getAttribute('data-date-only') === 'true';
+      el.textContent = formatDateString(s, dateOnly);
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Student - <%= student.uid %></title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #edfffb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        .custom-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .card-header-custom {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            padding: 15px 25px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .card-body-custom {
+            padding: 25px;
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        
+        <div class="mb-4">
+            <a href="/studentsupdate" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="fas fa-arrow-left"></i> Back to Students
+            </a>
+        </div>
+
+        <div class="header-gradient d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <h2 class="mb-0"><i class="fas fa-user-edit"></i> Edit Student — <%= student.uid %></h2>
+            <div>
+                <% 
+                    let badgeClass = 'bg-secondary';
+                    if(student.status === 'Active') badgeClass = 'bg-success';
+                    else if(student.status === 'Restrict') badgeClass = 'bg-danger';
+                %>
+                <span class="badge <%= badgeClass %> fs-5 px-3 py-2 rounded-pill"><%= student.status %></span>
+            </div>
+        </div>
+
+        <% if (message && message.length > 0) { %>
+            <div class="alert alert-info alert-dismissible fade show rounded-3" role="alert">
+                <i class="fas fa-info-circle me-2"></i> <%= message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <form action="/admin/student/edit/<%= student.uid %>" method="POST">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-6">
+                    <!-- Personal Info -->
+                    <div class="card custom-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-user text-primary me-2"></i> Personal Information
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">UID (Read Only)</label>
+                                <input type="text" class="form-control bg-light" value="<%= student.uid %>" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Full Name</label>
+                                <input type="text" name="sname" class="form-control" value="<%= student.sname %>" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Gender</label>
+                                <select name="gender" class="form-select">
+                                    <option value="MALE" <%= student.gender === 'MALE' ? 'selected' : '' %>>MALE</option>
+                                    <option value="FEMALE" <%= student.gender === 'FEMALE' ? 'selected' : '' %>>FEMALE</option>
+                                    <option value="Other" <%= student.gender === 'Other' ? 'selected' : '' %>>Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Date of Birth</label>
+                                <% 
+                                    let dobStr = '';
+                                    if(student.dob) {
+                                        // If stored as date, formatting it for HTML5 date input
+                                        const d = new Date(student.dob);
+                                        if(!isNaN(d.getTime())) {
+                                            dobStr = d.toISOString().split('T')[0];
+                                        } else {
+                                            dobStr = student.dob;
+                                        }
+                                    }
+                                %>
+                                <input type="date" name="dob" class="form-control" value="<%= dobStr %>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="card custom-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-address-book text-success me-2"></i> Contact Information
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Email</label>
+                                <input type="email" name="email" class="form-control" value="<%= student.email %>">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Mobile No.</label>
+                                <input type="text" name="mobileno" class="form-control" value="<%= student.mobileno %>">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Address</label>
+                                <textarea name="address" class="form-control" rows="2"><%= student.address %></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Parent Name</label>
+                                <input type="text" name="parentname" class="form-control" value="<%= student.parentname %>">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Parent Number</label>
+                                <input type="text" name="parentnumber" class="form-control" value="<%= student.parentnumber %>">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-md-6">
+                    <!-- Academic Info -->
+                    <div class="card custom-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-graduation-cap text-info me-2"></i> Academic Information
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Department / Branch</label>
+                                <select name="dept" class="form-select" required>
+                                    <option value="">-- Select Department --</option>
+                                    <optgroup label="B.Tech.">
+                                        <option value="COMPUTER ENGINEERING" <%= student.dept === 'COMPUTER ENGINEERING' ? 'selected' : '' %>>Computer Science &amp; Engineering (CSE)</option>
+                                        <option value="ELECTRICAL ENGINEERING" <%= student.dept === 'ELECTRICAL ENGINEERING' ? 'selected' : '' %>>Electrical Engineering</option>
+                                        <option value="INFORMATION TECHNOLOGY" <%= student.dept === 'INFORMATION TECHNOLOGY' ? 'selected' : '' %>>Information Technology (IT)</option>
+                                        <option value="ELECTRONICS & TELECOMMUNICATION ENGINEERING" <%= student.dept === 'ELECTRONICS & TELECOMMUNICATION ENGINEERING' ? 'selected' : '' %>>Electronics &amp; Telecommunication Engineering (ETC)</option>
+                                        <option value="MECHANICAL ENGINEERING" <%= student.dept === 'MECHANICAL ENGINEERING' ? 'selected' : '' %>>Mechanical Engineering</option>
+                                        <option value="CIVIL ENGINEERING" <%= student.dept === 'CIVIL ENGINEERING' ? 'selected' : '' %>>Civil Engineering</option>
+                                        <option value="ARTIFICIAL INTELLIGENCE" <%= student.dept === 'ARTIFICIAL INTELLIGENCE' ? 'selected' : '' %>>Artificial Intelligence (AI)</option>
+                                        <option value="COMPUTER SCIENCE & ENGINEERING (DATA SCIENCE)" <%= student.dept === 'COMPUTER SCIENCE & ENGINEERING (DATA SCIENCE)' ? 'selected' : '' %>>Computer Science &amp; Engineering (Data Science)</option>
+                                        <option value="COMPUTER SCIENCE & ENGINEERING (CYBER SECURITY)" <%= student.dept === 'COMPUTER SCIENCE & ENGINEERING (CYBER SECURITY)' ? 'selected' : '' %>>Computer Science &amp; Engineering (Cyber Security)</option>
+                                        <option value="INDUSTRIAL IOT" <%= student.dept === 'INDUSTRIAL IOT' ? 'selected' : '' %>>Industrial IoT (IIoT)</option>
+                                        <option value="COMPUTER SCIENCE AND BUSINESS SYSTEMS" <%= student.dept === 'COMPUTER SCIENCE AND BUSINESS SYSTEMS' ? 'selected' : '' %>>Computer Science and Business Systems (CSBS)</option>
+                                        <option value="ROBOTICS & ARTIFICIAL INTELLIGENCE" <%= student.dept === 'ROBOTICS & ARTIFICIAL INTELLIGENCE' ? 'selected' : '' %>>Robotics &amp; Artificial Intelligence (RAI)</option>
+                                        <option value="MECHANICAL CAD-CAM" <%= student.dept === 'MECHANICAL CAD-CAM' ? 'selected' : '' %>>Mechanical CAD-CAM</option>
+                                    </optgroup>
+                                    <optgroup label="B.Voc.">
+                                        <option value="B.VOC. IN CYBER SECURITY" <%= student.dept === 'B.VOC. IN CYBER SECURITY' ? 'selected' : '' %>>B.Voc. in Cyber Security</option>
+                                        <option value="B.VOC. IN SOFTWARE DEVELOPMENT" <%= student.dept === 'B.VOC. IN SOFTWARE DEVELOPMENT' ? 'selected' : '' %>>B.Voc. in Software Development</option>
+                                        <option value="B.VOC. IN VIRTUAL REALITY & AUGMENTED REALITY" <%= student.dept === 'B.VOC. IN VIRTUAL REALITY & AUGMENTED REALITY' ? 'selected' : '' %>>B.Voc. in Virtual Reality &amp; Augmented Reality</option>
+                                        <option value="B VOCATIONAL" <%= student.dept === 'B VOCATIONAL' ? 'selected' : '' %>>B Vocational</option>
+                                    </optgroup>
+                                    <optgroup label="Other Programs">
+                                        <option value="BCA" <%= student.dept === 'BCA' ? 'selected' : '' %>>BCA</option>
+                                        <option value="BBA" <%= student.dept === 'BBA' ? 'selected' : '' %>>BBA</option>
+                                        <option value="MCA" <%= student.dept === 'MCA' ? 'selected' : '' %>>MCA</option>
+                                        <option value="MBA" <%= student.dept === 'MBA' ? 'selected' : '' %>>MBA</option>
+                                        <option value="M.TECH" <%= student.dept === 'M.TECH' ? 'selected' : '' %>>M.Tech</option>
+                                        <option value="M.TECH CSE" <%= student.dept === 'M.TECH CSE' ? 'selected' : '' %>>M.Tech CSE</option>
+                                        <option value="M.TECH CADCAM" <%= student.dept === 'M.TECH CADCAM' ? 'selected' : '' %>>M.Tech CAD-CAM</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Year</label>
+                                <select name="year" class="form-select">
+                                    <% const years = ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Alumni']; %>
+                                    <% years.forEach(y => { %>
+                                        <option value="<%= y %>" <%= student.year === y ? 'selected' : '' %>><%= y %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Academic Year</label>
+                                <input type="text" name="academicyear" class="form-control" value="<%= student.academicyear %>">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Category</label>
+                                <select name="category" class="form-select">
+                                    <option value="Hostel" <%= student.category === 'Hostel' ? 'selected' : '' %>>Hostel</option>
+                                    <option value="Day Scholar" <%= student.category === 'Day Scholar' ? 'selected' : '' %>>Day Scholar</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hostel Allocation -->
+                    <div class="card custom-card border-start border-warning border-4">
+                        <div class="card-header-custom">
+                            <i class="fas fa-bed text-warning me-2"></i> Hostel Allocation
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Block</label>
+                                <input type="text" name="block" class="form-control" value="<%= student.other2 %>">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted small fw-bold">Room No</label>
+                                    <input type="text" name="room_no" class="form-control" value="<%= student.room_no %>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted small fw-bold">Bed No</label>
+                                    <input type="text" name="bed_no" class="form-control" value="<%= student.bed_no %>">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Mess Type</label>
+                                <select name="mess_type" class="form-select">
+                                    <option value="">Select Mess Type</option>
+                                    <option value="Veg" <%= student.other1 === 'Veg' || student.other1 === 'Vegetarian' ? 'selected' : '' %>>Vegetarian</option>
+                                    <option value="Non-Veg" <%= student.other1 === 'Non-Veg' || student.other1 === 'Non-Vegetarian' ? 'selected' : '' %>>Non-Vegetarian</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Status -->
+                    <div class="card custom-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-shield-alt text-danger me-2"></i> Account Status
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Status</label>
+                                <select name="status" class="form-select fw-bold" id="statusSelect">
+                                    <option value="Active" <%= student.status === 'Active' ? 'selected' : '' %>>Active</option>
+                                    <option value="Restrict" <%= student.status === 'Restrict' ? 'selected' : '' %>>Restrict</option>
+                                    <option value="Unrestrict" <%= student.status === 'Unrestrict' ? 'selected' : '' %>>Unrestrict</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid mb-5 mt-2">
+                <button type="submit" class="btn-gradient fs-5 shadow"><i class="fas fa-save me-2"></i> Save Changes</button>
+            </div>
+        </form>
+
+        <hr class="my-5 border-2 border-secondary opacity-25">
+
+        <!-- Reset Password Mini-Form -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card custom-card border border-danger border-2">
+                    <div class="card-header bg-danger text-white py-3 fw-bold">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Reset Student Password
+                    </div>
+                    <div class="card-body p-4">
+                        <form action="/admin/student/resetpassword/<%= student.uid %>" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">New Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-key text-muted"></i></span>
+                                    <input type="password" name="new_password" class="form-control" required minlength="8" placeholder="Enter at least 8 characters">
+                                </div>
+                                <div class="form-text text-danger"><i class="fas fa-info-circle"></i> This will immediately overwrite the student's existing password.</div>
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-danger fw-bold px-4" onclick="return confirm('Are you sure you want to reset this student\'s password?');">
+                                    Reset Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Color code the status select box
+        const statusSelect = document.getElementById('statusSelect');
+        function updateStatusColor() {
+            statusSelect.classList.remove('text-success', 'text-danger', 'text-secondary');
+            if(statusSelect.value === 'Active' || statusSelect.value === 'Unrestrict') {
+                statusSelect.classList.add('text-success');
+            } else if(statusSelect.value === 'Restrict') {
+                statusSelect.classList.add('text-danger');
+            } else {
+                statusSelect.classList.add('text-secondary');
+            }
+        }
+        statusSelect.addEventListener('change', updateStatusColor);
+        updateStatusColor();
+    </script>
+</body>
+</html>

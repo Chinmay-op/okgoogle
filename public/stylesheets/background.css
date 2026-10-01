@@ -1,0 +1,98 @@
+
+.carousel__content--wrapper {
+  display: none;
+}
+.carousel:has(input#radio0:checked) .carousel__content--wrapper:nth-child(1) {
+  display: contents;
+}
+.carousel:has(input#radio1:checked) .carousel__content--wrapper:nth-child(2) {
+  display: contents;
+}
+.carousel:has(input#radio2:checked) .carousel__content--wrapper:nth-child(3) {
+  display: contents;
+}
+.carousel:has(input#radio3:checked) .carousel__content--wrapper:nth-child(4) {
+  display: contents;
+}
+.carousel:has(input#radio4:checked) .carousel__content--wrapper:nth-child(5) {
+  display: contents;
+}
+.carousel:has(input#radio5:checked) .carousel__content--wrapper:nth-child(6) {
+  display: contents;
+}
+.carousel:has(input#radio6:checked) .carousel__content--wrapper:nth-child(7) {
+  display: contents;
+}
+.carousel:has(input#radio7:checked) .carousel__content--wrapper:nth-child(8) {
+  display: contents;
+}
+.carousel:has(input#radio8:checked) .carousel__content--wrapper:nth-child(9) {
+  display: contents;
+}
+.carousel:has(input#radio9:checked) .carousel__content--wrapper:nth-child(10) {
+  display: contents;
+}
+.carousel:has(input#radio10:checked) .carousel__content--wrapper:nth-child(11) {
+  display: contents;
+}
+.carousel__content {
+  display: grid;
+  grid-template-areas: 'p img n';
+  grid-template-columns: auto 70vmin auto;
+  place-items: center;
+}
+.carousel__nav {
+  padding: 20px;
+  line-height: 1;
+  background: #bde0fe;
+  border-radius: 0.2rem;
+  border: 1px solid;
+  box-shadow: 0.1rem 0.1rem 0 0.1rem;
+  user-select: none;
+  transition: all 40ms;
+}
+.carousel__nav:active {
+  background: color-mix(in hsl, #bde0fe, #000 20%);
+  box-shadow: inset 0.1rem 0.1rem 0 rgba(0,0,0,0.24);
+  transform: translate(0.2rem, 0.2rem);
+}
+.carousel__nav--prev {
+  grid-area: p;
+}
+.carousel__nav--next {
+  grid-area: n;
+}
+.carousel--img {
+  grid-area: img;
+  aspect-ratio: 1;
+  border-radius: 0.2rem;
+  border: 1px solid;
+  box-shadow: 0.1rem 0.1rem 0 0.1rem;
+  overflow: hidden;
+}
+.carousel--img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.carousel__pagination {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+}
+.carousel__pagination input {
+  appearance: none;
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  background: #fff;
+  border: 2px solid #b388eb;
+  border-radius: 100%;
+  box-shadow: 0.1rem 0.1rem 0;
+}
+.carousel__pagination input:checked {
+  background: #b388eb;
+  border-color: color-mix(in hsl, #b388eb, #000 20%);
+}

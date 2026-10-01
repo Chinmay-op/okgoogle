@@ -1,0 +1,232 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Student profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/codescanner.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+    <link rel="icon" href="/images/4174.png">
+
+    <title>Student Profile</title>
+    <script>
+        function update() {
+            if (update) {
+
+                document.getElementById('dropdownlist2').disabled = false;
+                document.getElementById('academicyear').disabled = false;
+                document.getElementById('dropdownlist3').disabled = false;
+                document.getElementById('dropdownlist4').disabled = false;
+                document.getElementById('dropdownlist6').disabled = false;
+                document.getElementById('mobile').disabled = false;
+                document.getElementById('email').disabled = false;
+                document.getElementById('dropdownlist5').disabled = false;
+                document.getElementById('dob').disabled = false;
+                document.getElementById('address').disabled = false;
+                document.getElementById('ParentsName').disabled = false;
+                document.getElementById('ParentsNumber').disabled = false;
+                document.getElementById('update').hidden = true;
+                document.getElementById('cancel').hidden = false;
+                document.getElementById('submit').hidden = false;
+
+            }
+
+
+        }
+
+        function cancel() {
+            if (cancel) {
+                document.getElementById('dropdownlist2').disabled = true;
+                document.getElementById('academicyear').disabled = true;
+                document.getElementById('dropdownlist3').disabled = true;
+                document.getElementById('dropdownlist4').disabled = true;
+                document.getElementById('mobile').disabled = true;
+                document.getElementById('dropdownlist6').disabled = true;
+                document.getElementById('email').disabled = true;
+                document.getElementById('dropdownlist5').disabled = true;
+                document.getElementById('dob').disabled = true;
+                document.getElementById('address').disabled = true;
+                document.getElementById('ParentsName').disabled = true;
+                document.getElementById('ParentsNumber').disabled = true;
+                document.getElementById('update').hidden = false;
+                document.getElementById('cancel').hidden = true;
+                document.getElementById('submit').hidden = true;
+            }
+        }
+
+    </script>
+
+</head>
+
+<body>
+    <div>
+        <center>
+          <a href="/daterange"><img src="/images/logo.png" /></a><br>
+          <% if(message.length>0){ %>
+          <div class="alert-danger">
+            <h5>
+              <%- message %>
+            </h5>
+          </div>
+          <% } %>
+        </center>
+      </div><br>
+    <form action="/updatestudent/<%= result[0].uid%>" method="post">
+        <div class="container rounded bg-white mt-5 mb-5">
+            <div class="row">
+                <div class="col-md-3 border-right">
+                    <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                        <% if (!result[0].path==0) { %>
+                            <div>
+                                <img class="rounded-circle mt-5" width="150px" src="<%= result[0].path%>"></a>
+                            </div>
+                            <%} else { %>
+                                <div>
+                                    <img class="rounded-circle mt-5" width="150px" src="/images/4174.png"></a>
+                                </div>
+                                <% } %>
+
+                                    <span class="font-weight-bold">
+                                        <%= result[0].sname%>
+                                    </span><span class="text-black-50">
+                                        <%= result[0].uid%>
+                                    </span><span> </span>
+                    </div>
+                </div>
+                <div class="col-md-5 border-right">
+                    <div class="p-3 py-5">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="text-right">Profile</h4>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12"><label class="labels">Department</label>
+                                <select class="form-control" id="dropdownlist2" required placeholder="Department"
+                                    name="Department" disabled>
+                                    <option value="<%= result[0].dept %>" selected hidden>
+                                        <%= result[0].dept %>
+                                    </option>
+                                    <option value="Mechanical Engineering"> Mechanical Engineering
+                                    </option>
+                                    <option value="Basic science and humanities"> Basic science and humanities
+                                    </option>
+                                    <option value="Computer Engineering"> Computer Engineering
+                                    </option>
+                                    <option value="Electronics and Telecommunication"> Electronics and Telecommunication
+                                    </option>
+                                    <option value="Electrical Engineering"> Electrical Engineering
+                                    </option>
+                                    <option value="Civil Engineering"> Civil Engineering
+                                    </option>
+                                    <option value="B Vocational"> B Vocational
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12"><label class="labels">Academic year</label><input id="academicyear"
+                                    name="academicyear" type="number" placeholder="YYYY" min="2020" max="2030"
+                                    class="form-control" disabled value="<%= result[0].academicyear %>"></div>
+                            <div class="col-md-12"><label class="labels">Year</label>
+                                <select class="form-control" id="dropdownlist3" required placeholder="Year" name="year"
+                                    disabled>
+                                    <option value="<%= result[0].year %>" selected hidden>
+                                        <%= result[0].year %>
+                                    </option>
+                                    <option value="1st"> 1st
+                                    </option>
+                                    <option value="2nd"> 2nd
+                                    </option>
+                                    <option value="3rd"> 3rd
+                                    </option>
+                                    <option value="4th"> 4th
+                                    </option>
+                                    <option value="NA"> Not Applicable
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6"><label class="labels">Category</label>
+                                <select class="form-control" id="dropdownlist4" required placeholder="category"
+                                    name="category" disabled>
+                                    <option value="<%= result[0].category %>" selected hidden>
+                                        <%= result[0].category %>
+                                    </option>
+                                    <option value="Hostel"> Hostel
+                                    </option>
+                                    <option value="Day Scholar"> Day Scholar
+                                    </option>
+                                    <option value="PassOut"> PassOut
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-12"><label class="labels">Mobile Number</label><input type="tel"
+                                    class="form-control" placeholder="Mobile" name="mobile" id="mobile"
+                                    pattern="[0-9]{10}" disabled value="<%=result[0].mobileno %>"></div>
+                            <div class="col-md-12"><label class="labels">Email ID</label><input type="text"
+                                    class="form-control" placeholder="Email Id" name="email" id="email" disabled
+                                    value="<%= result[0].email %>"></div>
+
+
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 py-5">
+
+
+                        <div class="col-md-12"><label class="labels">Gender</label>
+                            <select class="form-control" id="dropdownlist5" required placeholder="Gender" name="gender"
+                                disabled>
+                                <option value="<%= result[0].gender %>" selected hidden>
+                                    <%= result[0].gender %>
+                                </option>
+                                <option value="MALE"> Male
+                                </option>
+                                <option value="FEMALE"> Female
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6"><label class="labels">Block</label>
+                            <select class="form-control" id="dropdownlist6" required placeholder="Block" name="Block"
+                                disabled>
+                                <option value="<%= result[0].status %>" selected hidden>
+                                    <%= result[0].status %>
+                                </option>
+                                <option value="Restrict"> Restrict
+                                </option>
+                                <option value="Unrestrict"> Unrestrict
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6"><label class="labels">DOB</label><input type="date" class="form-control"
+                                placeholder="DOB" id="dob" disabled name="dob" value="<%=result[0].dob %>"></div>
+                        <div class="col-md-12"><label class="labels">Address</label><input type="text"
+                                class="form-control" placeholder=" Address" name="address" id="address" disabled
+                                value="<%= result[0].address%>"></div>
+                        <div class="col-md-6"><label class="labels">Parents Name</label><input type="text"
+                                class="form-control" placeholder=" Parents Name" name="ParentsName" id="ParentsName" disabled
+                                value="<%= result[0].parentname%>"></div>
+                        <div class="col-md-6"><label class="labels">Parents Number</label><input type="text"
+                                class="form-control" placeholder=" Parents Number" name="ParentsNumber" id="ParentsNumber" disabled
+                                value="<%= result[0].parentnumber %>"></div>
+                        <br>
+                        <div align="center"> <button id="submit" class="btn btn-primary"
+                                hidden><span>Submit</span></button></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div>
+        <div align="center"><label onclick="update()" id="update"
+                class="btn btn-primary"><span>Update</span></label><label onclick="cancel()" id="cancel"
+                class="btn btn-danger" hidden><span>Cancel</span></label></div>
+    </div>
+</body>
+
+</html>

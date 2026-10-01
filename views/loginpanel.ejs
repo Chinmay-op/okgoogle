@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Login page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/loginpanel.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+
+</head>
+
+<body>
+
+
+    <header><img src="/images/logo.png" height="auto" max-width="100%" class="center" /></header><br><br>
+    <% if(message.length>0){ %>
+        <div class="alert-danger">
+            <h3>
+                <%- message %>
+            </h3>
+        </div>
+        <% } %>
+            <div class="form-bg ">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-offset-3 col-md-6 col-sm-offset-2 col-sm-8">
+                            <div class="form-container">
+                                <form class="form-horizontal" action="/loginpanel" method="post">
+                                    <h3 class="title">Admin Login</h3>
+                                    <span class="description"></span>
+                                    <div class="form-group" style="justify-self: center;">
+                                        <input class="form-control" type="text" placeholder="Enter your UID" name="UID">
+                                    </div>
+                                    <div class="form-group" style="justify-self: center;">
+                                        <input class="form-control" type="password" placeholder="Enter your Password"
+                                            name="password">
+                                    </div>
+                                    <div style="justify-self: center;">
+                                        <button class="btn signin">Login</button>
+                                    </div>
+
+
+
+                                    <!-- <div style="margin-top:10px; display:flex; gap:10px; align-items:center;">
+                                                            <span class="signup"><a href="">Forgot Password?</a></span>
+                                                            <a class="signup-btn" href="/signup" style="background:#3a86ff;color:#fff;padding:8px 12px;border-radius:4px;text-decoration:none;">Sign Up</a>
+                                                        </div> -->
+                                    <div
+                                        style="margin-top:20px; padding-top:15px; border-top:1px solid #eee; text-align:center;">
+                                        <p style="color:#fff; margin-bottom:10px;">Are you a student?</p>
+                                        <a href="/student/login"
+                                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; padding:10px 25px; border-radius:8px; text-decoration:none; display:inline-block; font-weight:500;">
+                                            <i class="fas fa-user-graduate"></i> Student Portal
+                                        </a>
+                                        <div style="margin-top: 15px;">
+                                            <a href="/privacy-policy" style="color: #fff; text-decoration: underline; font-size: 13px;">Privacy Policy</a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                const backgroundImages = [
+                    '/loginimages/1.jpg',
+                    '/loginimages/2.jpg',
+                    '/loginimages/3.jpg',
+                    '/loginimages/4.jpg',
+                    '/loginimages/5.jpg',
+                    '/loginimages/6.jpg',
+                    '/loginimages/7.jpg'
+
+                ];
+
+                let currentImageIndex = 0;
+
+                function changeBackground() {
+                    document.body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
+                    currentImageIndex = (currentImageIndex + 1) % backgroundImages.length;
+                }
+
+                // Set initial background
+                changeBackground();
+
+                // Change background every 5 seconds
+                setInterval(changeBackground, 20000);
+            </script>
+</body>
+
+</html>

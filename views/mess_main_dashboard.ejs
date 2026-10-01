@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mess Management - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/4174.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 30px;
+            padding-bottom: 40px;
+            color: #1a1a2e;
+        }
+
+        .page-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f2f5;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .page-title {
+            margin: 0;
+            font-weight: 700;
+            color: #1a1a2e;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-title-icon {
+            width: 42px; height: 42px;
+            background: #e8f0fe;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: #1976d2; font-size: 1.2rem;
+        }
+        .page-subtitle {
+            margin: 4px 0 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding-left: 54px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            font-weight: 600;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .back-btn:hover {
+            background-color: #f8f9fa;
+            border-color: #c1c9d0;
+            color: #212529;
+            transform: translateY(-1px);
+        }
+
+        .form-control-custom {
+            border-color: #d1d5db;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            color: #1a1a2e;
+        }
+        .form-control-custom:focus {
+            border-color: #1976d2;
+            box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
+        }
+        .btn-primary-custom {
+            background: #1976d2;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            transition: background 0.15s, transform 0.1s;
+        }
+        .btn-primary-custom:hover { background: #1565c0; transform: translateY(-1px); }
+
+        /* ── SECTION CARDS ── */
+        .section-header {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .panel-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 24px;
+            height: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+        .panel-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-title i { color: #888; font-size: 0.95rem; }
+
+        .group-header {
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .meal-badge {
+            background: #fff3e0; color: #bf5600;
+            font-size: 0.72rem; padding: 4px 10px;
+            border-radius: 6px; font-weight: 700; letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .meal-badge.lunch { background: #e8f5e9; color: #2e7d32; }
+        .meal-badge.dinner { background: #e3f2fd; color: #1565c0; }
+        
+        .count-pill {
+            background: #f0f2f5; color: #555;
+            font-size: 0.75rem; padding: 2px 10px;
+            border-radius: 12px; font-weight: 600;
+        }
+        .count-pill.default { background: #e3f2fd; color: #1565c0; }
+
+        /* ── TABLES ── */
+        .table-wrap {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow-y: auto;
+            background: #fff;
+            position: relative;
+        }
+        .table-custom {
+            width: 100%;
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .table-custom thead { background-color: #f8f9fa; }
+        .table-custom th {
+            font-weight: 600; color: #6c757d;
+            padding: 10px 14px; text-transform: uppercase; font-size: 0.72rem;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky; top: 0; z-index: 10;
+            background-color: #f8f9fa !important;
+            box-shadow: inset 0 -1px 0 #e5e7eb;
+        }
+        .table-custom td {
+            padding: 10px 14px; color: #333;
+            border-bottom: 1px solid #f4f6f9;
+            vertical-align: middle;
+            background-color: #ffffff;
+        }
+        .table-custom tbody tr:last-child td { border-bottom: none; }
+        .table-custom tbody tr:hover td { background-color: #fcfcfc; }
+        
+        .action-btn-neutral {
+            color: #9ca3af;
+            background: transparent;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .action-btn-neutral:hover { color: #1976d2; background: #e8f0fe; }
+
+        .empty-state {
+            padding: 30px; text-align: center; color: #9ca3af;
+            background: #fff; border-radius: 10px; border: 1px dashed #e5e7eb;
+        }
+
+        /* ── STAT CARDS ── */
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 16px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            margin-bottom: 24px;
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+            cursor: pointer;
+        }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        /* ── MEAL SELECTOR PILLS ── */
+        .meal-selector-group {
+            display: inline-flex;
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 12px;
+            gap: 6px;
+            border: 1px solid #cbd5e1;
+        }
+        .meal-select-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 22px;
+            border-radius: 9px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .meal-select-btn:hover {
+            color: #1e293b;
+            background: rgba(255, 255, 255, 0.7);
+        }
+        .meal-select-btn.active.breakfast {
+            background: #f59e0b;
+            color: #ffffff;
+            box-shadow: 0 3px 8px rgba(245, 158, 11, 0.35);
+        }
+        .meal-select-btn.active.lunch {
+            background: #10b981;
+            color: #ffffff;
+            box-shadow: 0 3px 8px rgba(16, 185, 129, 0.35);
+        }
+        .meal-select-btn.active.dinner {
+            background: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 3px 8px rgba(59, 130, 246, 0.35);
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- ── HEADER ── -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">
+                    <div class="page-title-icon"><i class="fas fa-utensils"></i></div>
+                    Mess Management
+                </h1>
+                <p class="page-subtitle"><%= role === 'BoysHostelAdmin' ? 'Admin Dashboard' : 'Super Admin Dashboard' %></p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <% 
+                    const todayNav = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+                    const tmrwNavObj = new Date(); tmrwNavObj.setDate(tmrwNavObj.getDate() + 1);
+                    const tmrwNav = tmrwNavObj.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+                %>
+                <!-- 3 Large Segmented Meal Pills -->
+                <div class="meal-selector-group me-3">
+                    <a href="/admin/mess?date=<%= targetDate %>&meal_type=breakfast" 
+                       class="meal-select-btn <%= (mealType || 'breakfast') === 'breakfast' ? 'active breakfast' : '' %>">
+                        <i class="fas fa-sun"></i>
+                        <span>Breakfast</span>
+                    </a>
+                    <a href="/admin/mess?date=<%= targetDate %>&meal_type=lunch" 
+                       class="meal-select-btn <%= mealType === 'lunch' ? 'active lunch' : '' %>">
+                        <i class="fas fa-cloud-sun"></i>
+                        <span>Lunch</span>
+                    </a>
+                    <a href="/admin/mess?date=<%= targetDate %>&meal_type=dinner" 
+                       class="meal-select-btn <%= mealType === 'dinner' ? 'active dinner' : '' %>">
+                        <i class="fas fa-moon"></i>
+                        <span>Dinner</span>
+                    </a>
+                </div>
+                <div class="btn-group me-2" role="group">
+                    <a href="/admin/mess?date=<%= todayNav %>&meal_type=<%= mealType %>" class="btn btn-sm <%= targetDate === todayNav ? 'btn-primary active' : 'btn-outline-secondary' %>">Today (<%= todayNav %>)</a>
+                    <a href="/admin/mess?date=<%= tmrwNav %>&meal_type=<%= mealType %>" class="btn btn-sm <%= targetDate === tmrwNav ? 'btn-primary active' : 'btn-outline-secondary' %>">Tomorrow (<%= tmrwNav %>)</a>
+                </div>
+                <form action="/admin/mess" method="GET" class="d-flex align-items-center m-0 me-2">
+                    <input type="hidden" name="meal_type" value="<%= mealType %>">
+                    <input type="date" name="date" class="form-control form-control-custom me-2" value="<%= targetDate %>">
+                    <button type="submit" class="btn btn-primary-custom"><i class="fas fa-filter me-1"></i> Filter</button>
+                </form>
+                <a href="/daterange" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+            </div>
+        </div>
+        
+        <% if(message && message.length > 0){ %>
+            <div class="alert alert-info" style="border-radius: 10px; font-size: 0.9rem;">
+                <i class="fas fa-info-circle me-2"></i><%- message %>
+            </div>
+        <% } %>
+        
+        <div class="section-header">
+            <i class="far fa-calendar-alt me-2 text-primary"></i> Student Selections for <%= targetDate %>
+        </div>
+        <%
+            // Build lists for each card category (filtered by mealType to match stat card counts)
+            const defaultStudents = [];
+            const optionalStudentsList = [];
+            const specialStudentsList = (typeof specialStudents !== 'undefined' && specialStudents) ? 
+                specialStudents.map(s => ({
+                    uid: s.uid,
+                    name: s.sname,
+                    room: s.room_no,
+                    phone: s.mobileno,
+                    food: s.special_food_name
+                })) : [];
+
+            if (grouped) {
+                const addedOptionalUids = new Set();
+                const addedDefaultUids = new Set();
+
+                grouped.forEach(g => {
+                    if (g.meal_type !== mealType) return;
+                    g.students.forEach(s => {
+                        if (g.type === 'OPTIONAL') {
+                            if (!addedOptionalUids.has(s.student_uid)) {
+                                addedOptionalUids.add(s.student_uid);
+                                optionalStudentsList.push({ uid: s.student_uid, name: s.student_name, room: s.room_number, phone: s.phone_number, food: g.food_name, has_scanned: s.has_scanned });
+                            }
+                        }
+                    });
+                });
+
+                grouped.forEach(g => {
+                    if (g.meal_type !== mealType) return;
+                    g.students.forEach(s => {
+                        if (!addedOptionalUids.has(s.student_uid) && !addedDefaultUids.has(s.student_uid)) {
+                            addedDefaultUids.add(s.student_uid);
+                            defaultStudents.push({ uid: s.student_uid, name: s.student_name, room: s.room_number, phone: s.phone_number, food: g.food_name });
+                        }
+                    });
+                });
+            }
+        %>
+
+        <div id="data-holder" 
+             data-all="<%= JSON.stringify((allStudents || []).map(s => ({ uid: s.uid, name: s.sname, room: s.room_no, phone: s.mobileno, food: s.meal_status || '-' }))) %>"
+             data-default="<%= JSON.stringify(defaultStudents) %>"
+             data-optional="<%= JSON.stringify(optionalStudentsList) %>"
+             data-special="<%= JSON.stringify(specialStudentsList) %>"
+             style="display: none;">
+        </div>
+        <script>
+            const dataHolder = document.getElementById('data-holder');
+            const DATA_ALL     = JSON.parse(dataHolder.getAttribute('data-all'));
+            const DATA_DEFAULT  = JSON.parse(dataHolder.getAttribute('data-default'));
+            const DATA_OPTIONAL = JSON.parse(dataHolder.getAttribute('data-optional'));
+            const DATA_SPECIAL  = JSON.parse(dataHolder.getAttribute('data-special'));
+        </script>
+
+        <div class="row mb-4 mt-2 g-4">
+            <div class="col-xl-3 col-md-6 col-sm-12">
+                <div class="stat-card" style="border-top: 4px solid #6c757d;" onclick="openStudentList('Total Students','all')" title="Click to view list">
+                    <h3 class="text-secondary mb-2"><i class="fas fa-users mb-2"></i><br><%= stats.total %></h3>
+                    <p class="mb-1 fw-bold text-dark">Total Students</p>
+                    <small class="text-muted" style="font-size: 0.75rem;">All active students <i class="fas fa-external-link-alt ms-1" style="font-size:0.65rem;"></i></small>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 col-sm-12">
+                <div class="stat-card" style="border-top: 4px solid #28a745;" onclick="openStudentList('Students (Default Menu)','default')" title="Click to view list">
+                    <h3 class="text-success mb-2"><i class="fas fa-utensils mb-2"></i><br><%= stats.defaultCnt %></h3>
+                    <p class="mb-1 fw-bold text-dark">Total Students (Default Menu)</p>
+                    <small class="text-muted" style="font-size: 0.75rem;">For selected date/meal <i class="fas fa-external-link-alt ms-1" style="font-size:0.65rem;"></i></small>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 col-sm-12">
+                <div class="stat-card" style="border-top: 4px solid #17a2b8;" onclick="openStudentList('Students (Optional Selected)','optional')" title="Click to view list">
+                    <h3 class="text-info mb-2"><i class="fas fa-concierge-bell mb-2"></i><br><%= stats.optionalCnt %></h3>
+                    <p class="mb-1 fw-bold text-dark">Total Students (Optional Selected)</p>
+                    <small class="text-muted" style="font-size: 0.75rem;">For selected date/meal <i class="fas fa-external-link-alt ms-1" style="font-size:0.65rem;"></i></small>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 col-sm-12">
+                <div class="stat-card" style="border-top: 4px solid #ffc107;" onclick="openStudentList('Students (Special Selected)','special')" title="Click to view list">
+                    <h3 class="text-warning mb-2"><i class="fas fa-star mb-2"></i><br><%= stats.specialCnt %></h3>
+                    <p class="mb-1 fw-bold text-dark">Total Students (Special Selected)</p>
+                    <small class="text-muted" style="font-size: 0.75rem;">For selected date/meal <i class="fas fa-external-link-alt ms-1" style="font-size:0.65rem;"></i></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <!-- ── CURRENT SELECTIONS ── -->
+            <div class="col-md-12">
+                <div class="panel-card">
+                    <div class="panel-title">
+                        <i class="fas fa-list-check"></i> Current Selections
+                    </div>
+                    <% if (grouped && grouped.length > 0) { %>
+                        <% grouped.forEach(function(group) { 
+                            let mealClass = 'meal-badge ';
+                            if(group.meal_type === 'lunch') mealClass += 'lunch';
+                            else if(group.meal_type === 'dinner') mealClass += 'dinner';
+                        %>
+                            <div class="mb-4">
+                                <div class="group-header">
+                                    <span class="<%= mealClass %>"><%= group.meal_type %></span>
+                                    <span><%= group.food_name %></span>
+                                    <span class="count-pill <%= group.type === 'DEFAULT' ? 'default' : '' %> ms-auto">
+                                        <i class="fas fa-user me-1"></i> <%= group.students.length %>
+                                    </span>
+                                </div>
+                                <div class="table-wrap" style="max-height: 280px; overflow-y: auto;">
+                                    <table class="table-custom">
+                                        <thead>
+                                            <tr>
+                                                <th>UID</th>
+                                                <th>Name</th>
+                                                <th>Room</th>
+                                                <th>Phone</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% group.students.forEach(function(s) { %>
+                                                <tr>
+                                                    <td class="fw-semibold text-muted"><%= s.student_uid %></td>
+                                                    <td><%= s.student_name || '-' %></td>
+                                                    <td><%= s.room_number || '-' %></td>
+                                                    <td><%= s.phone_number || '-' %></td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <i class="fas fa-inbox fs-4 mb-2"></i><br>
+                            No selections made for this date yet.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student List Modal -->
+    <div class="modal fade" id="studentListModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content" style="border-radius: 14px; border: none; box-shadow: 0 8px 40px rgba(0,0,0,0.13);">
+                <div class="modal-header" style="border-bottom: 1px solid #f0f2f5; background: #f8f9fa; border-radius: 14px 14px 0 0;">
+                    <h5 class="modal-title fw-bold" id="studentListModalTitle"><i class="fas fa-users me-2"></i>Student List</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="p-3 border-bottom" style="background:#fff;">
+                        <input type="text" id="studentListSearch" class="form-control" placeholder="🔍 Search by UID, Name, or Room..." oninput="filterStudentList()" style="border-radius:8px; font-size:0.85rem;">
+                    </div>
+                    <div style="max-height: 480px; overflow-y: auto;">
+                        <table class="table mb-0" style="font-size:0.85rem;">
+                            <thead id="studentListHeader" style="background:#f8f9fa; position:sticky; top:0; z-index:1;">
+                            </thead>
+                            <tbody id="studentListBody"></tbody>
+                        </table>
+                        <div id="studentListEmpty" class="text-center py-5 text-muted d-none">
+                            <i class="fas fa-inbox fs-4 mb-2 d-block"></i>No students found.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid #f0f2f5; font-size:0.8rem; color:#9ca3af;">
+                    <span id="studentListCount"></span>
+                    <button type="button" class="btn btn-sm btn-secondary ms-auto" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentStudentData = [];
+        let currentListType = 'all';
+
+        function openStudentList(title, type) {
+            let data;
+            if      (type === 'all')      data = DATA_ALL;
+            else if (type === 'default')  data = DATA_DEFAULT;
+            else if (type === 'optional') data = DATA_OPTIONAL;
+            else if (type === 'special')  data = DATA_SPECIAL;
+            else data = [];
+
+            currentStudentData = data;
+            currentListType = type;
+            document.getElementById('studentListModalTitle').innerHTML = '<i class="fas fa-users me-2"></i>' + title;
+            document.getElementById('studentListSearch').value = '';
+            document.getElementById('studentListCount').textContent = data.length + ' student' + (data.length !== 1 ? 's' : '');
+            renderStudentTable(data, type);
+            new bootstrap.Modal(document.getElementById('studentListModal')).show();
+        }
+
+        function renderStudentTable(data, type) {
+            const thead = document.getElementById('studentListHeader');
+            const tbody = document.getElementById('studentListBody');
+            const empty = document.getElementById('studentListEmpty');
+            
+            let lastColName = 'Food';
+            if (type === 'all') lastColName = 'Current Meal Status';
+            if (type === 'default') lastColName = 'Default Food';
+            if (type === 'optional') lastColName = 'Selected Optional Food';
+            if (type === 'special') lastColName = 'Selected Special Food';
+
+            thead.innerHTML = `
+                <tr>
+                    <th style="padding:10px 16px; font-weight:600; color:#6b7280; font-size:0.75rem; text-transform:uppercase;">#</th>
+                    <th style="padding:10px 16px; font-weight:600; color:#6b7280; font-size:0.75rem; text-transform:uppercase;">UID</th>
+                    <th style="padding:10px 16px; font-weight:600; color:#6b7280; font-size:0.75rem; text-transform:uppercase;">Name</th>
+                    <th style="padding:10px 16px; font-weight:600; color:#6b7280; font-size:0.75rem; text-transform:uppercase;">Room</th>
+                    ${type === 'all' ? '<th style="padding:10px 16px; font-weight:600; color:#6b7280; font-size:0.75rem; text-transform:uppercase;">Phone</th>' : ''}
+                    <th style="padding:10px 16px; font-weight:600; color:#6b7280; font-size:0.75rem; text-transform:uppercase;">${lastColName}</th>
+                    ${type === 'optional' ? '<th style="padding:10px 16px; font-weight:600; color:#6b7280; font-size:0.75rem; text-transform:uppercase;">Status</th>' : ''}
+                </tr>
+            `;
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '';
+                empty.classList.remove('d-none');
+                return;
+            }
+            empty.classList.add('d-none');
+            
+            tbody.innerHTML = data.map((s, i) => {
+                let statusHtml = '';
+                if (type === 'optional') {
+                    if (s.has_scanned) {
+                        statusHtml = `<td style="padding:10px 16px;"><span class="badge bg-success" style="font-size:0.7rem; font-weight:600; letter-spacing:0.5px; padding:5px 10px;">Received</span></td>`;
+                    } else {
+                        statusHtml = `<td style="padding:10px 16px;"></td>`;
+                    }
+                }
+                return `
+                <tr style="border-bottom:1px solid #f4f6f9;">
+                    <td style="padding:10px 16px; color:#9ca3af;">${i + 1}</td>
+                    <td style="padding:10px 16px; font-weight:600; color:#6b7280;">${s.uid || '-'}</td>
+                    <td style="padding:10px 16px;">${s.name || '-'}</td>
+                    <td style="padding:10px 16px;">${s.room || '-'}</td>
+                    ${type === 'all' ? `<td style="padding:10px 16px;">${s.phone || '-'}</td>` : ''}
+                    <td style="padding:10px 16px; color:#555;">${s.food || '-'}</td>
+                    ${statusHtml}
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function filterStudentList() {
+            const q = document.getElementById('studentListSearch').value.toLowerCase();
+            const filtered = currentStudentData.filter(s =>
+                (s.uid   || '').toLowerCase().includes(q) ||
+                (s.name  || '').toLowerCase().includes(q) ||
+                (s.room  || '').toLowerCase().includes(q)
+            );
+            renderStudentTable(filtered, currentListType);
+            
+            if (filtered.length === 0) {
+                document.getElementById('studentListEmpty').classList.remove('d-none');
+            } else {
+                document.getElementById('studentListEmpty').classList.add('d-none');
+            }
+            document.getElementById('studentListCount').textContent = filtered.length + ' student' + (filtered.length !== 1 ? 's' : '');
+        }
+    </script>
+</body>
+</html>

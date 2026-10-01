@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Bonafide Certificate</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .verify-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 36px 32px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,.2);
+            text-align: center;
+        }
+        .verify-icon { font-size: 3rem; margin-bottom: 16px; }
+        .verify-icon.valid { color: #38a169; }
+        .verify-icon.invalid { color: #e53e3e; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: .9rem; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row .lbl { color: #718096; font-weight: 600; }
+        .info-row .val { color: #2d3748; font-weight: 700; }
+        .status-badge { padding: 4px 14px; border-radius: 99px; font-size: .8rem; font-weight: 700; }
+        .status-valid  { background: #d1fae5; color: #065f46; }
+        .status-invalid { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+<div class="verify-card">
+    <img src="/images/4174.png" alt="Logo" style="width:64px;margin-bottom:12px;">
+    <h4 style="font-weight:800;color:#2d3748;">Certificate Verification</h4>
+    <p style="color:#718096;font-size:.87rem;">St. Vincent Pallotti College of Engineering and Technology</p>
+    <hr>
+    <% if (request) { %>
+    <div class="verify-icon valid"><i class="fas fa-shield-alt"></i></div>
+    <h5 style="color:#38a169;font-weight:700;">Certificate Verified ✓</h5>
+    <p style="color:#718096;font-size:.85rem;margin-bottom:20px;">This bonafide certificate is authentic and issued by the Hostel Authority.</p>
+    <div style="text-align:left;">
+        <div class="info-row"><span class="lbl">Student Name</span><span class="val"><%= request.student_name %></span></div>
+        <div class="info-row"><span class="lbl">UID</span><span class="val" style="font-family:monospace;"><%= request.student_uid %></span></div>
+        <div class="info-row"><span class="lbl">Branch</span><span class="val"><%= request.branch || 'N/A' %></span></div>
+        <div class="info-row"><span class="lbl">Academic Year</span><span class="val"><%= request.academic_year %></span></div>
+        <div class="info-row"><span class="lbl">Certificate No.</span><span class="val" style="font-family:monospace;color:#667eea;"><%= request.certificate_no %></span></div>
+        <div class="info-row">
+            <span class="lbl">Status</span>
+            <span class="status-badge status-valid"><%= request.status %></span>
+        </div>
+        <div class="info-row"><span class="lbl">Issued Date</span><span class="val"><%= request.approved_date ? new Date(request.approved_date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'N/A' %></span></div>
+    </div>
+    <% } else { %>
+    <div class="verify-icon invalid"><i class="fas fa-times-circle"></i></div>
+    <h5 style="color:#e53e3e;font-weight:700;">Certificate Not Found</h5>
+    <p style="color:#718096;">This verification link is invalid or the certificate does not exist.</p>
+    <% } %>
+    <hr>
+    <p style="font-size:.75rem;color:#a0aec0;">Hostel ERP — SVPCET Nagpur</p>
+</div>
+</body>
+</html>

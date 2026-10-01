@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {packages: ['corechart', 'line']});
+         google.charts.setOnLoadCallback(fetchAndDrawChart);
+
+    function fetchAndDrawChart() {
+      // Fetch data from Node.js server
+      fetch('http://localhost:4000/datatimelines')
+        .then(response => response.json())
+        .then(data => drawBackgroundColor(data))
+        .catch(error => console.error('Error fetching data:', error));
+
+        
+    }
+    
+    function drawBackgroundColor(data) {
+          var chartData = new google.visualization.DataTable();
+          chartData.addColumn('number', 'Timeframe');
+          chartData.addColumn('number', 'Count');
+
+          data.forEach(item => {
+        chartData.addRow([item.Timeframe, item.Count]);
+
+      });
+    
+          
+    
+          var options = {
+            hAxis: {
+              title: 'Time'
+            },
+            vAxis: {
+              title: 'Popularity'
+            },
+            backgroundColor: '#f1f8e9'
+          };
+    
+          var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+          chart.draw(chartData, options);
+        }
+    </script>
+  <div id="chart_div"></div>
+</body>
+</html>

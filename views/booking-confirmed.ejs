@@ -1,0 +1,135 @@
+﻿<!-- views/booking-confirmed.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Booking Confirmed - TNPS Boys Hostel</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #eef3f8;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1f2937;
+    }
+    .outer { width: 100%; padding: 24px 12px; box-sizing: border-box; }
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #dbe6f3;
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
+    }
+    .header {
+      background: linear-gradient(135deg, #0f4c81 0%, #1f7a4d 100%);
+      color: #fff;
+      text-align: center;
+      padding: 28px 30px 24px;
+    }
+    .header img {
+      width: 120px;
+      max-width: 100%;
+      height: auto;
+      display: inline-block;
+      margin-bottom: 14px;
+      background: rgba(255,255,255,0.96);
+      border-radius: 14px;
+      padding: 10px 14px;
+    }
+    .header h1 { margin: 0; font-size: 24px; }
+    .header p { margin: 8px 0 0; opacity: 0.95; font-size: 14px; }
+    .content { padding: 28px 30px 24px; }
+    .intro { margin: 0 0 18px; font-size: 15px; line-height: 1.65; color: #334155; }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      border: 1px solid #dbe5ee;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .info-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .info-table tr:last-child td { border-bottom: none; }
+    .info-table td:first-child {
+      width: 42%;
+      background: #f8fbff;
+      font-weight: 700;
+      color: #334155;
+    }
+    .note {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      border-radius: 12px;
+      padding: 14px 16px;
+      line-height: 1.6;
+      font-size: 14px;
+      margin: 18px 0 0;
+    }
+    .footer {
+      margin-top: 18px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .contact {
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      padding: 18px 30px 24px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #475569;
+    }
+    .contact strong { color: #0f172a; }
+    @media only screen and (max-width: 640px) {
+      .content, .header, .contact { padding-left: 18px; padding-right: 18px; }
+      .header h1 { font-size: 20px; }
+      .info-table td { font-size: 13px; padding: 10px 12px; }
+      .info-table td:first-child { width: 46%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="outer">
+    <div class="container">
+      <div class="header">
+        <img src="cid:hostel-logo" alt="TNPS Boys Hostel Logo">
+        <h1>Room Booking Confirmed</h1>
+        <p>Your hostel payment has been verified</p>
+      </div>
+
+      <div class="content">
+        <p class="intro">
+          Hello <strong><%= sname %></strong>, your room booking payment has been verified and confirmed by the hostel administration.
+        </p>
+
+        <table class="info-table" role="presentation">
+          <tr><td>UID</td><td><%= uid %></td></tr>
+          <tr><td>Block</td><td><%= block %></td></tr>
+          <tr><td>Room No.</td><td><%= room_no %></td></tr>
+          <tr><td>Bed No.</td><td><%= bed_no %></td></tr>
+          <tr><td>Amount Paid</td><td>Rs. <%= advance_amount %></td></tr>
+          <tr><td>Transaction ID</td><td><%= transaction_id %></td></tr>
+          <tr><td>Confirmed On</td><td><%= confirmed_on %></td></tr>
+        </table>
+
+        <div class="note">
+          Please keep this confirmation for your records. If any detail looks incorrect, contact the hostel office right away.
+        </div>
+      </div>
+
+      <div class="contact">
+        <div><strong>Contact Email:</strong> <%= contactEmail %></div>
+        <div class="footer">TNPS Boys Hostel - St. Vincent Pallotti College of Engineering & Technology, Nagpur</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

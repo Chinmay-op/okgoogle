@@ -1,0 +1,421 @@
+<!-- Single Day Default Menu Modal -->
+<div class="modal fade" id="editSingleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form class="modal-content" action="/admin/mess/edit-single" method="POST">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Default Menu: <span id="singleMealLabel"></span> - <span id="singleDayLabel"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="meal_type" id="singleMealType">
+                <input type="hidden" name="weekday" id="singleWeekday">
+                <div class="mb-3">
+                    <label>Food Name</label>
+                    <input type="text" class="form-control" name="food_name" id="singleFoodName" required>
+                </div>
+                <div class="mb-3">
+                    <label>Drink</label>
+                    <input type="text" class="form-control" name="drink" id="singleDrink">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Full Week Default Menu Modal -->
+<div class="modal fade" id="editFullWeekModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <form class="modal-content" action="/admin/mess/edit-full" method="POST">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Full Week Default Menu: <span id="fullWeekMealLabel"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="meal_type" id="fullWeekMealType">
+                <table class="table">
+                    <thead><tr><th>Day</th><th>Food Name</th><th>Drink</th></tr></thead>
+                    <tbody>
+                        <% ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].forEach(d => { %>
+                        <tr>
+                            <td><%= d %></td>
+                            <td><input type="text" class="form-control full-week-food-<%= d %>" name="food_<%= d %>"></td>
+                            <td><input type="text" class="form-control full-week-drink-<%= d %>" name="drink_<%= d %>"></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Week</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Single Day Optional Menu Modal -->
+<div class="modal fade" id="editSingleOptionalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form class="modal-content" action="/admin/mess/edit-optional-single" method="POST" id="editSingleOptionalForm">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Optional Menu: <span id="singleOptionalMealLabel"></span> - <span id="singleOptionalDayLabel"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="meal_type" id="singleOptionalMealType">
+                <input type="hidden" name="weekday" id="singleOptionalWeekday">
+                
+                <h6 class="border-bottom pb-2 mb-3 text-success d-flex justify-content-between align-items-center" id="singleOptVegHeader">
+                    Veg Option
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="addOptionalFoodRow('vegFoodContainer')" id="singleOptVegAddBtn"><i class="fas fa-plus"></i> Add</button>
+                </h6>
+                <div id="vegFoodContainer"></div>
+                <input type="hidden" name="veg_food" id="singleOptionalVegFood">
+
+                <div class="mb-3">
+                    <label id="singleOptVegDrinkLabel">Drink (Veg)</label>
+                    <input type="text" class="form-control" name="veg_drink" id="singleOptionalVegDrink">
+                </div>
+
+                <div id="singleOptNonVegSection">
+                    <h6 class="border-bottom pb-2 mb-3 mt-4 text-danger d-flex justify-content-between align-items-center">
+                        Non-Veg Option
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="addOptionalFoodRow('nonVegFoodContainer')"><i class="fas fa-plus"></i> Add</button>
+                    </h6>
+                    <div id="nonVegFoodContainer"></div>
+                    <input type="hidden" name="nonveg_food" id="singleOptionalNonVegFood">
+
+                    <div class="mb-3">
+                        <label>Drink (Non-Veg)</label>
+                        <input type="text" class="form-control" name="nonveg_drink" id="singleOptionalNonVegDrink">
+                    </div>
+                </div>
+                <small class="text-muted">Remove all items or leave blank to remove that option.</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Full Week Optional Menu Modal -->
+<div class="modal fade" id="editFullOptionalWeekModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <form class="modal-content" action="/admin/mess/edit-optional-full" method="POST">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Full Week Optional Menu: <span id="fullWeekOptionalMealLabel"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="meal_type" id="fullWeekOptionalMealType">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th class="text-success" id="fullOptVegFoodTh">Veg Food</th>
+                            <th class="text-success" id="fullOptVegDrinkTh">Veg Drink</th>
+                            <th class="text-danger" id="fullOptNonVegFoodTh">Non-Veg Food</th>
+                            <th class="text-danger" id="fullOptNonVegDrinkTh">Non-Veg Drink</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].forEach(d => { %>
+                        <tr>
+                            <td class="fw-bold align-middle"><%= d %></td>
+                            <td><input type="text" class="form-control full-week-opt-vfood-<%= d %>" name="veg_food_<%= d %>"></td>
+                            <td><input type="text" class="form-control full-week-opt-vdrink-<%= d %>" name="veg_drink_<%= d %>"></td>
+                            <td><input type="text" class="form-control full-week-opt-nvfood-<%= d %>" name="nonveg_food_<%= d %>"></td>
+                            <td><input type="text" class="form-control full-week-opt-nvdrink-<%= d %>" name="nonveg_drink_<%= d %>"></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Week</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Student Selection Modal -->
+<div class="modal fade" id="editStudentSelectionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form class="modal-content" action="/admin/mess/edit-student-selection" method="POST">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Student Selection</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="student_uid" id="editStudentUid">
+                <input type="hidden" name="meal_type" id="editStudentMealType">
+                <input type="hidden" name="selection_date" value="<%= typeof targetDate !== 'undefined' ? targetDate : '' %>">
+                <div class="mb-3">
+                    <label>UID</label>
+                    <input type="text" class="form-control" id="editStudentUidDisplay" disabled>
+                </div>
+                <div class="mb-3">
+                    <label>Selected Food</label>
+                    <input type="text" class="form-control" name="selected_food" id="editStudentSelectedFood" placeholder="e.g. 'DEFAULT' or specific food name" required>
+                    <small class="text-muted">Type 'DEFAULT' to assign the default menu, or type the exact name of the optional food.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Selection</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function editStudentSelection(uid, mealType, currentFood) {
+        document.getElementById('editStudentUid').value = uid;
+        document.getElementById('editStudentUidDisplay').value = uid;
+        document.getElementById('editStudentMealType').value = mealType || 'breakfast';
+        document.getElementById('editStudentSelectedFood').value = currentFood;
+        var myModal = new bootstrap.Modal(document.getElementById('editStudentSelectionModal'));
+        myModal.show();
+    }
+</script>
+
+<!-- Add Special Food Modal -->
+<div class="modal fade" id="addSpecialFoodModal" tabindex="-1" aria-labelledby="addSpecialFoodModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addSpecialFoodModalLabel">Add Special Food Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/special-food/items/add" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Food Name (e.g., Milk)</label>
+            <input type="text" class="form-control" name="food_name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Quantity / Description (e.g., 300ml)</label>
+            <input type="text" class="form-control" name="quantity_desc" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Duration (Days)</label>
+            <input type="number" class="form-control" name="duration_days" min="1" value="30" required>
+            <small class="text-muted">This duration will be used in student requests.</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Price per Day (₹)</label>
+            <input type="number" step="0.01" class="form-control" name="price_per_day" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Availability</label>
+            <select class="form-select" name="availability" required>
+              <option value="both">Both (Day & Night)</option>
+              <option value="day">Day Only</option>
+              <option value="night">Night Only</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Add Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Special Food Modal -->
+<div class="modal fade" id="editSpecialFoodModal" tabindex="-1" aria-labelledby="editSpecialFoodModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editSpecialFoodModalLabel">Edit Special Food Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="editSpecialFoodForm" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Food Name</label>
+            <input type="text" class="form-control" name="food_name" id="editSFName" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Quantity / Description</label>
+            <input type="text" class="form-control" name="quantity_desc" id="editSFQuantity" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Price per Day (₹)</label>
+            <input type="number" step="0.01" class="form-control" name="price_per_day" id="editSFPrice" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Duration (Days)</label>
+            <input type="number" class="form-control" name="duration_days" id="editSFDuration" min="1" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Availability</label>
+            <select class="form-select" name="availability" id="editSFAvailability" required>
+              <option value="both">Both (Day & Night)</option>
+              <option value="day">Day Only</option>
+              <option value="night">Night Only</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Request Special Food Modal (Student) -->
+<div class="modal fade" id="requestSpecialFoodModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Request <span id="reqSFNameDisplay" class="text-primary"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/special-food/requests/add" method="POST">
+        <input type="hidden" name="special_food_id" id="reqSFId">
+        <input type="hidden" id="reqSFBasePrice">
+        
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Duration (Days)</label>
+            <input type="number" class="form-control" name="duration_days" id="reqSFDuration" value="30" min="1" required readonly>
+            <small class="text-muted">Set by the admin while creating the item.</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Quantity Multiplier</label>
+            <input type="number" class="form-control" name="quantity_multiplier" id="reqSFQuantity" value="1" min="1" required oninput="calculateSFTotal()">
+            <small class="text-muted">E.g. 2 means double the quantity.</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Time Slot</label>
+            <select class="form-select" name="obtain_time" id="reqSFTime" required onchange="calculateSFTotal()">
+              <option value="day">Day</option>
+              <option value="night">Night</option>
+              <option value="both">Both (Day & Night) - 2x Price</option>
+            </select>
+          </div>
+          
+          <div class="alert alert-info mt-3">
+            <h5 class="mb-0">Estimated Total: ₹<span id="reqSFTotal">0</span></h5>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Submit Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Approve Special Food Modal (Superadmin) -->
+<div class="modal fade" id="approveSpecialFoodModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Approve Special Food Request</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="approveSpecialFoodForm" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Start Date</label>
+            <input type="date" class="form-control" name="start_date" id="approveSFStartDate" required>
+            <small class="text-muted">The validity period will start from this date.</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Approve Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Edit Item
+    const editBtns = document.querySelectorAll('.edit-food-btn');
+    editBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('editSpecialFoodForm').action = '/special-food/items/edit/' + this.dataset.id;
+            document.getElementById('editSFName').value = this.dataset.name;
+            document.getElementById('editSFQuantity').value = this.dataset.quantity;
+            document.getElementById('editSFPrice').value = this.dataset.price;
+            document.getElementById('editSFDuration').value = this.dataset.durationDays || 30;
+            document.getElementById('editSFAvailability').value = this.dataset.availability;
+        });
+    });
+    
+    // Request Item
+    const reqBtns = document.querySelectorAll('.request-food-btn');
+    reqBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('reqSFId').value = this.dataset.id;
+            document.getElementById('reqSFNameDisplay').innerText = this.dataset.name;
+            document.getElementById('reqSFBasePrice').value = this.dataset.price;
+            document.getElementById('reqSFDuration').value = this.dataset.durationDays || 30;
+            
+            const avail = this.dataset.availability;
+            const timeSelect = document.getElementById('reqSFTime');
+            
+            // Enable all options first
+            Array.from(timeSelect.options).forEach(opt => opt.disabled = false);
+            
+            // Disable options that don't match the item's availability
+            if (avail === 'day') {
+                timeSelect.querySelector('option[value="night"]').disabled = true;
+                timeSelect.querySelector('option[value="both"]').disabled = true;
+                timeSelect.value = 'day';
+            } else if (avail === 'night') {
+                timeSelect.querySelector('option[value="day"]').disabled = true;
+                timeSelect.querySelector('option[value="both"]').disabled = true;
+                timeSelect.value = 'night';
+            } else {
+                // 'both' means any option is valid
+                timeSelect.value = 'day'; // Default to day, let student choose
+            }
+            
+            calculateSFTotal();
+        });
+    });
+    
+    // Approve Request
+    const approveBtns = document.querySelectorAll('.approve-food-btn');
+    approveBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('approveSpecialFoodForm').action = '/special-food/requests/approve/' + this.dataset.id;
+            // Set default date to today
+            const today = new Date();
+            const todayStr = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            document.getElementById('approveSFStartDate').value = todayStr;
+        });
+    });
+});
+
+function calculateSFTotal() {
+    const basePrice = parseFloat(document.getElementById('reqSFBasePrice').value) || 0;
+    const duration = parseInt(document.getElementById('reqSFDuration').value) || 0;
+    const qty = parseInt(document.getElementById('reqSFQuantity').value) || 0;
+    const time = document.getElementById('reqSFTime').value;
+    
+    let multiplier = 1;
+    if (time === 'both') multiplier = 2;
+    
+    const total = basePrice * duration * qty * multiplier;
+    document.getElementById('reqSFTotal').innerText = total.toFixed(2);
+}
+</script>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Application #<%= app.id %></title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #edfffb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        .custom-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .card-header-custom {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            padding: 15px 25px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .card-body-custom {
+            padding: 25px;
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+
+        <div class="mb-4 d-flex gap-2">
+            <a href="/admin/admission-applications/<%= app.id %>" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="fas fa-arrow-left"></i> Back to Details
+            </a>
+        </div>
+
+        <div class="header-gradient d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <h2 class="mb-0"><i class="fas fa-edit"></i> Edit Application #<%= app.id %></h2>
+            <div>
+                <%
+                    let badgeClass = 'bg-warning text-dark';
+                    if(app.status === 'Admitted') badgeClass = 'bg-success';
+                    else if(app.status === 'Rejected') badgeClass = 'bg-danger';
+                %>
+                <span class="badge <%= badgeClass %> fs-5 px-3 py-2 rounded-pill"><%= app.status %></span>
+            </div>
+        </div>
+
+        <% if (message && message.length > 0) { %>
+            <div class="alert alert-info alert-dismissible fade show rounded-3" role="alert">
+                <i class="fas fa-info-circle me-2"></i> <%= message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <form action="/admin/admission-applications/<%= app.id %>/edit" method="POST">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-6">
+                    <!-- Personal Information -->
+                    <div class="card custom-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-user text-primary me-2"></i> Personal Information
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" name="full_name" class="form-control text-uppercase" value="<%= app.full_name %>" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Date of Birth</label>
+                                <%
+                                    let dobVal = '';
+                                    if(app.dob) {
+                                        const d = new Date(app.dob);
+                                        if(!isNaN(d.getTime())) {
+                                            dobVal = d.toISOString().split('T')[0];
+                                        }
+                                    }
+                                %>
+                                <input type="date" name="dob" class="form-control" value="<%= dobVal %>" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Father's Name</label>
+                                    <input type="text" name="father_name" class="form-control" value="<%= app.father_name %>" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Father's Occupation</label>
+                                    <input type="text" name="father_occupation" class="form-control" value="<%= app.father_occupation || '' %>">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Mother's Name</label>
+                                    <input type="text" name="mother_name" class="form-control" value="<%= app.mother_name %>" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Mother's Occupation</label>
+                                    <input type="text" name="mother_occupation" class="form-control" value="<%= app.mother_occupation || '' %>">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Permanent Address</label>
+                                <textarea name="permanent_address" class="form-control" rows="2" required><%= app.permanent_address %></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="card custom-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-phone-alt text-success me-2"></i> Contact Information
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Parent Phone No.</label>
+                                    <input type="text" name="parent_phone" class="form-control" value="<%= app.parent_phone %>" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Student Mobile No.</label>
+                                    <input type="text" name="student_mobile" class="form-control" value="<%= app.student_mobile %>" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Student Personal Email</label>
+                                    <input type="email" name="student_email" class="form-control" value="<%= app.student_email %>" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-md-6">
+                    <!-- Academic Details -->
+                    <div class="card custom-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-graduation-cap text-info me-2"></i> Academic Details
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="mb-3">
+                                <label class="form-label">Branch</label>
+                                <select name="branch" class="form-select" required>
+                                    <option value="">-- Select Branch / Department --</option>
+                                    <optgroup label="B.Tech.">
+                                        <option value="COMPUTER ENGINEERING" <%= app.branch === 'COMPUTER ENGINEERING' ? 'selected' : '' %>>Computer Science &amp; Engineering (CSE)</option>
+                                        <option value="ELECTRICAL ENGINEERING" <%= app.branch === 'ELECTRICAL ENGINEERING' ? 'selected' : '' %>>Electrical Engineering</option>
+                                        <option value="INFORMATION TECHNOLOGY" <%= app.branch === 'INFORMATION TECHNOLOGY' ? 'selected' : '' %>>Information Technology (IT)</option>
+                                        <option value="ELECTRONICS &amp; TELECOMMUNICATION ENGINEERING" <%= app.branch === 'ELECTRONICS & TELECOMMUNICATION ENGINEERING' ? 'selected' : '' %>>Electronics &amp; Telecommunication Engineering (ETC)</option>
+                                        <option value="MECHANICAL ENGINEERING" <%= app.branch === 'MECHANICAL ENGINEERING' ? 'selected' : '' %>>Mechanical Engineering</option>
+                                        <option value="CIVIL ENGINEERING" <%= app.branch === 'CIVIL ENGINEERING' ? 'selected' : '' %>>Civil Engineering</option>
+                                        <option value="ARTIFICIAL INTELLIGENCE" <%= app.branch === 'ARTIFICIAL INTELLIGENCE' ? 'selected' : '' %>>Artificial Intelligence (AI)</option>
+                                        <option value="COMPUTER SCIENCE &amp; ENGINEERING (DATA SCIENCE)" <%= app.branch === 'COMPUTER SCIENCE & ENGINEERING (DATA SCIENCE)' ? 'selected' : '' %>>Computer Science &amp; Engineering (Data Science)</option>
+                                        <option value="COMPUTER SCIENCE &amp; ENGINEERING (CYBER SECURITY)" <%= app.branch === 'COMPUTER SCIENCE & ENGINEERING (CYBER SECURITY)' ? 'selected' : '' %>>Computer Science &amp; Engineering (Cyber Security)</option>
+                                        <option value="INDUSTRIAL IOT" <%= app.branch === 'INDUSTRIAL IOT' ? 'selected' : '' %>>Industrial IoT (IIoT)</option>
+                                        <option value="COMPUTER SCIENCE AND BUSINESS SYSTEMS" <%= app.branch === 'COMPUTER SCIENCE AND BUSINESS SYSTEMS' ? 'selected' : '' %>>Computer Science and Business Systems (CSBS)</option>
+                                        <option value="ROBOTICS &amp; ARTIFICIAL INTELLIGENCE" <%= app.branch === 'ROBOTICS & ARTIFICIAL INTELLIGENCE' ? 'selected' : '' %>>Robotics &amp; Artificial Intelligence (RAI)</option>
+                                        <option value="MECHANICAL CAD-CAM" <%= app.branch === 'MECHANICAL CAD-CAM' ? 'selected' : '' %>>Mechanical CAD-CAM</option>
+                                    </optgroup>
+                                    <optgroup label="B.Voc.">
+                                        <option value="B.VOC. IN CYBER SECURITY" <%= app.branch === 'B.VOC. IN CYBER SECURITY' ? 'selected' : '' %>>B.Voc. in Cyber Security</option>
+                                        <option value="B.VOC. IN SOFTWARE DEVELOPMENT" <%= app.branch === 'B.VOC. IN SOFTWARE DEVELOPMENT' ? 'selected' : '' %>>B.Voc. in Software Development</option>
+                                        <option value="B.VOC. IN VIRTUAL REALITY &amp; AUGMENTED REALITY" <%= app.branch === 'B.VOC. IN VIRTUAL REALITY & AUGMENTED REALITY' ? 'selected' : '' %>>B.Voc. in Virtual Reality &amp; Augmented Reality</option>
+                                        <option value="B VOCATIONAL" <%= app.branch === 'B VOCATIONAL' ? 'selected' : '' %>>B Vocational</option>
+                                    </optgroup>
+                                    <optgroup label="Other Programs">
+                                        <option value="BCA" <%= app.branch === 'BCA' ? 'selected' : '' %>>BCA</option>
+                                        <option value="BBA" <%= app.branch === 'BBA' ? 'selected' : '' %>>BBA</option>
+                                        <option value="MCA" <%= app.branch === 'MCA' ? 'selected' : '' %>>MCA</option>
+                                        <option value="MBA" <%= app.branch === 'MBA' ? 'selected' : '' %>>MBA</option>
+                                        <option value="M.TECH" <%= app.branch === 'M.TECH' ? 'selected' : '' %>>M.Tech</option>
+                                        <option value="M.TECH CSE" <%= app.branch === 'M.TECH CSE' ? 'selected' : '' %>>M.Tech CSE</option>
+                                        <option value="M.TECH CADCAM" <%= app.branch === 'M.TECH CADCAM' ? 'selected' : '' %>>M.Tech CAD-CAM</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Admission Year</label>
+                                <select name="admission_year" class="form-select" required>
+                                    <option value="">-- Select Year --</option>
+                                    <option value="1" <%= (app.admission_year == '1' || app.admission_year == 'First year' || app.admission_year == '1st') ? 'selected' : '' %>>First Year</option>
+                                    <option value="2" <%= (app.admission_year == '2' || app.admission_year == 'Second year' || app.admission_year == '2nd') ? 'selected' : '' %>>Second Year</option>
+                                    <option value="3" <%= (app.admission_year == '3' || app.admission_year == 'Third year' || app.admission_year == '3rd') ? 'selected' : '' %>>Third Year</option>
+                                    <option value="4" <%= (app.admission_year == '4' || app.admission_year == 'Fourth year' || app.admission_year == '4th') ? 'selected' : '' %>>Fourth Year</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="card custom-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-info-circle text-warning me-2"></i> Additional Information
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Religion</label>
+                                    <%
+                                      const stdReligions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Parsi', 'Buddhist', 'Jain'];
+                                      let isCustomReligion = app.religion && !stdReligions.includes(app.religion);
+                                    %>
+                                    <select class="form-select" name="religion" id="religion" required onchange="toggleReligionOther(this)">
+                                        <option value="">-- Select --</option>
+                                        <option value="Hindu" <%= app.religion === 'Hindu' ? 'selected' : '' %>>Hindu</option>
+                                        <option value="Muslim" <%= app.religion === 'Muslim' ? 'selected' : '' %>>Muslim</option>
+                                        <option value="Christian" <%= app.religion === 'Christian' ? 'selected' : '' %>>Christian</option>
+                                        <option value="Sikh" <%= app.religion === 'Sikh' ? 'selected' : '' %>>Sikh</option>
+                                        <option value="Parsi" <%= app.religion === 'Parsi' ? 'selected' : '' %>>Parsi</option>
+                                        <option value="Buddhist" <%= app.religion === 'Buddhist' ? 'selected' : '' %>>Buddhist</option>
+                                        <option value="Jain" <%= app.religion === 'Jain' ? 'selected' : '' %>>Jain</option>
+                                        <option value="Other" <%= isCustomReligion ? 'selected' : '' %>>Other</option>
+                                    </select>
+                                    <input type="text" class="form-control mt-2" name="religion_other" id="religion_other" maxlength="50" placeholder="Please specify your religion" value="<%= isCustomReligion ? app.religion : '' %>" style="display: <%= isCustomReligion ? 'block' : 'none' %>;">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Caste Category</label>
+                                    <%
+                                      const stdCastes = ['SC', 'ST', 'OBC', 'VJNT', 'General'];
+                                      let isCustomCaste = app.caste_category && !stdCastes.includes(app.caste_category);
+                                    %>
+                                    <select class="form-select" name="caste_category" id="caste_category_select" required onchange="toggleCasteOther(this)">
+                                        <option value="">-- Select Caste Category --</option>
+                                        <option value="SC" <%= app.caste_category === 'SC' ? 'selected' : '' %>>SC</option>
+                                        <option value="ST" <%= app.caste_category === 'ST' ? 'selected' : '' %>>ST</option>
+                                        <option value="OBC" <%= app.caste_category === 'OBC' ? 'selected' : '' %>>OBC</option>
+                                        <option value="VJNT" <%= app.caste_category === 'VJNT' ? 'selected' : '' %>>VJNT</option>
+                                        <option value="General" <%= app.caste_category === 'General' ? 'selected' : '' %>>General</option>
+                                        <option value="Other" <%= isCustomCaste ? 'selected' : '' %>>Other</option>
+                                    </select>
+                                    <input type="text" class="form-control mt-2" name="caste_category_other" id="caste_category_other" maxlength="50" placeholder="Please specify your caste category" value="<%= isCustomCaste ? app.caste_category : '' %>" style="display: <%= isCustomCaste ? 'block' : 'none' %>;">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mess Preference</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="mess_preference" id="messVeg" value="Veg" <%= app.mess_preference === 'Veg' ? 'checked' : '' %> required>
+                                    <label class="btn btn-outline-success" for="messVeg"><i class="fas fa-leaf"></i> Veg</label>
+
+                                    <input type="radio" class="btn-check" name="mess_preference" id="messNonVeg" value="Non-Veg" <%= app.mess_preference === 'Non-Veg' ? 'checked' : '' %> required>
+                                    <label class="btn btn-outline-danger" for="messNonVeg"><i class="fas fa-drumstick-bite"></i> Non-Veg</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Student Photo Preview -->
+                    <% if(app.student_photo_path) { %>
+                    <div class="card custom-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-camera text-primary me-2"></i> Student Photo (Read Only)
+                        </div>
+                        <div class="card-body-custom text-center">
+                            <img src="<%= app.student_photo_path %>" alt="Student Photo"
+                                 style="width:120px; height:150px; object-fit:cover; border:2px solid #ddd; border-radius:8px;">
+                        </div>
+                    </div>
+                    <% } %>
+
+                    <!-- Signatures Preview -->
+                    <div class="card custom-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-signature text-secondary me-2"></i> Signatures (Read Only)
+                        </div>
+                        <div class="card-body-custom text-center">
+                            <div class="mb-3">
+                                <small class="text-muted text-uppercase fw-bold d-block mb-2">Student Signature</small>
+                                <% if(app.decl1_signature_path) { %>
+                                    <img src="<%= app.decl1_signature_path %>" alt="Student Signature"
+                                         style="max-width: 100%; max-height: 200px; border: 1px solid #ddd; border-radius: 5px; padding: 5px; background: #fff;">
+                                <% } else if(app.undertaking_signature_path) { %>
+                                    <img src="/uploads/admissions/<%= app.undertaking_signature_path %>" alt="Student Signature"
+                                         style="max-width: 100%; max-height: 200px; border: 1px solid #ddd; border-radius: 5px; padding: 5px; background: #fff;">
+                                <% } else { %>
+                                    <div class="text-muted fst-italic py-2">No signature uploaded</div>
+                                <% } %>
+                            </div>
+                            <% if(app.parent_signature_path) { %>
+                            <div>
+                                <small class="text-muted text-uppercase fw-bold d-block mb-2">Parent / Guardian Signature</small>
+                                <img src="<%= app.parent_signature_path %>" alt="Parent Signature"
+                                     style="max-width: 100%; max-height: 200px; border: 1px solid #ddd; border-radius: 5px; padding: 5px; background: #fff;">
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid mb-5 mt-2">
+                <button type="submit" class="btn-gradient fs-5 shadow" onclick="return confirm('Are you sure you want to save these changes?');">
+                    <i class="fas fa-save me-2"></i> Save Changes
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleCasteOther(sel) {
+            var otherInput = document.getElementById('caste_category_other');
+            if (sel.value === 'Other') {
+                otherInput.style.display = 'block';
+                otherInput.required = true;
+                otherInput.focus();
+            } else {
+                otherInput.style.display = 'none';
+                otherInput.required = false;
+                otherInput.value = '';
+            }
+        }
+
+        function toggleReligionOther(sel) {
+            var otherInput = document.getElementById('religion_other');
+            if (sel.value === 'Other') {
+                otherInput.style.display = 'block';
+                otherInput.required = true;
+                otherInput.focus();
+            } else {
+                otherInput.style.display = 'none';
+                otherInput.required = false;
+                otherInput.value = '';
+            }
+        }
+
+        // Force full_name to uppercase on submit and handle 'Other' dropdowns
+        document.querySelector('form').addEventListener('submit', function() {
+            const fn = document.querySelector('input[name="full_name"]');
+            if(fn) fn.value = fn.value.toUpperCase();
+
+            var casteSel = document.getElementById('caste_category_select');
+            var casteOther = document.getElementById('caste_category_other');
+            if (casteSel && casteSel.value === 'Other' && casteOther && casteOther.value.trim()) {
+                casteSel.name = '';
+                casteOther.name = 'caste_category';
+            }
+
+            var religionSel = document.getElementById('religion');
+            var religionOther = document.getElementById('religion_other');
+            if (religionSel && religionSel.value === 'Other' && religionOther && religionOther.value.trim()) {
+                religionSel.name = '';
+                religionOther.name = 'religion';
+            }
+        });
+    </script>
+</body>
+</html>

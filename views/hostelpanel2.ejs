@@ -1,0 +1,368 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todays Log</title>
+    <link rel="stylesheet" href="/stylesheets/hostelpanel.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="icon" href="/images/4174.png">
+
+
+    <script>
+        var activePassType = '';
+        var activeStatus = '';
+
+        function myFunction() {
+            applyFilters();
+            saveFilters();
+        }
+
+        function passfilter(value) {
+            activePassType = value || '';
+            applyFilters();
+            saveFilters();
+        }
+
+        function filterStatus(value) {
+            activeStatus = value || '';
+            applyFilters();
+            saveFilters();
+        }
+
+        function saveFilters() {
+            try {
+                localStorage.setItem('hostelpanel_pass_filter', activePassType);
+                localStorage.setItem('hostelpanel_status_filter', activeStatus);
+                
+                var searchInput = document.getElementById("searchbar");
+                if (searchInput) localStorage.setItem('hostelpanel_search_filter', searchInput.value);
+
+                var dateFromInput = document.querySelector('input[name="datefrom"]');
+                var dateToInput = document.querySelector('input[name="dateto"]');
+                if (dateFromInput) localStorage.setItem('hostelpanel_datefrom', dateFromInput.value);
+                if (dateToInput) localStorage.setItem('hostelpanel_dateto', dateToInput.value);
+            } catch (e) {
+                console.error('Failed to save filters to localStorage:', e);
+            }
+        }
+
+        function restoreFilters() {
+            try {
+                var savedPass = localStorage.getItem('hostelpanel_pass_filter');
+                if (savedPass !== null) {
+                    activePassType = savedPass;
+                    var passRadios = document.getElementsByName('radio');
+                    for (var i = 0; i < passRadios.length; i++) {
+                        if (passRadios[i].value === savedPass) {
+                            passRadios[i].checked = true;
+                        }
+                    }
+                }
+
+                var savedStatus = localStorage.getItem('hostelpanel_status_filter');
+                if (savedStatus !== null) {
+                    activeStatus = savedStatus;
+                    var statusRadios = document.getElementsByName('statusRadio');
+                    for (var i = 0; i < statusRadios.length; i++) {
+                        if (statusRadios[i].value === savedStatus) {
+                            statusRadios[i].checked = true;
+                        }
+                    }
+                }
+
+                var savedSearch = localStorage.getItem('hostelpanel_search_filter');
+                var searchInput = document.getElementById("searchbar");
+                if (savedSearch !== null && searchInput) {
+                    searchInput.value = savedSearch;
+                }
+
+                var savedDateFrom = localStorage.getItem('hostelpanel_datefrom');
+                var dateFromInput = document.querySelector('input[name="datefrom"]');
+                if (savedDateFrom && dateFromInput) {
+                    dateFromInput.value = savedDateFrom;
+                }
+
+                var savedDateTo = localStorage.getItem('hostelpanel_dateto');
+                var dateToInput = document.querySelector('input[name="dateto"]');
+                if (savedDateTo && dateToInput) {
+                    dateToInput.value = savedDateTo;
+                }
+            } catch (e) {
+                console.error('Failed to restore filters from localStorage:', e);
+            }
+            applyFilters();
+        }
+
+        function applyFilters() {
+            var searchInput = document.getElementById("searchbar");
+            var searchFilter = searchInput ? searchInput.value.toUpperCase() : '';
+            
+            var table = document.getElementById("myTable");
+            if (!table) return;
+            
+            var tbody = table.querySelector('tbody');
+            if (!tbody) return;
+            
+            var tr = tbody.getElementsByTagName("tr");
+
+            var passFilter = activePassType.toUpperCase();
+            var statusFilter = activeStatus;
+
+            for (var i = 0; i < tr.length; i++) {
+                var row = tr[i];
+                if (row.classList.contains('no-result')) continue;
+
+                var tds = row.getElementsByTagName("td");
+                if (tds.length < 9) continue;
+
+                // 1. Search Filter (UID or Name)
+                var tdName = tds[3]; // NAME column
+                var tdUid = tds[2];  // UID column
+                var nameVal = tdName ? (tdName.textContent || tdName.innerText).toUpperCase() : '';
+                var uidVal = tdUid ? (tdUid.textContent || tdUid.innerText).toUpperCase() : '';
+                var searchMatch = (searchFilter === '' || nameVal.indexOf(searchFilter) > -1 || uidVal.indexOf(searchFilter) > -1);
+
+                // 2. Pass Type Filter
+                var tdPass = tds[0];
+                var pt = tdPass ? (tdPass.textContent || tdPass.innerText).toUpperCase() : '';
+                var passMatch = (passFilter === '' || pt.indexOf(passFilter) > -1);
+
+                // 3. Status Filter
+                var hostelOutVal = tds[4] ? tds[4].innerText.trim() : '';
+                var hostelInVal = tds[5] ? tds[5].innerText.trim() : '';
+                var gateOutVal = tds[7] ? tds[7].innerText.trim() : '';
+                var gateInVal = tds[8] ? tds[8].innerText.trim() : '';
+
+                var statusMatch = false;
+                if (statusFilter === '') {
+                    statusMatch = true;
+                } else if (statusFilter === 'HostelOut') {
+                    statusMatch = (hostelOutVal !== '' && hostelInVal === '');
+                } else if (statusFilter === 'HostelIn') {
+                    statusMatch = (hostelInVal !== '');
+                } else if (statusFilter === 'GateOut') {
+                    statusMatch = (gateOutVal !== '' && gateInVal === '');
+                } else if (statusFilter === 'GateIn') {
+                    statusMatch = (gateInVal !== '');
+                }
+
+                // Show row if it matches all 3 filters
+                if (searchMatch && passMatch && statusMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        function dateFormat(input_D) {
+            // Robust parser for DB DATETIME strings like 'YYYY-MM-DD HH:MM:SS'
+            if (!input_D || typeof input_D !== 'string') return input_D;
+            input_D = input_D.trim();
+            var m = input_D.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?/);
+            if (!m) return input_D;
+            var yyyy = parseInt(m[1], 10);
+            var mm = parseInt(m[2], 10) - 1;
+            var dd = parseInt(m[3], 10);
+            var HH = parseInt(m[4], 10);
+            var Min = parseInt(m[5], 10);
+            var SS = parseInt(m[6] || '0', 10);
+            var d = new Date(yyyy, mm, dd, HH, Min, SS);
+            if (isNaN(d.getTime())) return input_D;
+            function pad(n) { return String(n).padStart(2, '0'); }
+            var monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            var hour = d.getHours();
+            var ampm = hour >= 12 ? 'pm' : 'am';
+            var hour12 = hour % 12;
+            if (hour12 === 0) hour12 = 12;
+            return d.getDate() + ' ' + monthNames[d.getMonth()] + ' ' + d.getFullYear() + ', ' + pad(hour12) + ':' + pad(d.getMinutes()) + ' ' + ampm;
+        }
+
+        window.onload = function () {
+            var approvalDates = document.getElementsByClassName("approvalDate");
+            for (var i = 0; i < approvalDates.length; i++) {
+                if (approvalDates[i].innerHTML == 0) {
+                    approvalDates[i].innerHTML = "";
+                } else {
+                    approvalDates[i].innerHTML = dateFormat(approvalDates[i].innerHTML);
+                }
+            }
+            restoreFilters();
+            var dateFromInput = document.querySelector('input[name="datefrom"]');
+            var dateToInput = document.querySelector('input[name="dateto"]');
+            if (dateFromInput) dateFromInput.addEventListener('change', saveFilters);
+            if (dateToInput) dateToInput.addEventListener('change', saveFilters);
+        };
+
+        function myFunction2() {
+            var x = document.getElementById("myDIV");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+    </script>
+
+
+</head>
+
+<body>
+   
+        <div>
+            <center>
+                <a href="/daterange"><img src="/images/logo.png" /></a><br>
+                <% if(message.length>0){ %>
+                    <div class="alert-danger">
+                        <h5>
+                            <%- message %>
+                        </h5>
+                    </div>
+                    <% } %><br>
+
+                        <div class="d-flex flex-column flex-md-row gap-3 justify-content-center align-items-center mt-3">
+                            <div class="radio-inputs" style="width: 280px;">
+                                <label class="radio">
+                                    <input type="radio" name="radio" onclick="passfilter(this.value)" id="passHome"
+                                        value="Home Pass">
+                                    <span class="name">Home</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="radio" onclick="passfilter(this.value)" id="passCity"
+                                        value="City Pass">
+                                    <span class="name">City</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="radio" checked="checked" onclick="passfilter(this.value)"
+                                        id="passAll" value="">
+                                    <span class="name">All Passes</span>
+                                </label>
+                            </div>
+
+                            <div class="radio-inputs" style="width: 520px; max-width: 95vw;">
+                                <label class="radio">
+                                    <input type="radio" name="statusRadio" checked="checked" onclick="filterStatus(this.value)"
+                                        id="statusAll" value="">
+                                    <span class="name">All Status</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="statusRadio" onclick="filterStatus(this.value)"
+                                        id="statusHostelOut" value="HostelOut">
+                                    <span class="name">Hostel Out</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="statusRadio" onclick="filterStatus(this.value)"
+                                        id="statusGateOut" value="GateOut">
+                                    <span class="name">Gate Out</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="statusRadio" onclick="filterStatus(this.value)"
+                                        id="statusHostelIn" value="HostelIn">
+                                    <span class="name">Hostel In</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="statusRadio" onclick="filterStatus(this.value)"
+                                        id="statusGateIn" value="GateIn">
+                                    <span class="name">Gate In</span>
+                                </label>
+                            </div>
+                        </div>
+
+            </center>
+        </div><br>
+        <div id="myDIV">
+        <div class="container">
+
+            <div class="row justify-content-center">
+                <div>
+                    <form action="/daterange" align="right" method="post">
+                        <div>
+                            <div align="center">
+                                <label class="form-label">Date From</label>
+                                <input type="date" name="datefrom">
+
+                                <label class="form-label">Date To</label>
+                                <input type="date" name="dateto">
+                                <button class="btn btn-primary"><span>Go</span></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div><input type="search" class="form-control rounded" placeholder="Search" aria-label="Search"
+                        aria-describedby="search-addon" id="searchbar" onkeyup="myFunction()" />
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container table-responsive py-5">
+        <% if(datefrom.length>0 || dateto >0){ %>
+
+            
+                
+                <button onclick="myFunction2()"   class="btn btn-warning">  <%- datefrom %> to <%- dateto %></button>
+            
+
+            <% } %>
+                
+                <table class="table table-bordered table-hover" id="myTable">
+                    <thead class="thead-dark">
+
+                        <tr>
+                            <th scope="col" hidden>Pass Type</th>
+                            <th scope="col">S.N</th>
+                            <th scope="col">UID</th>
+                            <th scope="col">NAME</th>
+                            <th scope="col">Hostel OUT</th>
+                            <th scope="col">Hostel IN</th>
+                            <th scope="col" hidden>Hostel Duration</th>
+                            <th scope="col">Gate OUT</th>
+                            <th scope="col">Gate IN</th>
+                            <th scope="col">Gate Duration</th>
+                            <th scope="col">Authority</th>
+                            <th scope="col" hidden>Pass Type</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if(result.length> 0) { %>
+
+                            <% for(var i=0;i<result.length;i++){ %>
+
+                                <tr>
+                                    <td hidden><%-result[i].passtype %></td>
+                                    <td><%- i + 1 %></td>
+                                    <td><a href="/studentprofile/<%-result[i].uid%>"><%-result[i].uid%></a></td>
+                                    <td><%- result[i].sname%></td>
+                                    <td class="approvalDate"><%- result[i].approvaldt%></td>
+                                    <td class="approvalDate"><%- result[i].hostelintime%></td>
+                                    <td hidden><%-result[i].Durationh %></td>
+                                    <td class="approvalDate"><%- result[i].outdatetime%></td>
+                                    <td class="approvalDate"><%-result[i].indatetime %></td>
+                                    <td><%-result[i].Duration %></td>
+                                    <td><%-result[i].hosteloutauth %></td>
+
+
+
+                                </tr>
+
+                                <% } %>
+
+                                    <% }else{ %>
+                                        <tr class="warning no-result">
+                                            <td colspan="10"> <i class="fa fa-warning"></i>
+                                                <center>Data Not found</center>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                    </tbody>
+                </table>
+    </div>
+
+
+</body>
+
+</html>
