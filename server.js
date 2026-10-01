@@ -76,6 +76,15 @@ function handleQuery(sql, cb) {
   }
 
   if (sqlLower.includes('from pass_requests')) {
+    if (sqlLower.includes("status = 'pending'")) {
+        return cb(null, mockPassRequests.filter(p => p.status === 'pending'));
+    }
+    if (sqlLower.includes("status = 'rejected'")) {
+        return cb(null, mockPassRequests.filter(p => p.status === 'rejected'));
+    }
+    if (sqlLower.includes("status = 'approved'")) {
+        return cb(null, mockPassRequests.filter(p => p.status === 'approved'));
+    }
     return cb(null, mockPassRequests);
   }
   
