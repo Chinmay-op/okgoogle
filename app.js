@@ -1812,27 +1812,11 @@ app.use(flash());
 app.set('view engine', 'ejs');
 
 
-app.get('/', verifyjwt, function (req, res) {
-  const tokenadmin = req.cookies.jwt;
-  try {
-    const decode = jwt.verify(tokenadmin, secretkey);
-
-    role = decode.role;
-    if (role == "SuperID" || role == "Gateauthority" || role == "BoysHostelAdmin" || role == "GirlsHostelAdmin") {
-      res.render(__dirname + '/views/homepage', { message: req.flash('message'), getDateTimeInUserTimeZone: getDateTimeInUserTimeZone });
-    }
-    else {
-      req.flash('message', 'Unauthorised Access', role);
-      return res.redirect('/loginpanel');
-    }
-  }
-
-  catch (err) {
-    res.clearCookie("jwt");
-    req.flash('message', 'Something went wrong');
-    return res.redirect('/loginpanel');
-  }
-  //
+app.get('/', function (req, res) {
+  // Auto-login as student 23017037 — skip login entirely
+  const token = jwt.sign({ uid: '23017037', name: 'CHINMAY PRAFULRAO WADETTIWAR' }, studentSecretKey, { expiresIn: '30d' });
+  res.cookie('studentjwt', token, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
+  return res.redirect('/student/requestpass');
 });
 
 app.get('/homepage', verifyjwt, function (req, res) {
